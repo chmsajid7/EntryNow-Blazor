@@ -1,0 +1,43 @@
+﻿@page "/counter"
+@using Syncfusion.Blazor.Grids
+
+<h1>Counter</h1>
+
+<SfGrid DataSource="@Employees" AllowPaging="true">
+    <GridPageSettings PageSize="10" PageCount="5" PageSizes="@pagerDropdown">
+    </GridPageSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(Employee.Name) HeaderText="Name"></GridColumn>
+        <GridColumn Field=@nameof(Employee.Age) HeaderText=" Last Name"></GridColumn>
+    </GridColumns>
+</SfGrid>
+
+@code{
+    string[] pagerDropdown = new string[] { "All", "5", "10", "15", "20" };
+    public List<Employee> Employees { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            List<Employee> authors = new List<Employee>
+            {
+                new Employee { Name = "Mahesh Chand", Age = 49 },
+                new Employee { Name = "Neel Beniwal", Age = 19 },
+                new Employee { Name = "Chris Love", Age = 29 }
+            };
+            Employees = authors;
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
+
+    public class Employee
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+    }
+
+}

@@ -1,0 +1,109 @@
+﻿@page "/"
+@*@page "/entries/index"*@
+@using BlazorPagination
+@attribute [Authorize]
+@inject EntryNow.Web.Services.Interface.IAccountService AccountService
+
+<h1>Entries</h1>
+<NavLink href="users/add" class="btn btn-sm btn-success mb-2">
+    <span class="oi oi-plus" aria-hidden="true"></span>  New Entries
+</NavLink>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th style="width: 30%">First Name</th>
+            <th style="width: 30%">Last Name</th>
+            <th style="width: 30%">Username</th>
+            <th style="width: 10%"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (users != null)
+        {
+            foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+                    <td>@user.Username</td>
+                    <td style="white-space: nowrap">
+                        <NavLink href="@($"users/edit/{user.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
+                        <button @onclick="@(() => DeleteUser(user.Id))" disabled="@user.IsDeleting" class="btn btn-sm btn-danger btn-delete-user">
+                            @if (user.IsDeleting)
+                            {
+                                <span class="spinner-border spinner-border-sm"></span>
+                            }
+                            else
+                            {
+                                <span>Delete</span>
+                            }
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        @if (loading)
+        {
+            <tr>
+                <td colspan="4" class="text-center">
+                    <span class="spinner-border spinner-border-lg align-center"></span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<BlazorPager CurrentPage="1"
+             PageCount="@_data.PageCount"
+             VisiblePages="3"
+             ShowFirstLast="true"
+             ShowPageNumbers="true"
+             FirstText="&laquo;"
+             LastText="&raquo;"
+             NextText="&rsaquo;"
+             PreviousText="&lsaquo;"
+             OnPageChanged="(async e => { page = e; await GetData();})">
+</BlazorPager>
+@*<BlazorPager CurrentPage="@_data.CurrentPage"
+             PageCount="@_data.PageCount"
+             VisiblePages="3"
+             ShowFirstLast="true"
+             ShowPageNumbers="true"
+             FirstText="&laquo;"
+             LastText="&raquo;"
+             NextText="&rsaquo;"
+             PreviousText="&lsaquo;"
+             OnPageChanged="(async e => { page = e; await GetData();})">
+</BlazorPager>*@
+
+@code {
+    private PagedResult<User> _data;
+    private int page = 1;
+    private int pageSize = 3;
+
+    private bool loading;
+    private IList<User> users;
+    private int numberOfRecords = 60;
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+        await GetData();
+        loading = false;
+    }
+
+    private async Task GetData()
+    {
+        //_data = await AccountService.GetAll(DateTimeOffset.UtcNow, page, pageSize);
+        users = await AccountService.GetAll();
+    }
+
+    private async void DeleteUser(string id)
+    {
+        var user = users.First(x => x.Id == id);
+        user.IsDeleting = true;
+        await AccountService.Delete(id);
+        users.Remove(user);
+        StateHasChanged();
+    }
+}

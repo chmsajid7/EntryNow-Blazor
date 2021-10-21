@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+@inject EntryNow.Web.Services.Interface.IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+@if (LoggedIn)
+{
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+}
+
+<div class="main @(LoggedIn ? "bg-light" : "")">
+    <div class="top-row px-4">
+        <NavLink href="account/logout" target="_blank" class="ml-md-auto">Logout</NavLink>
+    </div>
+    <div class="content px-4">
+        @Body
+    </div>
+</div>
+
+@code {
+    public bool LoggedIn
+    {
+        get { return AccountService.User != null; }
+    }
+}
