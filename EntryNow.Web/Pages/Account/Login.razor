@@ -44,9 +44,18 @@
         loading = true;
         try
         {
-            await AccountService.Login(model);
-            var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
-            NavigationManager.NavigateTo(returnUrl);
+            bool login = await AccountService.Login(model);
+            if (login)
+            {
+                var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
+                NavigationManager.NavigateTo(returnUrl);
+            }
+            else
+            {
+                AlertService.Error("Username or password is incorrect");
+                loading = false;
+                StateHasChanged();
+            }
         }
         catch (Exception ex)
         {

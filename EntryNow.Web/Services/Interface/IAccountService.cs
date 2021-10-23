@@ -10,10 +10,11 @@ namespace EntryNow.Web.Services.Interface
     {
         User User { get; }
         Task Initialize();
-        Task Login(Login model);
+        Task<bool> Login(Login model);
         Task Logout();
         Task Register(AddUser model);
         Task<IList<User>> GetAll();
+        Task<IList<User>> GetAllEntries();
         Task<User> GetById(string id);
         Task Update(string id, EditUser model);
         Task Delete(string id);

@@ -1,5 +1,8 @@
 ﻿using EntryNow.Web.Services.Interface;
 using Microsoft.JSInterop;
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -21,7 +24,7 @@ namespace EntryNow.Web.Services.Implementation
             if (json == null)
                 return default;
 
-            return JsonSerializer.Deserialize<T>(json);
+            return JsonSerializer.Deserialize<T>(json.ToString());
         }
 
         public async Task SetItem<T>(string key, T value)

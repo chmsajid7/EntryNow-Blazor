@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace EntryNow.Web.Services.Implementation
@@ -34,10 +36,30 @@ namespace EntryNow.Web.Services.Implementation
             User = await _localStorageService.GetItem<User>(_userKey);
         }
 
-        public async Task Login(Login model)
+        public async Task<bool> Login(Login model)
         {
-            User = await _httpService.Post<User>("/users/authenticate", model);
-            await _localStorageService.SetItem(_userKey, User);
+            //User = await _httpService.Post<User>("/users/authenticate", model);
+            //await _localStorageService.SetItem(_userKey, User);
+
+            if (model.Username == "admin" && model.Password == "admin")
+            {
+                User fakeUser = new User()
+                {
+                    Username = "admin",
+                    Id = "admin",
+                    FirstName = "admin",
+                    LastName = "admin",
+                    Token = "fake-jwt-token"
+                };
+                User = fakeUser;
+
+                await _localStorageService.SetItem(_userKey, User);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public async Task Logout()
@@ -57,6 +79,17 @@ namespace EntryNow.Web.Services.Implementation
             return await _httpService.Get<IList<User>>("/users");
         }
 
+        public async Task<IList<User>> GetAllEntries()
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://entrynowapi.azurewebsites.net/api/");
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            // List all Names.
+            HttpResponseMessage response = client.GetAsync("voter/get?pageNumber=1&perPage=1000").Result;
+
+            return await _httpService.Get<IList<User>>("/users");
+        }
 
         public async Task<User> GetById(string id)
         {

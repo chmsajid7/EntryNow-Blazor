@@ -106,7 +106,7 @@ namespace EntryNow.Web.Services.Implementation
 
         private async Task<T> sendRequest<T>(HttpRequestMessage request)
         {
-            await addJwtHeader(request);
+            //await addJwtHeader(request);
 
             // send request
             using var response = await _httpClient.SendAsync(request);
@@ -114,7 +114,7 @@ namespace EntryNow.Web.Services.Implementation
             // auto logout on 401 response
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                _navigationManager.NavigateTo("account/logout");
+                _navigationManager.NavigateTo("account/logout");    
                 return default;
             }
 
