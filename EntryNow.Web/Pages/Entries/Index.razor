@@ -10,17 +10,17 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th style="width: 30%">Name</th>
-            <th style="width: 30%">Surname</th>
-            <th style="width: 30%">Contact</th>
-            <th style="width: 30%">CNIC</th>
-            <th style="width: 30%">Reference</th>
-            <th style="width: 30%">Union Counsil</th>
-            <th style="width: 30%">Taluka</th>
-            <th style="width: 30%">Deh</th>
-            <th style="width: 30%">Village</th>
-            <th style="width: 30%">City</th>
-            <th style="width: 30%">Address</th>
+            <th style="width: 8%">Name</th>
+            <th style="width: 8%">Surname</th>
+            <th style="width: 8%">Contact</th>
+            <th style="width: 8%">CNIC</th>
+            <th style="width: 8%">Reference</th>
+            <th style="width: 8%">Union Counsil</th>
+            <th style="width: 8%">Taluka</th>
+            <th style="width: 8%">Deh</th>
+            <th style="width: 8%">Village</th>
+            <th style="width: 8%">City</th>
+            <th style="width: 10%">Address</th>
             <th style="width: 10%"></th>
         </tr>
     </thead>
@@ -43,7 +43,8 @@
                     <td>@entrie.Address</td>
                     <td style="white-space: nowrap">
                         <NavLink href="@($"users/edit/{entrie.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
-       @*                 <button @onclick="@(() => DeleteUser(entrie.Id))" disabled="@entrie.IsDeleting" class="btn btn-sm btn-danger btn-delete-user">
+                        <NavLink href="@($"users/edit/{entrie.Id}")" class="btn btn-sm btn-danger mr-1">Delete</NavLink>
+@*                        <button @onclick="@(() => DeleteUser(entrie.Id))" disabled="@entrie.IsDeleting" class="btn btn-sm btn-danger btn-delete-user">
                             @if (entrie.IsDeleting)
                             {
                                 <span class="spinner-border spinner-border-sm"></span>
@@ -60,7 +61,7 @@
         @if (loading)
         {
             <tr>
-                <td colspan="4" class="text-center">
+                <td colspan="12" class="text-center">
                     <span class="spinner-border spinner-border-lg align-center"></span>
                 </td>
             </tr>

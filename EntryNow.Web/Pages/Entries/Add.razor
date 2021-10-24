@@ -3,50 +3,41 @@
 @inject EntryNow.Web.Services.Interface.IAlertService AlertService
 @inject NavigationManager NavigationManager
 
-<h1>Add User</h1>
+<h1>New Entry</h1>
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <div class="form-row">
         <div class="form-group col">
-            <label>First Name</label>
+            <label>Name</label>
             <InputText @bind-Value="model.Name" class="form-control" />
             <ValidationMessage For="@(() => model.Name)" />
         </div>
+        
         <div class="form-group col">
-            <label>Last Name</label>
-            <InputText @bind-Value="model.Surname" class="form-control" />
-            <ValidationMessage For="@(() => model.Surname)" />
+            <label>Surname</label>
+            <select class="form-control">
+            <option value="">Select Surname</option>
+@*            @foreach(var surname in surnames)
+                {
+                    <option value="@surname.Id">@surname.Value</option>
+                }*@
+            </select>
         </div>
+
         <div class="form-group col">
-            <label>Last Name</label>
+            <label>Contact Number</label>
             <InputText @bind-Value="model.ContactNumber" class="form-control" />
             <ValidationMessage For="@(() => model.ContactNumber)" />
         </div>
     </div>
-    <div class="form-row">
-      @*  <div class="form-group col">
-            <label>Username</label>
-            <InputText @bind-Value="model.EmailAddress" class="form-control" />
-            <ValidationMessage For="@(() => model.EmailAddress )" />
-        </div>
-        <div class="form-group col">
-            <label>Username</label>
-            <InputText @bind-Value="model.CNIC" class="form-control" />
-            <ValidationMessage For="@(() => model.CNIC)" />
-        </div>
-        <div class="form-group col">
-            <label>Username</label>
-            <InputText @bind-Value="model.District" class="form-control" />
-            <ValidationMessage For="@(() => model.District)" />
-        </div>*@
-    </div>
+
     <div class="form-group">
         <button disabled="@loading" class="btn btn-primary">
             @if (loading)
             {
                 <span class="spinner-border spinner-border-sm mr-1"></span>
             }
-            Save
+            Submit
         </button>
         <NavLink href="users" class="btn btn-link">Cancel</NavLink>
     </div>
@@ -54,16 +45,100 @@
 
 @code {
     private Entries_ViewModel model = new Entries_ViewModel();
+    private IList<DropDowns> cities;
+    private IList<DropDowns> dehs;
+    private IList<DropDowns> districts;
+    private IList<DropDowns> surnames;
+    private IList<DropDowns> talukas;
+    private IList<DropDowns> unioncounsils;
+    private IList<DropDowns> villages;
     private bool loading;
 
-    private async void OnValidSubmit()
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+        await FillDropDowns();
+        loading = false;
+    }
+
+    private async Task FillDropDowns()
+    {
+        try
+        {
+            string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown")) 
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+                }
+            }
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "deh/dropdown"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.dehs = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+                }
+            }
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "district/dropdown"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.districts = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+                }
+            }
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/dropdown"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.surnames = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+                }
+            }
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/dropdown"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.talukas = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+                }
+            }
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/dropdown"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.unioncounsils = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+                }
+            }
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/dropdown"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.villages = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void OnValidSubmit()
     {
         loading = true;
         try
         {
             //await AccountService.Register(model);
             AlertService.Success("User added successfully", keepAfterRouteChange: true);
-            NavigationManager.NavigateTo("users");
+            NavigationManager.NavigateTo("entries/index");
         }
         catch (Exception ex)
         {
@@ -72,4 +147,10 @@
             StateHasChanged();
         }
     }
+    //OnSurnameChanged
+    private void OnSurnameChanged(ChangeEventArgs e) 
+    {  
+        string cityName = e.Value.ToString();
+        this.StateHasChanged();
+    }  
 }

@@ -47,6 +47,7 @@
             bool login = await AccountService.Login(model);
             if (login)
             {
+                await Task.Delay(3000);
                 var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
                 NavigationManager.NavigateTo(returnUrl);
             }

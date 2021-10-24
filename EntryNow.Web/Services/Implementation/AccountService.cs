@@ -66,7 +66,7 @@ namespace EntryNow.Web.Services.Implementation
         {
             User = null;
             await _localStorageService.RemoveItem(_userKey);
-            _navigationManager.NavigateTo("account/login");
+            //_navigationManager.NavigateTo("account/login");
         }
 
         public async Task Register(AddUser model)
