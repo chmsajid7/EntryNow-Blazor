@@ -21,19 +21,21 @@ namespace EntryNow.Web
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>();
 
-            // configure http client
-            builder.Services.AddScoped(x => {
-                var apiUrl = new Uri(builder.Configuration["apiUrl"]);
+            //builder.Services.AddHttpClient();
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            //builder.Services.AddScoped(x => 
+            //{
+            //    var apiUrl = new Uri(builder.Configuration["apiUrl"]);
+            //    return new HttpClient() { BaseAddress = apiUrl };
 
-                // use fake backend if "fakeBackend" is "true" in appsettings.json
-                if (builder.Configuration["fakeBackend"] == "true")
-                {
-                    var fakeBackendHandler = new Helpers.FakeBackendHandler(x.GetService<ILocalStorageService>());
-                    return new HttpClient(fakeBackendHandler) { BaseAddress = apiUrl };
-                }
+            //    //if (builder.Configuration["fakeBackend"] == "true")
+            //    //{
+            //    //    var fakeBackendHandler = new Helpers.FakeBackendHandler(x.GetService<ILocalStorageService>());
+            //    //    return new HttpClient(fakeBackendHandler) { BaseAddress = apiUrl };
+            //    //}
 
-                return new HttpClient() { BaseAddress = apiUrl };
-            });
+                
+            //});
 
             var host = builder.Build();
 

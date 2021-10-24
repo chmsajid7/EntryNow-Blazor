@@ -1,34 +1,50 @@
-﻿@page "/"
-@*@page "/entries/index"*@
+﻿@page "/entries/index"
 @attribute [Authorize]
-@inject EntryNow.Web.Services.Interface.IAccountService AccountService
+@inject EntryNow.Web.Services.Interface.IAlertService AlertService
+@*@inject EntryNow.Web.Services.Interface.IAccountService AccountService*@
 
 <h1>Entries</h1>
-<NavLink href="users/add" class="btn btn-sm btn-success mb-2">
+<NavLink href="entries/add" class="btn btn-sm btn-success mb-2">
     <span class="oi oi-plus" aria-hidden="true"></span>  New Entries
 </NavLink>
 <table class="table table-striped">
     <thead>
         <tr>
-            <th style="width: 30%">First Name</th>
-            <th style="width: 30%">Last Name</th>
-            <th style="width: 30%">Username</th>
+            <th style="width: 30%">Name</th>
+            <th style="width: 30%">Surname</th>
+            <th style="width: 30%">Contact</th>
+            <th style="width: 30%">CNIC</th>
+            <th style="width: 30%">Reference</th>
+            <th style="width: 30%">Union Counsil</th>
+            <th style="width: 30%">Taluka</th>
+            <th style="width: 30%">Deh</th>
+            <th style="width: 30%">Village</th>
+            <th style="width: 30%">City</th>
+            <th style="width: 30%">Address</th>
             <th style="width: 10%"></th>
         </tr>
     </thead>
     <tbody>
-        @if (users != null)
+        @if (entries != null)
         {
-            foreach (var user in users)
+            foreach (var entrie in entries)
             {
                 <tr>
-                    <td>@user.FirstName</td>
-                    <td>@user.LastName</td>
-                    <td>@user.Username</td>
+                    <td>@entrie.Name</td>
+                    <td>@entrie.Surname</td>
+                    <td>@entrie.ContactNumber</td>
+                    <td>@entrie.CNIC</td>
+                    <td>@entrie.Reference</td>
+                    <td>@entrie.UnionCounsil</td>
+                    <td>@entrie.Taluka</td>
+                    <td>@entrie.Deh</td>
+                    <td>@entrie.Village</td>
+                    <td>@entrie.City</td>
+                    <td>@entrie.Address</td>
                     <td style="white-space: nowrap">
-                        <NavLink href="@($"users/edit/{user.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
-                        <button @onclick="@(() => DeleteUser(user.Id))" disabled="@user.IsDeleting" class="btn btn-sm btn-danger btn-delete-user">
-                            @if (user.IsDeleting)
+                        <NavLink href="@($"users/edit/{entrie.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
+       @*                 <button @onclick="@(() => DeleteUser(entrie.Id))" disabled="@entrie.IsDeleting" class="btn btn-sm btn-danger btn-delete-user">
+                            @if (entrie.IsDeleting)
                             {
                                 <span class="spinner-border spinner-border-sm"></span>
                             }
@@ -36,7 +52,7 @@
                             {
                                 <span>Delete</span>
                             }
-                        </button>
+                        </button>*@
                     </td>
                 </tr>
             }
@@ -53,8 +69,11 @@
 </table>
 
 @code {
+    private const int page = 1;
+    private const int pageSize = 1000;
     private bool loading;
-    private IList<User> users;
+    private IList<Entries> entries;
+    private readonly System.Net.Http.HttpClient _httpClient;
 
     protected override async Task OnInitializedAsync()
     {
@@ -65,39 +84,31 @@
 
     private async Task GetData()
     {
-        users = await AccountService.GetAll();
-
-        System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
-        client.BaseAddress = new Uri("https://entrynowapi.azurewebsites.net/api/");
-        // Add an Accept header for JSON format.
-        client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-        string c = client.BaseAddress.AbsoluteUri;
-
         try
         {
-            System.Net.Http.HttpResponseMessage response = await client.GetAsync("https://entrynowapi.azurewebsites.net/api/voter/get?pageNumber=1&perPage=2");
-            //System.Net.Http.HttpResponseMessage response = client.GetAsync("voter/get?pageNumber=1&perPage=1000").Result;
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync("https://entrynowapi.azurewebsites.net/api/voter/get?pageNumber=" + page + "&perPage=" + pageSize))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
+                }
+            }
         }
-        catch(Exception eee)
+        catch(Exception e)
         {
-            
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
         }
-        // List all Names.
-        
-
-
-        string a = "";
-
     }
 
     private async void DeleteUser(string id)
     {
-        var user = users.First(x => x.Id == id);
-        user.IsDeleting = true;
-        await AccountService.Delete(id);
-        users.Remove(user);
-        StateHasChanged();
+        //var user = users.First(x => x.Id == id);
+        //user.IsDeleting = true;
+        //await AccountService.Delete(id);
+        //users.Remove(user);
+        //StateHasChanged();
     }
 }
