@@ -1,7 +1,7 @@
-﻿@page "/entries/index"
+﻿@page "/"
+@*@page "/entries/index"*@
 @attribute [Authorize]
 @inject EntryNow.Web.Services.Interface.IAlertService AlertService
-@*@inject EntryNow.Web.Services.Interface.IAccountService AccountService*@
 
 <h1>Entries</h1>
 <NavLink href="entries/add" class="btn btn-sm btn-success mb-2">
@@ -58,6 +58,7 @@
                 </tr>
             }
         }
+        
         @if (loading)
         {
             <tr>
@@ -68,17 +69,92 @@
         }
     </tbody>
 </table>
+@if (totalPages > 0)
+{
+    <nav aria-label="...">
+        <ul class="pagination justify-content-end">
+            @if(page == 1)
+            {
+                <li class="page-item disabled">
+                    <a class="page-link" @onclick="GetDataOnPreviousPage" tabindex="-1">Previous</a>
+                </li>
+            }
+            @if(page != 1)
+            {
+                <li class="">
+                    <a class="page-link" @onclick="GetDataOnPreviousPage" tabindex="-1">Previous</a>
+                </li>
+            }
+            @if (totalPages > 0)
+            {
+                @for (int i = 1; i <= totalPages; i++)
+               {
+                   int buttonNumber = i;
+                   <li class="page-item">
+                       <a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))">@i</a>
+                    </li>
+               }
+            }
+@*            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item active">
+                <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>*@
+            @if(page == totalPages)
+            {
+                <li class="page-item disabled">
+                    <a class="page-link" @onclick="GetDataOnNextPage">Next</a>
+                </li>
+            }
+            @if(page != totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" @onclick="GetDataOnNextPage">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
 
 @code {
-    private const int page = 1;
-    private const int pageSize = 1000;
+    private int page = 1;
+    private int pageSize = 5;
     private bool loading;
     private IList<Entries> entries;
+    private int totalPages;
     private readonly System.Net.Http.HttpClient _httpClient;
 
     protected override async Task OnInitializedAsync()
     {
         loading = true;
+        await GetData();
+        await GetEntriesCount();
+        loading = false;
+    }
+
+    private async Task GetDataOnNextPage()
+    {
+        loading = true;
+        page += 1;
+        pageSize = 5;
+        await GetData();
+        loading = false;
+    }
+    
+    private async Task GetDataByPageNumber(int pageNumber)
+    {
+        loading = true;
+        page = pageNumber;
+        pageSize = 5;
+        await GetData();
+        loading = false;
+    }
+    
+    private async Task GetDataOnPreviousPage()
+    {
+        loading = true;
+        page -= 1;
+        pageSize = 5;
         await GetData();
         loading = false;
     }
@@ -104,7 +180,29 @@
         }
     }
 
-    private async void DeleteUser(string id)
+    private async Task GetEntriesCount()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync("https://entrynowapi.azurewebsites.net/api/voter/get?pageNumber=" + 1 + "&perPage=" + 90000000))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    IList<Entries> _entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
+                    totalPages = (int)Math.Ceiling((decimal)_entries.Count() / (decimal)pageSize);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void DeleteUser(string id)
     {
         //var user = users.First(x => x.Id == id);
         //user.IsDeleting = true;

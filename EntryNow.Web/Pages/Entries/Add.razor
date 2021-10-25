@@ -6,41 +6,137 @@
 <h1>New Entry</h1>
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-    <div class="form-row">
-        <div class="form-group col">
-            <label>Name</label>
-            <InputText @bind-Value="model.Name" class="form-control" />
-            <ValidationMessage For="@(() => model.Name)" />
+    @if (villages != null)
+    {
+        <div class="form-row">
+            <div class="form-group col">
+                <label>Name</label>
+                <InputText @bind-Value="model.Name" class="form-control" />
+                <ValidationMessage For="@(() => model.Name)" />
+            </div>
+            <div class="form-group col">
+                <label>Surname</label>
+                <select class="form-control" @bind="model.SurnameId">
+                    <option value=""></option>
+                    @foreach(var item in surnames)
+                    {
+                        <option value="@item.Id">@item.Value</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col">
+                <label>Contact Number</label>
+                <InputText @bind-Value="model.ContactNumber" class="form-control" />
+                <ValidationMessage For="@(() => model.ContactNumber)" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <label>Email</label>
+                <InputText @bind-Value="model.EmailAddress" class="form-control" />
+                <ValidationMessage For="@(() => model.EmailAddress)" />
+            </div>
+            <div class="form-group col">
+                <label>CNIC</label>
+                <InputText @bind-Value="model.CNIC" class="form-control" />
+                <ValidationMessage For="@(() => model.CNIC)" />
+            </div>
+            <div class="form-group col">
+                <label>District</label>
+                <select class="form-control" @bind="model.DistrictId">
+                    <option value=""></option>
+                    @foreach(var item in districts)
+                    {
+                        <option value="@item.Id">@item.Value</option>
+                    }
+                </select>
+            </div>
         </div>
         
-        <div class="form-group col">
-            <label>Surname</label>
-            <select class="form-control">
-            <option value="">Select Surname</option>
-@*            @foreach(var surname in surnames)
+        <div class="form-row">
+            <div class="form-group col">
+                <label>Taluka</label>
+                <select class="form-control" @bind="model.TalukaId">
+                    <option value=""></option>
+                    @foreach(var item in talukas)
+                    {
+                        <option value="@item.Id">@item.Value</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col">
+                <label>Union Counsil</label>
+                <select class="form-control" @bind="model.UnionCounsilId">
+                    <option value=""></option>
+                    @foreach(var item in unioncounsils)
+                    {
+                        <option value="@item.Id">@item.Value</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col">
+                <label>Deh</label>
+                <select class="form-control" @bind="model.DehId">
+                    <option value=""></option>
+                    @foreach(var item in dehs)
+                    {
+                        <option value="@item.Id">@item.Value</option>
+                    }
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group col">
+                <label>City</label>
+                <select class="form-control" @bind="model.CityId">
+                    <option value=""></option>
+                    @foreach(var item in cities)
+                    {
+                        <option value="@item.Id">@item.Value</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col">
+                <label>Village</label>
+                <select class="form-control" @bind="model.VillageId">
+                    <option value=""></option>
+                    @foreach(var item in villages)
+                    {
+                        <option value="@item.Id">@item.Value</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <label>Address</label>
+                <InputText @bind-Value="model.Address" class="form-control" />
+                <ValidationMessage For="@(() => model.Address)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button disabled="@loading" class="btn btn-primary">
+                @if (loading)
                 {
-                    <option value="@surname.Id">@surname.Value</option>
-                }*@
-            </select>
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Submit
+            </button>
+            <NavLink href="entries/index" class="btn btn-link">Cancel</NavLink>
         </div>
-
-        <div class="form-group col">
-            <label>Contact Number</label>
-            <InputText @bind-Value="model.ContactNumber" class="form-control" />
-            <ValidationMessage For="@(() => model.ContactNumber)" />
-        </div>
-    </div>
-
-    <div class="form-group">
-        <button disabled="@loading" class="btn btn-primary">
-            @if (loading)
-            {
-                <span class="spinner-border spinner-border-sm mr-1"></span>
-            }
-            Submit
-        </button>
-        <NavLink href="users" class="btn btn-link">Cancel</NavLink>
-    </div>
+    }
+    @if (loading)
+    {
+        <tr>
+            <td colspan="12" class="text-center">
+                <span class="spinner-border spinner-border-lg align-center"></span>
+            </td>
+        </tr>
+    }
 </EditForm>
 
 @code {
@@ -52,6 +148,7 @@
     private IList<DropDowns> talukas;
     private IList<DropDowns> unioncounsils;
     private IList<DropDowns> villages;
+    private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
     private bool loading;
 
     protected override async Task OnInitializedAsync()
@@ -60,12 +157,10 @@
         await FillDropDowns();
         loading = false;
     }
-
     private async Task FillDropDowns()
     {
         try
         {
-            string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
                 using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown")) 
@@ -130,14 +225,15 @@
             StateHasChanged();
         }
     }
-
-    private void OnValidSubmit()
+    private async void OnValidSubmit()
     {
+        AlertService.Clear();
         loading = true;
         try
         {
-            //await AccountService.Register(model);
-            AlertService.Success("User added successfully", keepAfterRouteChange: true);
+            await AddEntryAsync();
+            AlertService.Success("New Entry Added Successfully", keepAfterRouteChange: true);
+            await Task.Delay(3000);
             NavigationManager.NavigateTo("entries/index");
         }
         catch (Exception ex)
@@ -147,10 +243,16 @@
             StateHasChanged();
         }
     }
-    //OnSurnameChanged
-    private void OnSurnameChanged(ChangeEventArgs e) 
-    {  
-        string cityName = e.Value.ToString();
-        this.StateHasChanged();
-    }  
+    private async Task AddEntryAsync()
+    {
+        using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        {
+            var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+            var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+            using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "voter/save", content))
+            {
+                string apiResponse = await response.Content.ReadAsStringAsync();
+            }
+        }
+    }
 }
