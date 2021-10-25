@@ -44,7 +44,7 @@
                     <td>@entrie.City</td>
                     <td>@entrie.Address</td>
                     <td style="white-space: nowrap">
-                        <NavLink href="@($"users/edit/{entrie.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
+                        <NavLink href="@($"entries/edit/{entrie.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
                         <NavLink href="@($"users/edit/{entrie.Id}")" class="btn btn-sm btn-danger mr-1">Delete</NavLink>
 @*                        <button @onclick="@(() => DeleteUser(entrie.Id))" disabled="@entrie.IsDeleting" class="btn btn-sm btn-danger btn-delete-user">
                             @if (entrie.IsDeleting)
@@ -79,15 +79,21 @@
             @if(page == 1)
             {
                 <li class="page-item disabled">
-                    <a class="page-link" @onclick="GetDataOnPreviousPage" tabindex="-1">Previous</a>
+                    <a class="page-link" @onclick="GetDataOnPreviousPage">Previous</a>
                 </li>
             }
             @if(page != 1)
             {
                 <li class="">
-                    <a class="page-link" @onclick="GetDataOnPreviousPage" tabindex="-1">Previous</a>
+                    <a class="page-link" @onclick="GetDataOnPreviousPage">Previous</a>
                 </li>
             }
+@*            @if (page > 3)
+            {
+                <li class="">
+                    <a class="page-link">...</a>
+                </li>
+            }*@
             @if (totalPages > 0)
             {
                 @for (int i = 1; i <= totalPages; i++)
@@ -139,7 +145,6 @@
     {
         loading = true;
         page += 1;
-        pageSize = 5;
         await GetData();
         loading = false;
     }
@@ -148,7 +153,6 @@
     {
         loading = true;
         page = pageNumber;
-        pageSize = 5;
         await GetData();
         loading = false;
     }
@@ -157,7 +161,6 @@
     {
         loading = true;
         page -= 1;
-        pageSize = 5;
         await GetData();
         loading = false;
     }
