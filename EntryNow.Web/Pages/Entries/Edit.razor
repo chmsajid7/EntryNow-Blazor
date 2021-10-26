@@ -11,7 +11,7 @@
         <div class="form-row">
             <div class="form-group col">
                 <label>Name</label>
-                <InputText @bind-Value="model.Name" class="form-control" placeholder="@model.Name" />
+                <InputText @bind-Value="model.Name" class="form-control" placeholder="@entries.Name" />
                 <ValidationMessage For="@(() => model.Name)" />
             </div>
             <div class="form-group col">
@@ -140,6 +140,7 @@
 </EditForm>
 
 @code {
+    private Entries entries = new Entries();
     private Entries_ViewModel model = new Entries_ViewModel();
     private IList<DropDowns> cities;
     private IList<DropDowns> dehs;
@@ -158,14 +159,31 @@
     protected override async Task OnInitializedAsync()
     {
         pageLoading = true;
-        await GetEntry();
+        entries = await GetEntry();
         await FillDropDowns();
         pageLoading = false;
     }
 
-    private async Task GetEntry()
+    private async Task<Entries> GetEntry()
     {
-        
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/find/" + Id))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    return Newtonsoft.Json.JsonConvert.DeserializeObject<Entries>(apiResponse);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+        return new Entries();
     }
 
     private async Task FillDropDowns()
@@ -174,7 +192,7 @@
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown")) 
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
@@ -255,6 +273,7 @@
             StateHasChanged();
         }
     }
+
     private async Task AddEntryAsync()
     {
         //model.Id
