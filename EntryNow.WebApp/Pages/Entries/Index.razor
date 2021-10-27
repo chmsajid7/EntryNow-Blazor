@@ -1,0 +1,252 @@
+﻿@page "/entries/index"
+@attribute [Authorize]
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>All Voters</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">List of all the Voters</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <!-- /.col -->
+            <div class="card">
+              <div class="card-header">
+                  <NavLink href="entries/add">
+                    <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Click to add a voter! </h3>
+                  </NavLink>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-0">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Contact</th>
+                      <th>CNIC</th>
+                      <th>Reference</th>
+                      <th>UC</th>
+                      <th>Taluka</th>
+                      <th>Deh</th>
+                      <th>Village</th>
+                      <th>City</th>
+                      <th>Address</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      @if (entries != null)
+                        {
+                            foreach (var entrie in entries)
+                            {
+                                <tr>
+                                    <td>@entrie.Name</td>
+                                    <td>@entrie.Surname</td>
+                                    <td>@entrie.ContactNumber</td>
+                                    <td>@entrie.CNIC</td>
+                                    <td>@entrie.Reference</td>
+                                    <td>@entrie.UnionCounsil</td>
+                                    <td>@entrie.Taluka</td>
+                                    <td>@entrie.Deh</td>
+                                    <td>@entrie.Village</td>
+                                    <td>@entrie.City</td>
+                                    <td>@entrie.Address</td>
+                                    <td style="white-space: nowrap">
+                                        <a href="" @onclick="@(() => EditBtn(entrie.Id))" @onclick:preventDefault >
+                                            <i class="far fa-edit" style="color:blue;"></i>
+                                        </a>
+                                        &nbsp;
+                                        <a href="" @onclick="@(() => DeleteBtn(entrie.Id))" @onclick:preventDefault >
+                                            @if (IsDeleting)
+                                            {
+                                                <span class="spinner-border spinner-border-sm" style="color:black;"></span>
+                                            }
+                                            else
+                                            {
+                                                <i class="far fa-trash-alt" style="color:red;"></i>
+                                            }
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        @if (loading)
+                        {
+                            <tr>
+                                <td colspan="12" class="text-center">
+                                <span class="spinner-border spinner-border-lg align-center"></span>
+                                </td>
+                            </tr>
+                        }
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+
+            <!-- pagination -->
+            @if (totalPages > 0)
+            {
+                <div class="card-header">
+                <div class="card-tools">
+                  <ul class="pagination pagination-sm float-right">
+                        @if(page == 1)
+                        {
+                            <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
+                        }
+                        @if(page != 1)
+                        {
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
+                        }
+                        @if (totalPages > 0)
+                        {
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+                                int buttonNumber = i;
+                                <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))">@i</a></li>
+                            }
+                        }
+                        @if(page == totalPages)
+                        {
+                            <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
+                        }
+                        @if(page == totalPages)
+                        {
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
+                        }
+                  </ul>
+                </div>
+              </div>
+            }
+            </div>
+            <!-- /.card -->
+          <!-- /.col -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+
+@code {
+    private int page = 1;
+    private int pageSize = 10;
+    private bool loading;
+    private bool IsDeleting;
+    private IList<Entries> entries;
+    private int totalPages;
+    private readonly System.Net.Http.HttpClient _httpClient;
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+        await GetData();
+        await GetEntriesCount();
+        loading = false;
+    }
+
+    private async Task GetDataOnNextPage()
+    {
+        loading = true;
+        page += 1;
+        await GetData();
+        loading = false;
+    }
+
+    private async Task GetDataByPageNumber(int pageNumber)
+    {
+        loading = true;
+        page = pageNumber;
+        await GetData();
+        loading = false;
+    }
+
+    private async Task GetDataOnPreviousPage()
+    {
+        loading = true;
+        page -= 1;
+        await GetData();
+        loading = false;
+    }
+
+    private async Task GetData()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync("https://entrynowapi.azurewebsites.net/api/voter/get?pageNumber=" + page + "&perPage=" + pageSize))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GetEntriesCount()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync("https://entrynowapi.azurewebsites.net/api/voter/get/count"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    totalPages = (int)Math.Ceiling((decimal)Int32.Parse(apiResponse) / (decimal)pageSize);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void EditBtn(int id)
+    {
+        NavigationManager.NavigateTo($"entries/test/" + id);
+    }
+
+    private async Task DeleteBtn(int id)
+    {
+        IsDeleting = true;
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.DeleteAsync("https://entrynowapi.azurewebsites.net/api/voter/delete/" + id))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                }
+            }
+            await OnInitializedAsync();
+        }
+        catch(Exception e)
+        {
+            AlertService.Error("Not able to delete, Error : " + e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+        IsDeleting = false;
+    }
+}

@@ -1,0 +1,12 @@
+﻿@page "/account/logout"
+@layout MainLayout
+@inject EntryNow.Web.Services.Interface.IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override async void OnInitialized()
+    {
+        await AccountService.Logout();
+        NavigationManager.NavigateTo("account/login");
+    }
+}
