@@ -3,9 +3,9 @@
 @inject IAlertService AlertService
 @inject NavigationManager NavigationManager
 
-<div class="login-box">
+@*<div class="login-box">*@
   <div class="login-logo">
-    <a href="../../index2.html"><b>Entry</b>Now</a>
+    <a href=""><b>Entry</b>&nbsp;Now</a>
   </div>
   <div class="card">
     <div class="card-body login-card-body">
@@ -25,14 +25,15 @@
                 <div class="row">
                   <div class="col-8">
                     <div class="icheck-primary">
-                      <input type="checkbox" id="remember">
+                      @*<input type="checkbox" id="remember" @onchange="@(async (e) => await BtnRememberMeAsync(true))">*@
+                      <input type="checkbox" id="remember" @bind="login.RememberMe">
                       <label for="remember">
                         Remember Me
                       </label>
                     </div>
                   </div>
                   <div class="col-4">
-                    <button disabled="@loading" class="btn btn-primary btn-block">
+                    <button disabled="@loading" class="btn btn-primary btn-block" style="width:100px;">
                         @if (loading) 
                         {
                             <span class="spinner-border spinner-border-sm mr-1"></span>
@@ -44,11 +45,24 @@
          </EditForm>
     </div>
   </div>
-</div>
+@*</div>*@
 
 @code {
     private Models.Account.Login login = new Models.Account.Login();
     private bool loading;
+
+    //private async Task BtnRememberMeAsync(bool isClicked)
+    //{
+    //}
+    protected override async Task OnInitializedAsync()
+    {
+        var res = await AccountService.Rememberedredentials();
+        if(res != null)
+        {
+            login.Username = res.Username;
+            login.Password = res.Password;
+        }
+    }
 
     private async void OnValidSubmit()
     {

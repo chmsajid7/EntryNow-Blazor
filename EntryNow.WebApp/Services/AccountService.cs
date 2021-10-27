@@ -1,6 +1,7 @@
 using EntryNow.WebApp.Models;
 using EntryNow.WebApp.Models.Account;
 using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,6 +12,7 @@ namespace EntryNow.WebApp.Services
         User User { get; }
         Task Initialize();
         Task<bool> Login(Login login);
+        Task<Login> Rememberedredentials();
         Task Logout();
         Task Register(AddUser model);
         Task<IList<User>> GetAll();
@@ -56,9 +58,19 @@ namespace EntryNow.WebApp.Services
                     Token = "fake-jwt-token"
                 };
                 await _localStorageService.SetItem(_userKey, User);
+                
+                if (login.RememberMe)
+                {
+                    await _localStorageService.SetItem("RememberCredentials", login);
+                }
                 return true;
             }
             return false;
+        }
+
+        public async Task<Login> Rememberedredentials()
+        {
+            return await _localStorageService.GetItem<Login>("RememberCredentials");
         }
 
         public async Task Logout()
