@@ -12,7 +12,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Entries</a></li>
-              <li class="breadcrumb-item active">Add New Voter</li>
+              <li class="breadcrumb-item active">Add New Enty</li>
             </ol>
           </div>
         </div>
@@ -22,7 +22,7 @@
       <div class="container-fluid">
         <div class="card card-default">
           <div class="card-header">
-            <h3 class="card-title">Add Voter's details in the fields below</h3>
+            <h3 class="card-title">Add Entry's details in the fields below</h3>
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
@@ -38,7 +38,7 @@
                 @if (villages != null)
                 {
                        <div class="row">
-                          <div class="col-md-6">
+                          <div class="col-md-4">
                               <div class="form-group">
                                   <label>Name</label>
                                   <InputText @bind-Value="model.Name" class="form-control" />
@@ -50,16 +50,21 @@
                                   <ValidationMessage For="@(() => model.EmailAddress)" />
                               </div>
                               <div class="form-group">
-                                  <label>Contact Number</label>
-                                  <InputText @bind-Value="model.ContactNumber" class="form-control" />
-                                  <ValidationMessage For="@(() => model.ContactNumber)" />
+                                  <label>Taluka</label>
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.TalukaId">
+                                        <option selected="selected">Select Taluka</option>
+                                        @foreach(var item in talukas)
+                                        {
+                                            <option value="@item.Id">@item.Value</option>
+                                        }
+                                  </select>
                               </div>
                           </div>
-                          <div class="col-md-6">
+                          <div class="col-md-4">
                               <div class="form-group">
                                   <label>Surname</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.SurnameId">
-                                        <option selected="selected"></option>
+                                        <option selected="selected">Select Surname</option>
                                         @foreach(var item in surnames)
                                         {
                                             <option value="@item.Id">@item.Value</option>
@@ -72,31 +77,9 @@
                                   <ValidationMessage For="@(() => model.CNIC)" />
                               </div>
                               <div class="form-group">
-                                  <label>City</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.CityId">
-                                        <option selected="selected"></option>
-                                        @foreach(var item in cities)
-                                        {
-                                            <option value="@item.Id">@item.Value</option>
-                                        }
-                                  </select>
-                              </div>
-                          </div>
-                          <div class="col-md-6">
-                              <div class="form-group">
-                                  <label>Taluka</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.TalukaId">
-                                        <option selected="selected"></option>
-                                        @foreach(var item in talukas)
-                                        {
-                                            <option value="@item.Id">@item.Value</option>
-                                        }
-                                  </select>
-                              </div>
-                              <div class="form-group">
                                   <label>District</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.DistrictId">
-                                        <option selected="selected"></option>
+                                        <option selected="selected">Select District</option>
                                         @foreach(var item in districts)
                                         {
                                             <option value="@item.Id">@item.Value</option>
@@ -104,21 +87,40 @@
                                   </select>
                               </div>
                           </div>
-                          <div class="col-md-6">
+                          <div class="col-md-4">
                               <div class="form-group">
-                                  <label>Union Council</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.UnionCounsilId">
-                                        <option selected="selected"></option>
-                                        @foreach(var item in unioncounsils)
+                                  <label>Contact Number</label>
+                                  <InputText @bind-Value="model.ContactNumber" class="form-control" />
+                                  <ValidationMessage For="@(() => model.ContactNumber)" />
+                              </div>
+                              <div class="form-group">
+                                  <label>City</label>
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.CityId">
+                                        <option selected="selected">Select City</option>
+                                        @foreach(var item in cities)
                                         {
                                             <option value="@item.Id">@item.Value</option>
                                         }
                                   </select>
                               </div>
                               <div class="form-group">
+                                  <label>Union Council</label>
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.UnionCounsilId">
+                                        <option selected="selected">Select UC</option>
+                                        @foreach(var item in unioncounsils)
+                                        {
+                                            <option value="@item.Id">@item.Value</option>
+                                        }
+                                  </select>
+                              </div>
+                          </div>
+                       </div>
+                       <div class="row">
+                          <div class="col-md-4">
+                              <div class="form-group">
                                   <label>Deh</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.DehId">
-                                        <option selected="selected"></option>
+                                        <option selected="selected">Select Deh</option>
                                         @foreach(var item in dehs)
                                         {
                                             <option value="@item.Id">@item.Value</option>
@@ -126,17 +128,19 @@
                                   </select>
                               </div>
                           </div>
-                          <div class="col-md-6">
+                          <div class="col-md-8">
                               <div class="form-group">
                                       <label>Complete Address</label>
                                       <InputText @bind-Value="model.Address" class="form-control" />
                                       <ValidationMessage For="@(() => model.Address)" />
                               </div>
                           </div>
-                          <div class="col-md-6">
+                       </div>
+                       <div class="row">
+                           <div class="col-md-12">
                               <div class="form-group">
-                                    <NavLink href="entries/index" class="btn btn-link" style="float:right; margin-top:25px;">Cancel</NavLink>
-                                    <button disabled="@loading" class="btn btn-primary" style="float:right; margin-top:25px;">
+                                    <NavLink href="entries/index" class="btn btn-link" style="float:right; margin-top:10px;">Cancel</NavLink>
+                                    <button disabled="@loading" class="btn btn-primary" style="float:right; margin-top:10px;">
                                         @if (loading)
                                         {
                                             <span class="spinner-border spinner-border-sm mr-1"></span>
@@ -155,7 +159,7 @@
                         </td>
                     </tr>
                 }
-            </EditForm>
+              </EditForm>
           </div>
         </div>
       </div>

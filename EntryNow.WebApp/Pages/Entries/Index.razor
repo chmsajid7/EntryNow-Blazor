@@ -8,12 +8,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>All Voters</h1>
+            <h1>All Entries</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">List of all the Voters</li>
+              <li class="breadcrumb-item active">List of all the Entries</li>
             </ol>
           </div>
         </div>
@@ -27,7 +27,7 @@
             <div class="card">
               <div class="card-header">
                   <NavLink href="entries/add">
-                    <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Click to add a voter! </h3>
+                    <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Click to add a Entry! </h3>
                   </NavLink>
               </div>
               <!-- /.card-header -->
@@ -110,23 +110,23 @@
                         }
                         @if(page != 1)
                         {
-                            <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
                         }
                         @if (totalPages > 0)
                         {
                             @for (int i = 1; i <= totalPages; i++)
                             {
                                 int buttonNumber = i;
-                                <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))">@i</a></li>
+                                <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
                             }
                         }
                         @if(page == totalPages)
                         {
                             <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
                         }
-                        @if(page == totalPages)
+                        @if(page != totalPages)
                         {
-                            <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
                         }
                   </ul>
                 </div>
@@ -147,6 +147,7 @@
     private IList<Entries> entries;
     private int totalPages;
     private readonly System.Net.Http.HttpClient _httpClient;
+    private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
 
     protected override async Task OnInitializedAsync()
     {
@@ -186,7 +187,7 @@
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync("https://entrynowapi.azurewebsites.net/api/voter/get?pageNumber=" + page + "&perPage=" + pageSize))
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get?pageNumber=" + page + "&perPage=" + pageSize))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
@@ -207,7 +208,7 @@
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync("https://entrynowapi.azurewebsites.net/api/voter/get/count"))
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get/count"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     totalPages = (int)Math.Ceiling((decimal)Int32.Parse(apiResponse) / (decimal)pageSize);
@@ -234,7 +235,7 @@
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.DeleteAsync("https://entrynowapi.azurewebsites.net/api/voter/delete/" + id))
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.DeleteAsync(baseUrl + "voter/delete/" + id))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                 }

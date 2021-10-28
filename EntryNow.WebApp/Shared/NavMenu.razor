@@ -22,8 +22,8 @@
           <a href="account/logout" class="dropdown-item">
             <div class="media">
               <div class="media-body">
-                <i class="fas fa-user-lock"></i>
-                <NavLink target="_blank" class="ml-md-auto">&nbsp;Logout</NavLink>
+                <i class="fas fa-lock"></i>
+                <NavLink target="_blank" class="ml-md-auto" style="color:gray;">&nbsp;Logout</NavLink>
               </div>
             </div>
           </a>
@@ -36,8 +36,8 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
-      <img src="AdminLTE/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+    <a href="" class="brand-link">
+      <img src="Admin_LTE/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light">Entry Now</span>
     </a>
     <!-- Sidebar -->
@@ -53,7 +53,30 @@
                 Home
               </p>
             </NavLink>
-          </li>          
+          </li>
+          @*<li class="nav-item">
+            <NavLink class="nav-link">
+              <i class="nav-icon fas fa-th-list"></i>
+              <p>
+                Entries
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </NavLink>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <NavLink href="entries/index" class="nav-link" Match="NavLinkMatch.All">
+                  <i class="fas fa-eye"></i>
+                  <p>View Entries</p>
+                </NavLink>
+              </li>
+              <li class="nav-item">
+                <NavLink href="entries/add" class="nav-link">
+                  <i class="fas fa-plus-circle"></i>
+                  <p>Add Entries</p>
+                </NavLink>
+              </li>
+            </ul>
+          </li>*@
           <li class="nav-item menu-open">
             <NavLink href="entries/index" class="nav-link">
               <i class="nav-icon fas fa-th-list"></i>

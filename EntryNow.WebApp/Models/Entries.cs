@@ -25,6 +25,7 @@
         public string Name { get; set; }
 
         public int? SurnameId { get; set; }
+        public string Surname { get; set; }
 
         public string ContactNumber { get; set; }
 
@@ -33,14 +34,19 @@
         public string CNIC { get; set; }
 
         public int? DistrictId { get; set; }
+        public string District { get; set; }
 
         public int? TalukaId { get; set; }
+        public string Taluka { get; set; }
 
         public int? UnionCounsilId { get; set; }
+        public string UnionCouncil { get; set; }
 
         public int? DehId { get; set; }
+        public string Deh { get; set; }
 
         public int? CityId { get; set; }
+        public string City { get; set; }
 
         public int? VillageId { get; set; }
 
