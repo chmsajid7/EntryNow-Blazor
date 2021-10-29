@@ -189,18 +189,74 @@
         pageLoading = true;
         await FillDropDowns();
         entry = await GetEntryById();
+        await RenderDropDownDataOnEdit();
         model.Name = entry.Name;
         model.EmailAddress = entry.EmailAddress;
-        model.Taluka = entry.Taluka;
-        model.Surname = entry.Surname;
         model.CNIC = entry.CNIC;
-        model.District = entry.District;
         model.ContactNumber = entry.ContactNumber;
-        model.City = entry.City;
-        model.UnionCouncil = entry.UnionCounsil;
-        model.Deh = entry.Deh;
         model.Address = entry.Address;
         pageLoading = false;
+    }
+
+    private Task RenderDropDownDataOnEdit()
+    {
+        foreach (var item in cities)
+        {
+            if (item.Id == entry.CityId)
+            {
+                model.City = item.Value;
+                //cities.Remove(item);
+            }
+        }
+        foreach (var item in dehs)
+        {
+            if (item.Id == entry.DehId)
+            {
+                model.Deh = item.Value;
+                //dehs.Remove(item);
+            }
+        }
+        foreach (var item in districts)
+        {
+            if (item.Id == entry.DistrictId)
+            {
+                model.District = item.Value;
+                //districts.Remove(item);
+            }
+        }
+        foreach (var item in surnames)
+        {
+            if (item.Id == entry.SurnameId)
+            {
+                model.Surname = item.Value;
+                //surnames.Remove(item);
+            }
+        }
+        foreach (var item in talukas)
+        {
+            if (item.Id == entry.TalukaId)
+            {
+                model.Taluka = item.Value;
+                //talukas.Remove(item);
+            }
+        }
+        foreach (var item in unioncounsils)
+        {
+            if (item.Id == entry.UnionCounsilId)
+            {
+                model.UnionCouncil = item.Value;
+                //unioncounsils.Remove(item);
+            }
+        }
+        foreach (var item in villages)
+        {
+            if (item.Id == entry.VillageId)
+            {
+                model.Village = item.Value;
+                //villages.Remove(item);
+            }
+        }
+        return Task.CompletedTask;
     }
 
     private async Task<Entries> GetEntryById()
@@ -232,7 +288,7 @@
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown")) 
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
