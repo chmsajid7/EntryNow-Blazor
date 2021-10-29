@@ -31,8 +31,8 @@
                   </NavLink>
               </div>
               <!-- /.card-header -->
-              <div class="card-body p-0">
-                <table class="table scrollmenu">
+              <div class="card-body table-responsive p-0">
+                <table class="table text-nowrap">
                   <thead>
                     <tr>
                       <th>Name</th>
@@ -101,9 +101,8 @@
             <!-- pagination -->
             @if (totalPages > 0)
             {
-                <div class="card-header">
-                <div class="card-tools">
-                  <ul class="pagination pagination-sm float-right">
+                <div class="card-footer clearfix">
+                  <ul class="pagination pagination-sm m-0 float-right">
                         @if(page == 1)
                         {
                             <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
@@ -129,7 +128,6 @@
                             <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
                         }
                   </ul>
-                </div>
               </div>
             }
             </div>
