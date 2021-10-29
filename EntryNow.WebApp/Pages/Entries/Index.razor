@@ -32,7 +32,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body p-0">
-                <table class="table">
+                <table class="table scrollmenu">
                   <thead>
                     <tr>
                       <th>Name</th>
@@ -72,7 +72,7 @@
                                         </a>
                                         &nbsp;
                                         <a href="" @onclick="@(() => DeleteBtn(entrie.Id))" @onclick:preventDefault >
-                                            @if (IsDeleting)
+                                            @if (IsDeleting && currentId == entrie.Id)
                                             {
                                                 <span class="spinner-border spinner-border-sm" style="color:black;"></span>
                                             }
@@ -142,6 +142,7 @@
 @code {
     private int page = 1;
     private int pageSize = 10;
+    private int currentId;
     private bool loading;
     private bool IsDeleting;
     private IList<Entries> entries;
@@ -230,6 +231,7 @@
 
     private async Task DeleteBtn(int id)
     {
+        currentId = id;
         IsDeleting = true;
         try
         {
