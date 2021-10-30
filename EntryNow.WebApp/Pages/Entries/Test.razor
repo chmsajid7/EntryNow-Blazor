@@ -196,6 +196,11 @@
         model.CNIC = entry.CNIC;
         model.ContactNumber = entry.ContactNumber;
         model.Address = entry.Address;
+        if (entry.ReferenceId != null)
+        {
+            model.IsAReference = true;
+            model.ReferenceId = entry.ReferenceId;
+        }
         pageLoading = false;
     }
 

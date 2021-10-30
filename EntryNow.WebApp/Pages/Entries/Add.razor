@@ -128,19 +128,26 @@
                                   </select>
                               </div>
                           </div>
-                          <div class="col-md-8">
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                      <label>Reference</label>
+                                      <InputNumber @bind-Value="model.ReferenceId" class="form-control" />
+                                      <ValidationMessage For="@(() => model.ReferenceId)" />
+                              </div>
+                          </div>
+                       </div>
+                       <div class="row">
+                           <div class="col-md-8">
                               <div class="form-group">
                                       <label>Complete Address</label>
                                       <InputText @bind-Value="model.Address" class="form-control" />
                                       <ValidationMessage For="@(() => model.Address)" />
                               </div>
                           </div>
-                       </div>
-                       <div class="row">
-                           <div class="col-md-12">
+                           <div class="col-md-4">
                               <div class="form-group">
-                                    <NavLink href="entries/index" class="btn btn-link" style="float:right; margin-top:10px;">Cancel</NavLink>
-                                    <button disabled="@loading" class="btn btn-primary" style="float:right; margin-top:10px;">
+                                    <NavLink href="entries/index" class="btn btn-link" style="float:right; margin-top:45px;">Cancel</NavLink>
+                                    <button disabled="@loading" class="btn btn-primary" style="float:right; margin-top:45px;">
                                         @if (loading)
                                         {
                                             <span class="spinner-border spinner-border-sm mr-1"></span>
@@ -154,7 +161,7 @@
                 @if (pageLoading)
                 {
                     <tr>
-                        <td colspan="12" class="text-center">
+                        <td colspan="12" class="text-center align-center">
                             <span class="spinner-border spinner-border-lg align-center"></span>
                         </td>
                     </tr>
@@ -272,6 +279,10 @@
     }
     private async Task AddEntryAsync()
     {
+        if(model.ReferenceId != null)
+        {
+            model.IsAReference = true;
+        }
         using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
         {
             var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);

@@ -76,16 +76,16 @@
                                             <i class="far fa-edit" style="color:blue;"></i>
                                         </a>
                                         &nbsp;
-                                        <a href="" @onclick="@(() => DeleteBtn(entrie.Id))" @onclick:preventDefault >
-                                            @if (IsDeleting && currentId == entrie.Id)
-                                            {
-                                                <span class="spinner-border spinner-border-sm" style="color:black;"></span>
-                                            }
-                                            else
-                                            {
+                                        @if (IsDeleting && currentId == entrie.Id)
+                                        {
+                                            <span class="spinner-border spinner-border-sm" style="color:black;"></span>
+                                        }
+                                        else
+                                        {
+                                            <a href="" @onclick="@(() => DeleteBtn(entrie.Id))" @onclick:preventDefault >
                                                 <i class="far fa-trash-alt" style="color:red;"></i>
-                                            }
-                                        </a>
+                                            </a>
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -257,6 +257,8 @@
                     string apiResponse = await response.Content.ReadAsStringAsync();
                 }
             }
+            AlertService.Clear();
+            AlertService.Info("Entry was Deleted Successfully", keepAfterRouteChange: true);
             await OnInitializedAsync();
         }
         catch(Exception e)
