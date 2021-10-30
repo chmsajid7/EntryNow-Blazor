@@ -29,6 +29,10 @@
                   <NavLink href="entries/add">
                     <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Click to add a Entry! </h3>
                   </NavLink>
+                    @if (totalEntries != 0)
+                    {
+                        <a style="float:right; color:grey;">Total @totalEntries Entries Found</a>
+                    }
               </div>
               <!-- /.card-header -->
               <div class="card-body table-responsive p-0">
@@ -102,12 +106,13 @@
             @if (totalPages > 0)
             {
                 <div class="card-footer clearfix">
+                  Page @_page of @totalPages Selected
                   <ul class="pagination pagination-sm m-0 float-right">
-                        @if(page == 1)
+                        @if(_page == 1)
                         {
                             <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
                         }
-                        @if(page != 1)
+                        @if(_page != 1)
                         {
                             <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
                         }
@@ -119,11 +124,11 @@
                                 <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
                             }
                         }
-                        @if(page == totalPages)
+                        @if(_page == totalPages)
                         {
                             <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
                         }
-                        @if(page != totalPages)
+                        @if(_page != totalPages)
                         {
                             <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
                         }
@@ -138,8 +143,10 @@
     <!-- /.content -->
 
 @code {
-    private int page = 1;
+    //private int page = 1;
+    private int _page = 1;
     private int pageSize = 10;
+    private int totalEntries;
     private int currentId;
     private bool loading;
     private bool IsDeleting;
@@ -159,7 +166,7 @@
     private async Task GetDataOnNextPage()
     {
         loading = true;
-        page += 1;
+        _page += 1;
         await GetData();
         loading = false;
     }
@@ -167,7 +174,7 @@
     private async Task GetDataByPageNumber(int pageNumber)
     {
         loading = true;
-        page = pageNumber;
+        _page = pageNumber;
         await GetData();
         loading = false;
     }
@@ -175,7 +182,7 @@
     private async Task GetDataOnPreviousPage()
     {
         loading = true;
-        page -= 1;
+        _page -= 1;
         await GetData();
         loading = false;
     }
@@ -186,7 +193,7 @@
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get?pageNumber=" + page + "&perPage=" + pageSize))
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get?pageNumber=" + _page + "&perPage=" + pageSize))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
@@ -210,7 +217,8 @@
                 using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get/count"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
-                    totalPages = (int)Math.Ceiling((decimal)Int32.Parse(apiResponse) / (decimal)pageSize);
+                    totalEntries = Int32.Parse(apiResponse);
+                    totalPages = (int)Math.Ceiling((decimal)totalEntries / (decimal)pageSize);
                 }
             }
         }
