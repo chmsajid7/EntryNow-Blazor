@@ -1,5 +1,6 @@
 ﻿@page "/entries/index"
 @attribute [Authorize]
+@inject PageNumberHelper PageNumberHelper
 @inject IAlertService AlertService
 @inject NavigationManager NavigationManager
 
@@ -121,7 +122,14 @@
                             @for (int i = 1; i <= totalPages; i++)
                             {
                                 int buttonNumber = i;
-                                <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                @if (buttonNumber == _page)
+                                {
+                                    <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                }
+                                else
+                                {
+                                    <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                }
                             }
                         }
                         @if(_page == totalPages)
@@ -143,7 +151,6 @@
     <!-- /.content -->
 
 @code {
-    //private int page = 1;
     private int _page = 1;
     private int pageSize = 10;
     private int totalEntries;
@@ -158,6 +165,7 @@
     protected override async Task OnInitializedAsync()
     {
         loading = true;
+        _page = await PageNumberHelper.GetEntriesPageNo();
         await GetData();
         await GetEntriesCount();
         loading = false;
@@ -230,8 +238,9 @@
         }
     }
 
-    private void EditBtn(int id)
+    private async void EditBtn(int id)
     {
+        await PageNumberHelper.SaveEntriesPageNo(_page);
         NavigationManager.NavigateTo($"entries/test/" + id);
     }
 

@@ -1,6 +1,7 @@
 ﻿@page "/entries/test/{id}"
 @attribute [Authorize]
 @inject IAlertService AlertService
+@*@inject PageNumberHelper PageNumberHelper*@
 @inject NavigationManager NavigationManager
 
     <section class="content-header">
@@ -371,7 +372,7 @@
     }
     private async Task AddEntryAsync()
     {
-        //model.Id
+        model.Id = Int32.Parse(Id);
         using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
         {
             var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
