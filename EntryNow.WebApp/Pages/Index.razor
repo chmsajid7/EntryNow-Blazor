@@ -108,12 +108,14 @@
 
     protected override async Task OnInitializedAsync()
     {
+        entriesLoading = true;
+        referencesLoading = true;
         await GetEntriesCount();
         await GetReferencesCount();
     }
     private async Task GetEntriesCount()
     {
-        entriesLoading = true;
+        //entriesLoading = true;
         try
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
@@ -128,6 +130,7 @@
         }
         catch (Exception e)
         {
+            AlertService.Clear();
             AlertService.Error(e.Message);
             entriesLoading = false;
             StateHasChanged();
@@ -135,7 +138,7 @@
     }
     private async Task GetReferencesCount()
     {
-        referencesLoading = true;
+        //referencesLoading = true;
         try
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())

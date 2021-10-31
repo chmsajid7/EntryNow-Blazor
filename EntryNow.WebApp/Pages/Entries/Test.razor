@@ -1,6 +1,7 @@
 ﻿@page "/entries/test/{id}"
 @attribute [Authorize]
 @inject IAlertService AlertService
+@using EntryNow.WebApp.Constants
 @*@inject PageNumberHelper PageNumberHelper*@
 @inject NavigationManager NavigationManager
 
@@ -37,7 +38,7 @@
           <div class="card-body">
               <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
                 <DataAnnotationsValidator />
-                @if (villages != null)
+                @if (surnames != null)
                 {
                        <div class="row">
                           <div class="col-md-4">
@@ -53,11 +54,11 @@
                               </div>
                               <div class="form-group">
                                   <label>Taluka</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.TalukaId">
+                                  <select class="form-control select2" style="width: 100%;" @onchange="@FillUcDropDown">
                                         <option selected="selected">@model.Taluka</option>
-                                        @foreach(var item in talukas)
+                                        @foreach(var taluka in talukas)
                                         {
-                                            <option value="@item.Id">@item.Value</option>
+                                            <option value="@taluka">@taluka</option>
                                         }
                                   </select>
                               </div>
@@ -66,7 +67,7 @@
                               <div class="form-group">
                                   <label>Surname</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.SurnameId">
-                                        <option selected="selected">@model.Surname</option>
+                                        <option selected="selected">@surname</option>
                                         @foreach(var item in surnames)
                                         {
                                             <option value="@item.Id">@item.Value</option>
@@ -80,11 +81,11 @@
                               </div>
                               <div class="form-group">
                                   <label>District</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.DistrictId">
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.District">
                                         <option selected="selected">@model.District</option>
-                                        @foreach(var item in districts)
+                                        @foreach(var district in districts)
                                         {
-                                            <option value="@item.Id">@item.Value</option>
+                                            <option value="@district">@district</option>
                                         }
                                   </select>
                               </div>
@@ -92,26 +93,30 @@
                           <div class="col-md-4">
                               <div class="form-group">
                                   <label>Contact Number</label>
-                                  <InputText @bind-Value="model.ContactNumber" class="form-control" />
-                                  <ValidationMessage For="@(() => model.ContactNumber)" />
-                              </div>
+                                  <div class="input-group">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    </div>
+                                    <InputText @bind-Value="model.ContactNumber" class="form-control" data-inputmask='"mask": "0399-999 9999"' data-mask />
+                                  </div>
+                                </div>
                               <div class="form-group">
                                   <label>City</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.CityId">
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.City">
                                         <option selected="selected">@model.City</option>
-                                        @foreach(var item in cities)
+                                        @foreach(var city in cities)
                                         {
-                                            <option value="@item.Id">@item.Value</option>
+                                            <option value="@city">@city</option>
                                         }
                                   </select>
                               </div>
                               <div class="form-group">
                                   <label>Union Council</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.UnionCounsilId">
+                                  <select class="form-control select2" style="width: 100%;" @onchange="@FillVillagesDropDown" >
                                         <option selected="selected">@model.UnionCouncil</option>
-                                        @foreach(var item in unioncounsils)
+                                        @foreach(var uc in unioncounsils)
                                         {
-                                            <option value="@item.Id">@item.Value</option>
+                                            <option value="@uc">@uc</option>
                                         }
                                   </select>
                               </div>
@@ -120,12 +125,12 @@
                        <div class="row">
                           <div class="col-md-4">
                               <div class="form-group">
-                                  <label>Deh</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.DehId">
-                                        <option selected="selected">@model.Deh</option>
-                                        @foreach(var item in dehs)
+                                  <label>Village</label>
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.Village">
+                                        <option selected="selected">@model.Village</option>
+                                        @foreach(var village in villages)
                                         {
-                                            <option value="@item.Id">@item.Value</option>
+                                            <option value="@village">@village</option>
                                         }
                                   </select>
                               </div>
@@ -169,15 +174,17 @@
 
 
 @code {
-    private Entries entry;
-    private Entries_ViewModel model = new Entries_ViewModel();
-    private IList<DropDowns> cities;
-    private IList<DropDowns> dehs;
-    private IList<DropDowns> districts;
+    //private Entries entry;
+    private string surname;
+    private Entries_CreateViewModel model = new Entries_CreateViewModel();
+    private IList<SearchValues> searchList;
     private IList<DropDowns> surnames;
-    private IList<DropDowns> talukas;
-    private IList<DropDowns> unioncounsils;
-    private IList<DropDowns> villages;
+    private List<string> cities = new List<string>();
+    //private IList<DropDowns> dehs;
+    private List<string> districts = new List<string>();
+    private List<string> talukas = new List<string>();
+    private List<string> unioncounsils = new List<string>();
+    private List<string> villages = new List<string>();
     private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
     private bool loading;
     private bool pageLoading;
@@ -188,84 +195,108 @@
     protected override async Task OnInitializedAsync()
     {
         pageLoading = true;
+        districts.AddRange(Global.Districts);
+        talukas.AddRange(Global.Talukas);
+        cities.AddRange(Global.Cities);
         await FillDropDowns();
-        entry = await GetEntryById();
-        await RenderDropDownDataOnEdit();
-        model.Name = entry.Name;
-        model.EmailAddress = entry.EmailAddress;
-        model.CNIC = entry.CNIC;
-        model.ContactNumber = entry.ContactNumber;
-        model.Address = entry.Address;
-        if (entry.ReferenceId != null)
+        if (surnames!=null)
         {
-            model.IsAReference = true;
-            model.ReferenceId = entry.ReferenceId;
+            await FindSurname();
         }
+        model = await GetEntryById();
+        //await RenderDropDownDataOnEdit();
+        //model.Name = entry.Name;
+        //model.EmailAddress = entry.EmailAddress;
+        //model.CNIC = entry.CNIC;
+        //model.ContactNumber = entry.ContactNumber;
+        //model.Address = entry.Address;
+        //if (model.IsAReference==true)
+        //{
+
+        //}
+        //if (model.ReferenceId != null)
+        //{
+        //    if()
+        //    model.IsAReference = true;
+        //    model.ReferenceId = entry.ReferenceId;
+        //}
         pageLoading = false;
     }
 
-    private Task RenderDropDownDataOnEdit()
+    private Task FindSurname()
     {
-        foreach (var item in cities)
-        {
-            if (item.Id == entry.CityId)
-            {
-                model.City = item.Value;
-                //cities.Remove(item);
-            }
-        }
-        foreach (var item in dehs)
-        {
-            if (item.Id == entry.DehId)
-            {
-                model.Deh = item.Value;
-                //dehs.Remove(item);
-            }
-        }
-        foreach (var item in districts)
-        {
-            if (item.Id == entry.DistrictId)
-            {
-                model.District = item.Value;
-                //districts.Remove(item);
-            }
-        }
         foreach (var item in surnames)
         {
-            if (item.Id == entry.SurnameId)
+            if (item.Id == model.SurnameId)
             {
-                model.Surname = item.Value;
-                //surnames.Remove(item);
-            }
-        }
-        foreach (var item in talukas)
-        {
-            if (item.Id == entry.TalukaId)
-            {
-                model.Taluka = item.Value;
-                //talukas.Remove(item);
-            }
-        }
-        foreach (var item in unioncounsils)
-        {
-            if (item.Id == entry.UnionCounsilId)
-            {
-                model.UnionCouncil = item.Value;
-                //unioncounsils.Remove(item);
-            }
-        }
-        foreach (var item in villages)
-        {
-            if (item.Id == entry.VillageId)
-            {
-                model.Village = item.Value;
-                //villages.Remove(item);
+                surname = item.Value;
             }
         }
         return Task.CompletedTask;
     }
 
-    private async Task<Entries> GetEntryById()
+    //private Task RenderDropDownDataOnEdit()
+    //{
+    //    foreach (var item in cities)
+    //    {
+    //        if (item.Id == entry.CityId)
+    //        {
+    //            model.City = item.Value;
+    //            //cities.Remove(item);
+    //        }
+    //    }
+    //    foreach (var item in dehs)
+    //    {
+    //        if (item.Id == entry.DehId)
+    //        {
+    //            model.Deh = item.Value;
+    //            //dehs.Remove(item);
+    //        }
+    //    }
+    //    foreach (var item in districts)
+    //    {
+    //        if (item.Id == entry.DistrictId)
+    //        {
+    //            model.District = item.Value;
+    //            //districts.Remove(item);
+    //        }
+    //    }
+    //    foreach (var item in surnames)
+    //    {
+    //        if (item.Id == entry.SurnameId)
+    //        {
+    //            model.Surname = item.Value;
+    //            //surnames.Remove(item);
+    //        }
+    //    }
+    //    foreach (var item in talukas)
+    //    {
+    //        if (item.Id == entry.TalukaId)
+    //        {
+    //            model.Taluka = item.Value;
+    //            //talukas.Remove(item);
+    //        }
+    //    }
+    //    foreach (var item in unioncounsils)
+    //    {
+    //        if (item.Id == entry.UnionCounsilId)
+    //        {
+    //            model.UnionCouncil = item.Value;
+    //            //unioncounsils.Remove(item);
+    //        }
+    //    }
+    //    foreach (var item in villages)
+    //    {
+    //        if (item.Id == entry.VillageId)
+    //        {
+    //            model.Village = item.Value;
+    //            //villages.Remove(item);
+    //        }
+    //    }
+    //    return Task.CompletedTask;
+    //}
+
+    private async Task<Entries_CreateViewModel> GetEntryById()
     {
         try
         {
@@ -275,7 +306,7 @@
                 using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/find/" + id))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
-                    return Newtonsoft.Json.JsonConvert.DeserializeObject<Entries>(apiResponse);
+                    return Newtonsoft.Json.JsonConvert.DeserializeObject<Entries_CreateViewModel>(apiResponse);
                 }
             }
         }
@@ -285,37 +316,116 @@
             loading = false;
             StateHasChanged();
         }
-        return new Entries();
+        return new Entries_CreateViewModel();
     }
-
+    private void FillUcDropDown (ChangeEventArgs e)
+    {
+        model.Taluka = e.Value.ToString();
+        if(model.Taluka == "Hala")
+        {
+            unioncounsils.AddRange(Global.UnionCounsil_Hala);
+        }
+        if(model.Taluka == "Saeedabad")
+        {
+            unioncounsils.AddRange(Global.UnionCounsil_Saeedabad);
+        }
+        if(model.Taluka == "Matiari")
+        {
+            unioncounsils.AddRange(Global.UnionCounsil_Matiari);
+        }
+    }
+    private void FillVillagesDropDown (ChangeEventArgs e)
+    {
+        model.UnionCouncil = e.Value.ToString();
+        if(model.UnionCouncil == "Khandu")
+        {
+            villages.AddRange(Global.Villages_Khandu);   
+        }
+        if(model.UnionCouncil == "Karam Khan Nizamani")
+        {
+            villages.AddRange(Global.Villages_KaramKhanNizamani);   
+        }
+        if(model.UnionCouncil == "Ajan Shah")
+        {
+            villages.AddRange(Global.Villages_AjanShah);   
+        }
+        if(model.UnionCouncil == "Bhanoth")
+        {
+            villages.AddRange(Global.Villages_Bhanoth);   
+        }
+        if(model.UnionCouncil == "Bhit Shah")
+        {
+            villages.AddRange(Global.Villages_BhitShah);   
+        }
+        if(model.UnionCouncil == "Fateh Muhammad Shah Ajnani")
+        {
+            villages.AddRange(Global.Villages_FatehMuhammadShahAjnani);   
+        }
+        if(model.UnionCouncil == "Abdul Wahid Burira")
+        {
+            villages.AddRange(Global.Villages_AbdulWahidBurira);   
+        }
+        if(model.UnionCouncil == "BD Kaka")
+        {
+            villages.AddRange(Global.Villages_BDKaka);   
+        }
+        if(model.UnionCouncil == "Faqeerabad")
+        {
+            villages.AddRange(Global.Villages_Faqeerabad);   
+        }
+        if(model.UnionCouncil == "Makhdoom joon Landhiyoon")
+        {
+            villages.AddRange(Global.Villages_MakhdoomjoonLandhiyoon);   
+        }
+        if(model.UnionCouncil == "Old Saeedabad")
+        {
+            villages.AddRange(Global.Villages_OldSaeedabad);   
+        }
+        if(model.UnionCouncil == "Ramzan Unar")
+        {
+            villages.AddRange(Global.Villages_RamzanUnar);   
+        }
+        if(model.UnionCouncil == "Shahmir Rahu")
+        {
+            villages.AddRange(Global.Villages_ShahmirRahu);   
+        }
+        if(model.UnionCouncil == "Sikandarabad")
+        {
+            villages.AddRange(Global.Villages_Sikandarabad);   
+        }
+        if(model.UnionCouncil == "Zair Peer")
+        {
+            villages.AddRange(Global.Villages_ZairPeer);   
+        }
+    }
     private async Task FillDropDowns()
     {
         try
         {
-            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-                }
-            }
-            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "deh/dropdown"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    this.dehs = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-                }
-            }
-            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "district/dropdown"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    this.districts = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-                }
-            }
+            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            //{
+            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown"))
+            //    {
+            //        string apiResponse = await response.Content.ReadAsStringAsync();
+            //        this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+            //    }
+            //}
+            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            //{
+            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "deh/dropdown"))
+            //    {
+            //        string apiResponse = await response.Content.ReadAsStringAsync();
+            //        this.dehs = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+            //    }
+            //}
+            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            //{
+            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "district/dropdown"))
+            //    {
+            //        string apiResponse = await response.Content.ReadAsStringAsync();
+            //        this.districts = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+            //    }
+            //}
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
                 using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/dropdown"))
@@ -324,30 +434,30 @@
                     this.surnames = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
                 }
             }
-            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/dropdown"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    this.talukas = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-                }
-            }
-            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/dropdown"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    this.unioncounsils = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-                }
-            }
-            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/dropdown"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    this.villages = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-                }
-            }
+            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            //{
+            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/dropdown"))
+            //    {
+            //        string apiResponse = await response.Content.ReadAsStringAsync();
+            //        this.talukas = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+            //    }
+            //}
+            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            //{
+            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/dropdown"))
+            //    {
+            //        string apiResponse = await response.Content.ReadAsStringAsync();
+            //        this.unioncounsils = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+            //    }
+            //}
+            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            //{
+            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/dropdown"))
+            //    {
+            //        string apiResponse = await response.Content.ReadAsStringAsync();
+            //        this.villages = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+            //    }
+            //}
         }
         catch(Exception e)
         {
