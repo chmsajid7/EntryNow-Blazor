@@ -18,6 +18,7 @@
         </div>
       </div>
     </section>
+
     <section class="content">
       <div class="container-fluid">
         <div class="card card-default">
@@ -130,9 +131,17 @@
                           </div>
                           <div class="col-md-4">
                               <div class="form-group">
-                                      <label>Reference</label>
-                                      <InputNumber @bind-Value="model.ReferenceId" class="form-control" />
-                                      <ValidationMessage For="@(() => model.ReferenceId)" />
+                                  <label>Reference</label>
+                                  <InputText @bind-Value="this.referenceValue" class="form-control select2" @oninput="(e)=> AutoCompleteField(e.Value.ToString())" list="_ref"/>
+                                      <datalist id="_ref">
+                                        @if (searchList != null)
+                                        {
+                                            @foreach (var item in searchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                      </datalist>
                               </div>
                           </div>
                        </div>
@@ -146,8 +155,8 @@
                           </div>
                            <div class="col-md-4">
                               <div class="form-group">
-                                    <NavLink href="entries/index" class="btn btn-link" style="float:right; margin-top:45px;">Cancel</NavLink>
-                                    <button disabled="@loading" class="btn btn-primary" style="float:right; margin-top:45px;">
+                                    <NavLink href="entries/index" class="btn btn-link" style="float:right; margin-top:37px;">Cancel</NavLink>
+                                    <button disabled="@loading" class="btn btn-primary" style="float:right; margin-top:37px;">
                                         @if (loading)
                                         {
                                             <span class="spinner-border spinner-border-sm mr-1"></span>
@@ -174,6 +183,8 @@
 
 @code {
     private Entries_ViewModel model = new Entries_ViewModel();
+    private string referenceValue = "";
+    private IList<SearchValues> searchList;
     private IList<DropDowns> cities;
     private IList<DropDowns> dehs;
     private IList<DropDowns> districts;
@@ -190,6 +201,30 @@
         pageLoading = true;
         await FillDropDowns();
         pageLoading = false;
+    }
+
+    private async Task AutoCompleteField(string refName)
+    {
+        if (!string.IsNullOrEmpty(refName) && refName.Length >=3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/find?name=" + refName))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.searchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
     }
     private async Task FillDropDowns()
     {
@@ -279,10 +314,22 @@
     }
     private async Task AddEntryAsync()
     {
+        if (!string.IsNullOrEmpty(referenceValue))
+        {
+            foreach(var item in searchList)
+            {
+                if(item.Value == referenceValue)
+                {
+                    model.ReferenceId = item.Id;
+                }
+            }
+        }
+
         if(model.ReferenceId != null)
         {
             model.IsAReference = true;
         }
+
         using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
         {
             var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
