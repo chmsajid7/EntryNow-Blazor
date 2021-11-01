@@ -135,16 +135,32 @@
                                   </select>
                               </div>
                           </div>
-                          <div class="col-md-8">
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Reference</label>
+                                  @*@bind-Value="model.ContactNumber"*@
+                                  <InputText @bind-Value="this.referenceValue" class="form-control select2" @oninput="(e)=> AutoCompleteField(e.Value.ToString())" list="_ref"/>
+                                      <datalist id="_ref">
+                                        @if (searchList != null)
+                                        {
+                                            @foreach (var item in searchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                      </datalist>
+                              </div>
+                          </div>
+                       </div>
+                       <div class="row">
+                           <div class="col-md-8">
                               <div class="form-group">
                                       <label>Complete Address</label>
                                       <InputText @bind-Value="model.Address" class="form-control" />
                                       <ValidationMessage For="@(() => model.Address)" />
                               </div>
                           </div>
-                       </div>
-                       <div class="row">
-                           <div class="col-md-12">
+                           <div class="col-md-4">
                               <div class="form-group">
                                     <NavLink href="entries/index" class="btn btn-link" style="float:right; margin-top:10px;">Cancel</NavLink>
                                     <button disabled="@loading" class="btn btn-primary" style="float:right; margin-top:10px;">
@@ -176,6 +192,7 @@
 @code {
     //private Entries entry;
     private string surname;
+    private string referenceValue = "NA";
     private Entries_CreateViewModel model = new Entries_CreateViewModel();
     private IList<SearchValues> searchList;
     private IList<DropDowns> surnames;
@@ -195,35 +212,64 @@
     protected override async Task OnInitializedAsync()
     {
         pageLoading = true;
-
         districts.AddRange(Global.Districts);
         talukas.AddRange(Global.Talukas);
         cities.AddRange(Global.Cities);
+        model = await GetEntryById();
+        if (model.ReferenceId != 0)
+        {
+            await FindReferenceById();
+        }
+        
         await FillDropDowns();
         if (surnames!=null)
         {
             await FindSurname();
         }
-        model = await GetEntryById();
-        //await RenderDropDownDataOnEdit();
-        //model.Name = entry.Name;
-        //model.EmailAddress = entry.EmailAddress;
-        //model.CNIC = entry.CNIC;
-        //model.ContactNumber = entry.ContactNumber;
-        //model.Address = entry.Address;
-        //if (model.IsAReference==true)
-        //{
-
-        //}
-        //if (model.ReferenceId != null)
-        //{
-        //    if()
-        //    model.IsAReference = true;
-        //    model.ReferenceId = entry.ReferenceId;
-        //}
+        _FillUcDropDown();
+        _FillVillagesDropDown();
+        if (model.District != null)
+        {
+            districts.Remove(model.District);
+        }
+        if (model.Taluka != null)
+        {
+            talukas.Remove(model.Taluka);
+        }
+        if (model.City != null)
+        {
+            cities.Remove(model.City);
+        }
+        if(model.ReferenceId != 0)
+        {
+            model.IsAReference = true;
+        }
         pageLoading = false;
     }
-
+    private async Task FindReferenceById()
+    {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/find?id=" + model.ReferenceId))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.searchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+                foreach (var item in this.searchList)
+                {
+                    referenceValue = item.Value;
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error("Reference Not Found!");
+                loading = false;
+                StateHasChanged();
+            }
+    }
     private Task FindSurname()
     {
         foreach (var item in surnames)
@@ -297,6 +343,30 @@
     //    return Task.CompletedTask;
     //}
 
+    private async Task AutoCompleteField(string refName)
+    {
+        if (!string.IsNullOrEmpty(refName) && refName.Length >=3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/find?name=" + refName))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.searchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
     private async Task<Entries_CreateViewModel> GetEntryById()
     {
         try
@@ -335,9 +405,87 @@
             unioncounsils.AddRange(Global.UnionCounsil_Matiari);
         }
     }
+    private void _FillUcDropDown ()
+    {
+        if(model.Taluka == "Hala")
+        {
+            unioncounsils.AddRange(Global.UnionCounsil_Hala);
+        }
+        if(model.Taluka == "Saeedabad")
+        {
+            unioncounsils.AddRange(Global.UnionCounsil_Saeedabad);
+        }
+        if(model.Taluka == "Matiari")
+        {
+            unioncounsils.AddRange(Global.UnionCounsil_Matiari);
+        }
+    }
     private void FillVillagesDropDown (ChangeEventArgs e)
     {
         model.UnionCouncil = e.Value.ToString();
+        if(model.UnionCouncil == "Khandu")
+        {
+            villages.AddRange(Global.Villages_Khandu);   
+        }
+        if(model.UnionCouncil == "Karam Khan Nizamani")
+        {
+            villages.AddRange(Global.Villages_KaramKhanNizamani);   
+        }
+        if(model.UnionCouncil == "Ajan Shah")
+        {
+            villages.AddRange(Global.Villages_AjanShah);   
+        }
+        if(model.UnionCouncil == "Bhanoth")
+        {
+            villages.AddRange(Global.Villages_Bhanoth);   
+        }
+        if(model.UnionCouncil == "Bhit Shah")
+        {
+            villages.AddRange(Global.Villages_BhitShah);   
+        }
+        if(model.UnionCouncil == "Fateh Muhammad Shah Ajnani")
+        {
+            villages.AddRange(Global.Villages_FatehMuhammadShahAjnani);   
+        }
+        if(model.UnionCouncil == "Abdul Wahid Burira")
+        {
+            villages.AddRange(Global.Villages_AbdulWahidBurira);   
+        }
+        if(model.UnionCouncil == "BD Kaka")
+        {
+            villages.AddRange(Global.Villages_BDKaka);   
+        }
+        if(model.UnionCouncil == "Faqeerabad")
+        {
+            villages.AddRange(Global.Villages_Faqeerabad);   
+        }
+        if(model.UnionCouncil == "Makhdoom joon Landhiyoon")
+        {
+            villages.AddRange(Global.Villages_MakhdoomjoonLandhiyoon);   
+        }
+        if(model.UnionCouncil == "Old Saeedabad")
+        {
+            villages.AddRange(Global.Villages_OldSaeedabad);   
+        }
+        if(model.UnionCouncil == "Ramzan Unar")
+        {
+            villages.AddRange(Global.Villages_RamzanUnar);   
+        }
+        if(model.UnionCouncil == "Shahmir Rahu")
+        {
+            villages.AddRange(Global.Villages_ShahmirRahu);   
+        }
+        if(model.UnionCouncil == "Sikandarabad")
+        {
+            villages.AddRange(Global.Villages_Sikandarabad);   
+        }
+        if(model.UnionCouncil == "Zair Peer")
+        {
+            villages.AddRange(Global.Villages_ZairPeer);   
+        }
+    }
+    private void _FillVillagesDropDown ()
+    {
         if(model.UnionCouncil == "Khandu")
         {
             villages.AddRange(Global.Villages_Khandu);   
