@@ -82,7 +82,9 @@
                                         }
                                         else
                                         {
-                                            <a href="" @onclick="@(() => DeleteBtn(entrie.Id))" @onclick:preventDefault >
+
+                                            <a href="" @onclick="@(() => TemporaryEntryId(entrie.Id))" @onclick:preventDefault data-toggle="modal" data-target="#modal-default" >
+                                            @*<a href="#" data-toggle="modal" data-target="#modal-default" >*@
                                                 <i class="far fa-trash-alt" style="color:red;"></i>
                                             </a>
                                         }
@@ -148,7 +150,29 @@
           <!-- /.col -->
       </div><!-- /.container-fluid -->
     </section>
-    <!-- /.content -->
+
+    <!-- Pop Up for Delete Btn -->
+    <section class="content">
+      <div class="modal fade" id="modal-default">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Alert Message!</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure, you want to delete this Entry?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => DeleteBtn())">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
 @code {
     private int _page = 1;
@@ -169,6 +193,11 @@
         await GetData();
         await GetEntriesCount();
         loading = false;
+    }
+
+    private async Task TemporaryEntryId(int id)
+    {
+        currentId = id;
     }
 
     private async Task GetDataOnNextPage()
@@ -244,21 +273,20 @@
         NavigationManager.NavigateTo($"entries/test/" + id);
     }
 
-    private async Task DeleteBtn(int id)
+    private async Task DeleteBtn()
     {
-        currentId = id;
         IsDeleting = true;
         try
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.DeleteAsync(baseUrl + "voter/delete/" + id))
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.DeleteAsync(baseUrl + "voter/delete/" + currentId))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                 }
             }
             AlertService.Clear();
-            AlertService.Info("Entry was Deleted Successfully", keepAfterRouteChange: true);
+            AlertService.Success("Entry was Deleted Successfully", keepAfterRouteChange: true);
             await OnInitializedAsync();
         }
         catch(Exception e)
