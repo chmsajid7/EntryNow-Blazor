@@ -52,12 +52,12 @@
                                   <ValidationMessage For="@(() => model.EmailAddress)" />
                               </div>
                               <div class="form-group">
-                                  <label>Taluka</label>
-                                  <select class="form-control select2" style="width: 100%;" @onchange="@FillUcDropDown">
-                                        <option selected="selected">Select Taluka</option>
-                                        @foreach(var taluka in talukas)
+                                  <label>City</label>
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.City">
+                                        <option selected="selected">Select City</option>
+                                        @foreach(var city in cities)
                                         {
-                                            <option value="@taluka">@taluka</option>
+                                            <option value="@city">@city</option>
                                         }
                                   </select>
                               </div>
@@ -79,12 +79,12 @@
                                   <ValidationMessage For="@(() => model.CNIC)" />
                               </div>
                               <div class="form-group">
-                                  <label>District</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.District">
-                                        <option selected="selected">Select District</option>
-                                        @foreach(var district in districts)
+                                  <label>Taluka</label>
+                                  <select class="form-control select2" style="width: 100%;" @onchange="@FillUcDropDown">
+                                        <option selected="selected">Select Taluka</option>
+                                        @foreach(var taluka in talukas)
                                         {
-                                            <option value="@district">@district</option>
+                                            <option value="@taluka">@taluka</option>
                                         }
                                   </select>
                               </div>
@@ -99,13 +99,13 @@
                                     <InputText @bind-Value="model.ContactNumber" class="form-control" data-inputmask='"mask": "0399-999 9999"' data-mask />
                                   </div>
                                 </div>
-                              <div class="form-group">
-                                  <label>City</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.City">
-                                        <option selected="selected">Select City</option>
-                                        @foreach(var city in cities)
+                                <div class="form-group">
+                                  <label>District</label>
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.District">
+                                        <option selected="selected">Select District</option>
+                                        @foreach(var district in districts)
                                         {
-                                            <option value="@city">@city</option>
+                                            <option value="@district">@district</option>
                                         }
                                   </select>
                               </div>
@@ -409,7 +409,7 @@
         {
             await AddEntryAsync();
             AlertService.Success("New Entry Added Successfully", keepAfterRouteChange: true);
-            await Task.Delay(2000);
+            //await Task.Delay(2000);
             NavigationManager.NavigateTo("entries/index");
         }
         catch (Exception ex)

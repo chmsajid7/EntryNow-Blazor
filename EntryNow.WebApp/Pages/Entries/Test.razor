@@ -53,12 +53,12 @@
                                   <ValidationMessage For="@(() => model.EmailAddress)" />
                               </div>
                               <div class="form-group">
-                                  <label>Taluka</label>
-                                  <select class="form-control select2" style="width: 100%;" @onchange="@FillUcDropDown">
-                                        <option selected="selected">@model.Taluka</option>
-                                        @foreach(var taluka in talukas)
+                                  <label>City</label>
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.City">
+                                        <option selected="selected">@model.City</option>
+                                        @foreach(var city in cities)
                                         {
-                                            <option value="@taluka">@taluka</option>
+                                            <option value="@city">@city</option>
                                         }
                                   </select>
                               </div>
@@ -79,7 +79,7 @@
                                   <InputText @bind-Value="model.CNIC" class="form-control" />
                                   <ValidationMessage For="@(() => model.CNIC)" />
                               </div>
-                              <div class="form-group">
+                             <div class="form-group">
                                   <label>District</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.District">
                                         <option selected="selected">@model.District</option>
@@ -100,13 +100,13 @@
                                     <InputText @bind-Value="model.ContactNumber" class="form-control" data-inputmask='"mask": "0399-999 9999"' data-mask />
                                   </div>
                                 </div>
-                              <div class="form-group">
-                                  <label>City</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.City">
-                                        <option selected="selected">@model.City</option>
-                                        @foreach(var city in cities)
+                                 <div class="form-group">
+                                  <label>Taluka</label>
+                                  <select class="form-control select2" style="width: 100%;" @onchange="@FillUcDropDown">
+                                        <option selected="selected">@model.Taluka</option>
+                                        @foreach(var taluka in talukas)
                                         {
-                                            <option value="@city">@city</option>
+                                            <option value="@taluka">@taluka</option>
                                         }
                                   </select>
                               </div>
@@ -138,7 +138,6 @@
                           <div class="col-md-4">
                               <div class="form-group">
                                   <label>Reference</label>
-                                  @*@bind-Value="model.ContactNumber"*@
                                   <InputText @bind-Value="this.referenceValue" class="form-control select2" @oninput="(e)=> AutoCompleteField(e.Value.ToString())" list="_ref"/>
                                       <datalist id="_ref">
                                         @if (searchList != null)
@@ -191,7 +190,7 @@
 
 @code {
     //private Entries entry;
-    private string surname;
+    private string surname = "";
     private string referenceValue = "NA";
     private Entries_CreateViewModel model = new Entries_CreateViewModel();
     private IList<SearchValues> searchList;
@@ -220,7 +219,6 @@
         {
             await FindReferenceById();
         }
-        
         await FillDropDowns();
         if (surnames!=null)
         {
@@ -244,6 +242,30 @@
         {
             model.IsAReference = true;
         }
+        if (string.IsNullOrEmpty(surname))
+        {
+            surname = "Select Surname";
+        }
+        if (string.IsNullOrEmpty(model.District))
+        {
+            model.District = "Select District";
+        }
+        if (string.IsNullOrEmpty(model.City))
+        {
+            model.City = "Select City";
+        }
+        if (string.IsNullOrEmpty(model.Taluka))
+        {
+            model.Taluka = "Select Taluka";
+        }
+        if (string.IsNullOrEmpty(model.UnionCouncil))
+        {
+            model.UnionCouncil = "Select UnionCouncil";
+        }
+        if (string.IsNullOrEmpty(model.Village))
+        {
+            model.Village = "Select Village";
+        }
         pageLoading = false;
     }
     private async Task FindReferenceById()
@@ -252,7 +274,7 @@
             {
                 using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
                 {
-                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/find?id=" + model.ReferenceId))
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/findReference?id=" + model.ReferenceId))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                         this.searchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
@@ -624,7 +646,7 @@
         {
             await AddEntryAsync();
             AlertService.Success("Entry Edited Successfully", keepAfterRouteChange: true);
-            await Task.Delay(2000);
+            //await Task.Delay(2000);
             NavigationManager.NavigateTo("entries/index");
         }
         catch (Exception ex)
@@ -636,6 +658,9 @@
     }
     private async Task AddEntryAsync()
     {
+
+
+
         model.Id = Int32.Parse(Id);
         using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
         {
