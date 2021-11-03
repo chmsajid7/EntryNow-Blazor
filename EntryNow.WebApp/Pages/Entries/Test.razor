@@ -161,8 +161,8 @@
                           </div>
                            <div class="col-md-4">
                               <div class="form-group">
-                                    <NavLink href="entries/index" class="btn btn-link" style="float:right; margin-top:10px;">Cancel</NavLink>
-                                    <button disabled="@loading" class="btn btn-primary" style="float:right; margin-top:10px;">
+                                    <NavLink href="entries/index" class="btn btn-link" style="float:right; margin-top:34px;">Cancel</NavLink>
+                                    <button disabled="@loading" class="btn btn-primary" style="float:right; margin-top:34px;">
                                         @if (loading)
                                         {
                                             <span class="spinner-border spinner-border-sm mr-1"></span>
@@ -270,27 +270,27 @@
     }
     private async Task FindReferenceById()
     {
-            try
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/findReference?id=" + model.ReferenceId))
                 {
-                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/findReference?id=" + model.ReferenceId))
-                    {
-                        string apiResponse = await response.Content.ReadAsStringAsync();
-                        this.searchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
-                    }
-                }
-                foreach (var item in this.searchList)
-                {
-                    referenceValue = item.Value;
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.searchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
                 }
             }
-            catch(Exception e)
+            foreach (var item in this.searchList)
             {
-                AlertService.Error("Reference Not Found!");
-                loading = false;
-                StateHasChanged();
+                referenceValue = item.Value;
             }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error("Reference Not Found!");
+            loading = false;
+            StateHasChanged();
+        }
     }
     private Task FindSurname()
     {
@@ -658,8 +658,30 @@
     }
     private async Task AddEntryAsync()
     {
-
-
+        if (surname.Length >= 7 && surname.Substring(0, 6) == "Select")
+        {
+            model.SurnameId = null;
+        }
+        if (model.District.Length >= 7 && model.District.Substring(0, 6) == "Select")
+        {
+            model.District = null;
+        }
+        if (model.City.Length >= 7 && model.City.Substring(0, 6) == "Select")
+        {
+            model.City = null;
+        }
+        if (model.Taluka.Length >= 7 && model.Taluka.Substring(0, 6) == "Select")
+        {
+            model.Taluka = null;
+        }
+        if (model.UnionCouncil.Length >= 7 && model.UnionCouncil.Substring(0, 6) == "Select")
+        {
+            model.UnionCouncil = null;
+        }
+        if (model.Village.Length >= 7 && model.Village.Substring(0, 6) == "Select")
+        {
+            model.Village = null;
+        }
 
         model.Id = Int32.Parse(Id);
         using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
