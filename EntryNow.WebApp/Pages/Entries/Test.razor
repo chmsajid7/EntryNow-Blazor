@@ -193,7 +193,7 @@
     private string surname = "";
     private string referenceValue = "NA";
     private Entries_CreateViewModel model = new Entries_CreateViewModel();
-    private IList<SearchValues> searchList;
+    private List<SearchValues> searchList;
     private IList<DropDowns> surnames;
     private List<string> cities = new List<string>();
     //private IList<DropDowns> dehs;
@@ -277,12 +277,9 @@
                 using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/findReference?id=" + model.ReferenceId))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
-                    this.searchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    SearchValues searchedValue = Newtonsoft.Json.JsonConvert.DeserializeObject<SearchValues>(apiResponse);
+                    referenceValue = searchedValue.Value;
                 }
-            }
-            foreach (var item in this.searchList)
-            {
-                referenceValue = item.Value;
             }
         }
         catch(Exception e)
@@ -376,7 +373,7 @@
                     using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/find?name=" + refName))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
-                        this.searchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                        this.searchList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<SearchValues>>(apiResponse);
                     }
                 }
             }
@@ -447,126 +444,126 @@
         model.UnionCouncil = e.Value.ToString();
         if(model.UnionCouncil == "Khandu")
         {
-            villages.AddRange(Global.Villages_Khandu);   
+            villages.AddRange(Global.Villages_Khandu);
         }
         if(model.UnionCouncil == "Karam Khan Nizamani")
         {
-            villages.AddRange(Global.Villages_KaramKhanNizamani);   
+            villages.AddRange(Global.Villages_KaramKhanNizamani);
         }
         if(model.UnionCouncil == "Ajan Shah")
         {
-            villages.AddRange(Global.Villages_AjanShah);   
+            villages.AddRange(Global.Villages_AjanShah);
         }
         if(model.UnionCouncil == "Bhanoth")
         {
-            villages.AddRange(Global.Villages_Bhanoth);   
+            villages.AddRange(Global.Villages_Bhanoth);
         }
         if(model.UnionCouncil == "Bhit Shah")
         {
-            villages.AddRange(Global.Villages_BhitShah);   
+            villages.AddRange(Global.Villages_BhitShah);
         }
         if(model.UnionCouncil == "Fateh Muhammad Shah Ajnani")
         {
-            villages.AddRange(Global.Villages_FatehMuhammadShahAjnani);   
+            villages.AddRange(Global.Villages_FatehMuhammadShahAjnani);
         }
         if(model.UnionCouncil == "Abdul Wahid Burira")
         {
-            villages.AddRange(Global.Villages_AbdulWahidBurira);   
+            villages.AddRange(Global.Villages_AbdulWahidBurira);
         }
         if(model.UnionCouncil == "BD Kaka")
         {
-            villages.AddRange(Global.Villages_BDKaka);   
+            villages.AddRange(Global.Villages_BDKaka);
         }
         if(model.UnionCouncil == "Faqeerabad")
         {
-            villages.AddRange(Global.Villages_Faqeerabad);   
+            villages.AddRange(Global.Villages_Faqeerabad);
         }
         if(model.UnionCouncil == "Makhdoom joon Landhiyoon")
         {
-            villages.AddRange(Global.Villages_MakhdoomjoonLandhiyoon);   
+            villages.AddRange(Global.Villages_MakhdoomjoonLandhiyoon);
         }
         if(model.UnionCouncil == "Old Saeedabad")
         {
-            villages.AddRange(Global.Villages_OldSaeedabad);   
+            villages.AddRange(Global.Villages_OldSaeedabad);
         }
         if(model.UnionCouncil == "Ramzan Unar")
         {
-            villages.AddRange(Global.Villages_RamzanUnar);   
+            villages.AddRange(Global.Villages_RamzanUnar);
         }
         if(model.UnionCouncil == "Shahmir Rahu")
         {
-            villages.AddRange(Global.Villages_ShahmirRahu);   
+            villages.AddRange(Global.Villages_ShahmirRahu);
         }
         if(model.UnionCouncil == "Sikandarabad")
         {
-            villages.AddRange(Global.Villages_Sikandarabad);   
+            villages.AddRange(Global.Villages_Sikandarabad);
         }
         if(model.UnionCouncil == "Zair Peer")
         {
-            villages.AddRange(Global.Villages_ZairPeer);   
+            villages.AddRange(Global.Villages_ZairPeer);
         }
     }
     private void _FillVillagesDropDown ()
     {
         if(model.UnionCouncil == "Khandu")
         {
-            villages.AddRange(Global.Villages_Khandu);   
+            villages.AddRange(Global.Villages_Khandu);
         }
         if(model.UnionCouncil == "Karam Khan Nizamani")
         {
-            villages.AddRange(Global.Villages_KaramKhanNizamani);   
+            villages.AddRange(Global.Villages_KaramKhanNizamani);
         }
         if(model.UnionCouncil == "Ajan Shah")
         {
-            villages.AddRange(Global.Villages_AjanShah);   
+            villages.AddRange(Global.Villages_AjanShah);
         }
         if(model.UnionCouncil == "Bhanoth")
         {
-            villages.AddRange(Global.Villages_Bhanoth);   
+            villages.AddRange(Global.Villages_Bhanoth);
         }
         if(model.UnionCouncil == "Bhit Shah")
         {
-            villages.AddRange(Global.Villages_BhitShah);   
+            villages.AddRange(Global.Villages_BhitShah);
         }
         if(model.UnionCouncil == "Fateh Muhammad Shah Ajnani")
         {
-            villages.AddRange(Global.Villages_FatehMuhammadShahAjnani);   
+            villages.AddRange(Global.Villages_FatehMuhammadShahAjnani);
         }
         if(model.UnionCouncil == "Abdul Wahid Burira")
         {
-            villages.AddRange(Global.Villages_AbdulWahidBurira);   
+            villages.AddRange(Global.Villages_AbdulWahidBurira);
         }
         if(model.UnionCouncil == "BD Kaka")
         {
-            villages.AddRange(Global.Villages_BDKaka);   
+            villages.AddRange(Global.Villages_BDKaka);
         }
         if(model.UnionCouncil == "Faqeerabad")
         {
-            villages.AddRange(Global.Villages_Faqeerabad);   
+            villages.AddRange(Global.Villages_Faqeerabad);
         }
         if(model.UnionCouncil == "Makhdoom joon Landhiyoon")
         {
-            villages.AddRange(Global.Villages_MakhdoomjoonLandhiyoon);   
+            villages.AddRange(Global.Villages_MakhdoomjoonLandhiyoon);
         }
         if(model.UnionCouncil == "Old Saeedabad")
         {
-            villages.AddRange(Global.Villages_OldSaeedabad);   
+            villages.AddRange(Global.Villages_OldSaeedabad);
         }
         if(model.UnionCouncil == "Ramzan Unar")
         {
-            villages.AddRange(Global.Villages_RamzanUnar);   
+            villages.AddRange(Global.Villages_RamzanUnar);
         }
         if(model.UnionCouncil == "Shahmir Rahu")
         {
-            villages.AddRange(Global.Villages_ShahmirRahu);   
+            villages.AddRange(Global.Villages_ShahmirRahu);
         }
         if(model.UnionCouncil == "Sikandarabad")
         {
-            villages.AddRange(Global.Villages_Sikandarabad);   
+            villages.AddRange(Global.Villages_Sikandarabad);
         }
         if(model.UnionCouncil == "Zair Peer")
         {
-            villages.AddRange(Global.Villages_ZairPeer);   
+            villages.AddRange(Global.Villages_ZairPeer);
         }
     }
     private async Task FillDropDowns()
