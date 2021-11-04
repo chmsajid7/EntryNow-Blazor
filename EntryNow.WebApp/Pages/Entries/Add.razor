@@ -44,7 +44,7 @@
                               <div class="form-group">
                                   <label>Name</label>
                                   <InputText @bind-Value="model.Name" class="form-control" />
-                                  <ValidationMessage For="@(() => model.Name)" />
+                                  <ValidationMessage For="@(() => model.Name)" style="color:red;"/>
                               </div>
                               <div class="form-group">
                                   <label>Email</label>
@@ -54,7 +54,7 @@
                               <div class="form-group">
                                   <label>City</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.City">
-                                        <option selected="selected">Select City</option>
+                                        <option disabled selected hidden>Select City ...</option>
                                         @foreach(var city in cities)
                                         {
                                             <option value="@city">@city</option>
@@ -66,7 +66,7 @@
                               <div class="form-group">
                                   <label>Surname</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.SurnameId">
-                                        <option selected="selected">Select Surname</option>
+                                        <option disabled selected hidden>Select Surname ...</option>
                                         @foreach(var item in surnames)
                                         {
                                             <option value="@item.Id">@item.Value</option>
@@ -81,7 +81,7 @@
                               <div class="form-group">
                                   <label>Taluka</label>
                                   <select class="form-control select2" style="width: 100%;" @onchange="@FillUcDropDown">
-                                        <option selected="selected">Select Taluka</option>
+                                        <option disabled selected hidden>Select Taluka ...</option>
                                         @foreach(var taluka in talukas)
                                         {
                                             <option value="@taluka">@taluka</option>
@@ -102,7 +102,7 @@
                                 <div class="form-group">
                                   <label>District</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.District">
-                                        <option selected="selected">Select District</option>
+                                        <option disabled selected hidden>Select District ...</option>
                                         @foreach(var district in districts)
                                         {
                                             <option value="@district">@district</option>
@@ -112,7 +112,7 @@
                               <div class="form-group">
                                   <label>Union Council</label>
                                   <select class="form-control select2" style="width: 100%;" @onchange="@FillVillagesDropDown" >
-                                        <option selected="selected">Select UC</option>
+                                        <option disabled selected hidden>Select Union Council ...</option>
                                         @foreach(var uc in unioncounsils)
                                         {
                                             <option value="@uc">@uc</option>
@@ -126,7 +126,7 @@
                               <div class="form-group">
                                   <label>Village</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.Village">
-                                        <option selected="selected">Select Village</option>
+                                        <option disabled selected hidden>Select Village ...</option>
                                         @foreach(var village in villages)
                                         {
                                             <option value="@village">@village</option>

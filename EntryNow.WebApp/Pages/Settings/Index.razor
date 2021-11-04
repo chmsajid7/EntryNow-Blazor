@@ -17,9 +17,317 @@
             </ol>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
+      </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+		<div class="container-fluid">
+			<div class="row">
+            <div class="card card-primary card-outline card-tabs" style="width:50%">
+              <div class="card-header p-0 pt-1 border-bottom-0">
+                <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="custom-tabs-three-home-tab" data-toggle="pill" href="#custom-tabs-three-home" role="tab" aria-controls="custom-tabs-three-home" aria-selected="true">Surnames</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#custom-tabs-three-profile" role="tab" aria-controls="custom-tabs-three-profile" aria-selected="false">Others</a>
+                  </li>
+                </ul>
+                @if (totalPages > 0)
+                {
+                    @*<div class="card-footer clearfix">*@
+                      @*Page @_page of @totalPages Selected*@
+                      <ul class="pagination pagination-sm m-0 float-right">
+                            @if(_page == 1)
+                            {
+                                <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
+                            }
+                            @if(_page != 1)
+                            {
+                                <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
+                            }
+                            @if (totalPages > 0)
+                            {
+                                @for (int i = 1; i <= totalPages; i++)
+                                {
+                                    int buttonNumber = i;
+                                    @if (buttonNumber == _page)
+                                    {
+                                        <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                    }
+                                    else
+                                    {
+                                        <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                    }
+                                }
+                            }
+                            @if(_page == totalPages)
+                            {
+                                <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
+                            }
+                            @if(_page != totalPages)
+                            {
+                                <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
+                            }
+                      </ul>
+                  @*</div>*@
+                }
+              </div>
+              <div class="card-body">
+                <div class="tab-content" id="custom-tabs-three-tabContent">
+                  <div class="tab-pane fade show active" id="custom-tabs-three-home" role="tabpanel" aria-labelledby="custom-tabs-three-home-tab">
+                      <div class="card-body table-responsive p-0">
+                          
+                <table class="table text-nowrap">
+                  <thead>
+                    <tr>
+                      <th>All Surnames</th>
+                      <th></th>
+                      <th></th>
+                      <th>
+                          <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default">
+                              <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add new Surname! </h3>
+                          </NavLink>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                                        @if (surnames != null)
+                                        {
+                                              @foreach (var surname in surnames)
+                                              {
+                                                  <tr>
+                                                      <td>@surname.SurnameName</td>
+                                                      <td></td>
+                                                      <td></td>
+                                                      <td>
+                                                            <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit" @onclick="@(() => CurrentSurname(surname.Id, surname.SurnameName))">
+                                                                <i class="far fa-edit" style="color:blue;"></i>
+                                                            </NavLink>
+                                                      </td>
+                                                  </tr>
+                                              }
+                                        }
+                                        @if (loading)
+                                        {
+                                            <tr>
+                                                <td colspan="12" class="text-center">
+                                                <span class="spinner-border spinner-border-lg align-center"></span>
+                                                </td>
+                                            </tr>
+                                        }
+                  </tbody>
+                </table>
+              </div>
+                  </div>
+                  <div class="tab-pane fade" id="custom-tabs-three-profile" role="tabpanel" aria-labelledby="custom-tabs-three-profile-tab">
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            </div>
+		</div>
+    </section>
+
+    <!-- Pop Up for add surname -->
+    <section class="content">
+      <div class="modal fade" id="modal-default">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">New Surname</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="modal-body">
+                    <label>Surname: </label>
+                    <InputText @bind-Value="model.SurnameName" class="form-control" />
+                    <ValidationMessage For="@(() => model.SurnameName)" style="color:red;" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddSurname">
+                      @if (loadBtn)
+                      {
+                          <span class="spinner-border spinner-border-sm mr-1"></span>
+                      }
+                      Submit
+                  </button>
+                </div>
+            </EditForm>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pop Up for edit surname -->
+    <section class="content">
+      <div class="modal fade" id="modal-default-edit">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit Surname : @this.surname</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="modal-body">
+                    <label>New Value: </label>
+                    <InputText @bind-Value="model.SurnameName" class="form-control" />
+                    <ValidationMessage For="@(() => model.SurnameName)" style="color:red;" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditSurname">
+                      @if (loadBtn)
+                      {
+                          <span class="spinner-border spinner-border-sm mr-1"></span>
+                      }
+                      Submit
+                  </button>
+                </div>
+            </EditForm>
+          </div>
+        </div>
+      </div>
     </section>
 
 @code {
+    private int _page = 1;
+    private int pageSize = 10;
+    private int totalPages = 5;
 
+    private DropDownSettings model = new DropDownSettings();
+    private IList<DropDownSettings> surnames;
+    private bool loading;
+    private bool loadBtn;
+    private int surnameId;
+    private string surname;
+    private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
+
+    protected override async Task OnInitializedAsync()
+    {
+        model.SurnameName = "";
+        loading = true;
+        await GetSurnames();
+        loading = false;
+    }
+    private async Task GetSurnames()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/get?pageNumber=" + this._page + "&perPage=" + this.pageSize))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.surnames = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDownSettings>>(apiResponse);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    private async void OnValidSubmit()
+    {
+        surname = model.SurnameName;
+    }
+    private async Task AddSurname()
+    {
+        AlertService.Clear();
+        loadBtn = true;
+        try
+        {
+            if (!string.IsNullOrEmpty(model.SurnameName))
+            {
+                model.Id = 0;
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+                    var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
+                }
+                AlertService.Success("New Surname Added Successfully", keepAfterRouteChange: true);
+                loadBtn = false;
+                await OnInitializedAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error("Failed to Add New Surname, Error: " + ex.Message);
+            loadBtn = false;
+            StateHasChanged();
+        }
+    }
+    private async void CurrentSurname(int id, string value)
+    {
+        this.surnameId = id;
+        this.surname = value;
+    }
+    private async void EditSurname()
+    {
+        AlertService.Clear();
+        loadBtn = true;
+        try
+        {
+            if (!string.IsNullOrEmpty(this.surname))
+            {
+                model.Id = this.surnameId;
+                //model.SurnameName = this.surname;
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+                    var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
+                }
+                AlertService.Success("Surname Edited Successfully", keepAfterRouteChange: true);
+                loadBtn = false;
+                await OnInitializedAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error("Failed to Edit Surname, Error: " + ex.Message);
+            loadBtn = false;
+            StateHasChanged();
+        }
+    }
+    private async Task GetDataOnPreviousPage()
+    {
+        loading = true;
+        _page -= 1;
+        await GetSurnames();
+        loading = false;
+    }
+    private async Task GetDataByPageNumber(int pageNumber)
+    {
+        loading = true;
+        _page = pageNumber;
+        await GetSurnames();
+        loading = false;
+    }
+    private async Task GetDataOnNextPage()
+    {
+        loading = true;
+        _page += 1;
+        await GetSurnames();
+        loading = false;
+    }
 }

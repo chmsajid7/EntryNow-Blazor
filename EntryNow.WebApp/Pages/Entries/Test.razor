@@ -2,7 +2,6 @@
 @attribute [Authorize]
 @inject IAlertService AlertService
 @using EntryNow.WebApp.Constants
-@*@inject PageNumberHelper PageNumberHelper*@
 @inject NavigationManager NavigationManager
 
     <section class="content-header">
@@ -55,7 +54,14 @@
                               <div class="form-group">
                                   <label>City</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.City">
-                                        <option selected="selected">@model.City</option>
+                                        @if (string.IsNullOrEmpty(model.City))
+                                        {
+                                            <option disabled selected hidden>Select City ...</option>
+                                        }
+                                        else
+                                        {
+                                            <option selected="selected">@model.City</option>
+                                        }
                                         @foreach(var city in cities)
                                         {
                                             <option value="@city">@city</option>
@@ -67,7 +73,14 @@
                               <div class="form-group">
                                   <label>Surname</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.SurnameId">
-                                        <option selected="selected">@surname</option>
+                                        @if (string.IsNullOrEmpty(surname))
+                                        {
+                                            <option disabled selected hidden>Select Surname ...</option>
+                                        }
+                                        else
+                                        {
+                                            <option selected="selected">@surname</option>
+                                        }
                                         @foreach(var item in surnames)
                                         {
                                             <option value="@item.Id">@item.Value</option>
@@ -80,12 +93,19 @@
                                   <ValidationMessage For="@(() => model.CNIC)" />
                               </div>
                              <div class="form-group">
-                                  <label>District</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.District">
-                                        <option selected="selected">@model.District</option>
-                                        @foreach(var district in districts)
+                                  <label>Taluka</label>
+                                  <select class="form-control select2" style="width: 100%;" @onchange="@FillUcDropDown">
+                                        @if (string.IsNullOrEmpty(model.Taluka))
                                         {
-                                            <option value="@district">@district</option>
+                                            <option disabled selected hidden>Select Taluka ...</option>
+                                        }
+                                        else
+                                        {
+                                            <option selected="selected">@model.Taluka</option>
+                                        }
+                                        @foreach(var taluka in talukas)
+                                        {
+                                            <option value="@taluka">@taluka</option>
                                         }
                                   </select>
                               </div>
@@ -100,20 +120,34 @@
                                     <InputText @bind-Value="model.ContactNumber" class="form-control" data-inputmask='"mask": "0399-999 9999"' data-mask />
                                   </div>
                                 </div>
-                                 <div class="form-group">
-                                  <label>Taluka</label>
-                                  <select class="form-control select2" style="width: 100%;" @onchange="@FillUcDropDown">
-                                        <option selected="selected">@model.Taluka</option>
-                                        @foreach(var taluka in talukas)
+                                <div class="form-group">
+                                  <label>District</label>
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.District">
+                                        @if (string.IsNullOrEmpty(model.City))
                                         {
-                                            <option value="@taluka">@taluka</option>
+                                            <option disabled selected hidden>Select District ...</option>
+                                        }
+                                        else
+                                        {
+                                            <option selected="selected">@model.District</option>
+                                        }
+                                        @foreach(var district in districts)
+                                        {
+                                            <option value="@district">@district</option>
                                         }
                                   </select>
                               </div>
                               <div class="form-group">
                                   <label>Union Council</label>
                                   <select class="form-control select2" style="width: 100%;" @onchange="@FillVillagesDropDown" >
-                                        <option selected="selected">@model.UnionCouncil</option>
+                                        @if (string.IsNullOrEmpty(model.UnionCouncil))
+                                        {
+                                            <option disabled selected hidden>Select Union Council ...</option>
+                                        }
+                                        else
+                                        {
+                                            <option selected="selected">@model.UnionCouncil</option>
+                                        }
                                         @foreach(var uc in unioncounsils)
                                         {
                                             <option value="@uc">@uc</option>
@@ -127,7 +161,14 @@
                               <div class="form-group">
                                   <label>Village</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.Village">
-                                        <option selected="selected">@model.Village</option>
+                                        @if (string.IsNullOrEmpty(model.Village))
+                                        {
+                                            <option disabled selected hidden>Select Village ...</option>
+                                        }
+                                        else
+                                        {
+                                            <option selected="selected">@model.Village</option>
+                                        }
                                         @foreach(var village in villages)
                                         {
                                             <option value="@village">@village</option>
@@ -144,7 +185,7 @@
                                         {
                                             @foreach (var item in searchList)
                                             {
-                                                <option value="@item.Value">@item.Value</option>
+                                                <option id="@item.Id">@item.Value</option>
                                             }
                                         }
                                       </datalist>
@@ -238,34 +279,34 @@
         {
             cities.Remove(model.City);
         }
-        if(model.ReferenceId != 0)
-        {
-            model.IsAReference = true;
-        }
-        if (string.IsNullOrEmpty(surname))
-        {
-            surname = "Select Surname";
-        }
-        if (string.IsNullOrEmpty(model.District))
-        {
-            model.District = "Select District";
-        }
-        if (string.IsNullOrEmpty(model.City))
-        {
-            model.City = "Select City";
-        }
-        if (string.IsNullOrEmpty(model.Taluka))
-        {
-            model.Taluka = "Select Taluka";
-        }
-        if (string.IsNullOrEmpty(model.UnionCouncil))
-        {
-            model.UnionCouncil = "Select UnionCouncil";
-        }
-        if (string.IsNullOrEmpty(model.Village))
-        {
-            model.Village = "Select Village";
-        }
+        //if(model.ReferenceId != 0)
+        //{
+        //    model.IsAReference = true;
+        //}
+        //if (string.IsNullOrEmpty(surname))
+        //{
+        //    surname = "Select Surname";
+        //}
+        //if (string.IsNullOrEmpty(model.District))
+        //{
+        //    model.District = "Select District";
+        //}
+        //if (string.IsNullOrEmpty(model.City))
+        //{
+        //    model.City = "Select City";
+        //}
+        //if (string.IsNullOrEmpty(model.Taluka))
+        //{
+        //    model.Taluka = "Select Taluka";
+        //}
+        //if (string.IsNullOrEmpty(model.UnionCouncil))
+        //{
+        //    model.UnionCouncil = "Select Union Council";
+        //}
+        //if (string.IsNullOrEmpty(model.Village))
+        //{
+        //    model.Village = "Select Village";
+        //}
         pageLoading = false;
     }
     private async Task FindReferenceById()
@@ -385,7 +426,6 @@
             }
         }
     }
-
     private async Task<Entries_CreateViewModel> GetEntryById()
     {
         try
