@@ -34,92 +34,90 @@
                     <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#custom-tabs-three-profile" role="tab" aria-controls="custom-tabs-three-profile" aria-selected="false">Others</a>
                   </li>
                 </ul>
-                @if (totalPages > 0)
-                {
-                    @*<div class="card-footer clearfix">*@
-                      @*Page @_page of @totalPages Selected*@
-                      <ul class="pagination pagination-sm m-0 float-right">
-                            @if(_page == 1)
-                            {
-                                <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
-                            }
-                            @if(_page != 1)
-                            {
-                                <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
-                            }
-                            @if (totalPages > 0)
-                            {
-                                @for (int i = 1; i <= totalPages; i++)
-                                {
-                                    int buttonNumber = i;
-                                    @if (buttonNumber == _page)
-                                    {
-                                        <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
-                                    }
-                                    else
-                                    {
-                                        <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
-                                    }
-                                }
-                            }
-                            @if(_page == totalPages)
-                            {
-                                <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
-                            }
-                            @if(_page != totalPages)
-                            {
-                                <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
-                            }
-                      </ul>
-                  @*</div>*@
-                }
               </div>
               <div class="card-body">
                 <div class="tab-content" id="custom-tabs-three-tabContent">
                   <div class="tab-pane fade show active" id="custom-tabs-three-home" role="tabpanel" aria-labelledby="custom-tabs-three-home-tab">
                       <div class="card-body table-responsive p-0">
-                          
-                <table class="table text-nowrap">
-                  <thead>
-                    <tr>
-                      <th>All Surnames</th>
-                      <th></th>
-                      <th></th>
-                      <th>
-                          <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default">
-                              <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add new Surname! </h3>
-                          </NavLink>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                                        @if (surnames != null)
-                                        {
-                                              @foreach (var surname in surnames)
-                                              {
-                                                  <tr>
-                                                      <td>@surname.SurnameName</td>
-                                                      <td></td>
-                                                      <td></td>
-                                                      <td>
-                                                            <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit" @onclick="@(() => CurrentSurname(surname.Id, surname.SurnameName))">
-                                                                <i class="far fa-edit" style="color:blue;"></i>
-                                                            </NavLink>
-                                                      </td>
-                                                  </tr>
-                                              }
-                                        }
-                                        @if (loading)
-                                        {
-                                            <tr>
-                                                <td colspan="12" class="text-center">
-                                                <span class="spinner-border spinner-border-lg align-center"></span>
-                                                </td>
-                                            </tr>
-                                        }
-                  </tbody>
-                </table>
-              </div>
+
+                          <table class="table text-nowrap">
+                              <thead>
+                                  <tr>
+                                      <th>All Surnames</th>
+                                      <th></th>
+                                      <th></th>
+                                      <th>
+                                          <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default">
+                                              <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add new Surname! </h3>
+                                          </NavLink>
+                                      </th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  @if (loading)
+                                  {
+                                      <tr>
+                                          <td colspan="12" class="text-center">
+                                              <span class="spinner-border spinner-border-lg align-center"></span>
+                                          </td>
+                                      </tr>
+                                  }
+                                  else
+                                  {
+                                      @foreach (var surname in surnames)
+                                      {
+                                          <tr>
+                                              <td>@surname.SurnameName</td>
+                                              <td></td>
+                                              <td></td>
+                                              <td>
+                                                  <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit" @onclick="@(() => CurrentSurname(surname.Id, surname.SurnameName))">
+                                                      <i class="far fa-edit" style="color:blue;"></i>
+                                                  </NavLink>
+                                              </td>
+                                          </tr>
+                                      }
+                                  }
+                              </tbody>
+                          </table>
+                          @if (totalPages > 0)
+                          {
+                              <br />
+                              <ul class="pagination pagination-sm m-0 float-right">
+                                  @if (_page == 1)
+                                  {
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
+                                  }
+                                  @if (_page != 1)
+                                  {
+                                      <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
+                                  }
+                                  @if (totalPages > 0)
+                                  {
+                                      @for (int i = 1; i <= totalPages; i++)
+                                      {
+                                          int buttonNumber = i;
+                                          @if (buttonNumber == _page)
+                                          {
+                                              <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                          }
+                                          else
+                                          {
+                                              <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                          }
+                                      }
+                                  }
+                                  @if (_page == totalPages)
+                                  {
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
+                                  }
+                                  @if (_page != totalPages)
+                                  {
+                                      <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
+                                  }
+                              </ul>
+                          }
+                      </div>
                   </div>
                   <div class="tab-pane fade" id="custom-tabs-three-profile" role="tabpanel" aria-labelledby="custom-tabs-three-profile-tab">
                   </div>
@@ -202,8 +200,8 @@
 @code {
     private int _page = 1;
     private int pageSize = 10;
-    private int totalPages = 5;
-
+    private int totalPages;
+    private int totalSurnames;
     private DropDownSettings model = new DropDownSettings();
     private IList<DropDownSettings> surnames;
     private bool loading;
@@ -217,6 +215,7 @@
         model.SurnameName = "";
         loading = true;
         await GetSurnames();
+        await GetSurnamesCount();
         loading = false;
     }
     private async Task GetSurnames()
@@ -306,6 +305,27 @@
         {
             AlertService.Error("Failed to Edit Surname, Error: " + ex.Message);
             loadBtn = false;
+            StateHasChanged();
+        }
+    }
+    private async Task GetSurnamesCount()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/get/count"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    totalSurnames = Int32.Parse(apiResponse);
+                    totalPages = (int)Math.Ceiling((decimal)totalSurnames / (decimal)pageSize);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
             StateHasChanged();
         }
     }

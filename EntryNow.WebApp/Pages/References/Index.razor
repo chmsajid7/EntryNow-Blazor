@@ -53,39 +53,41 @@
                     </tr>
                   </thead>
                   <tbody>
-                      @if (entries != null)
-                        {
-                            foreach (var entrie in entries)
-                            {
-                                <tr>
-                                    <td>@entrie.Name</td>
-                                    <td>@entrie.Surname</td>
-                                    <td>@entrie.ContactNumber</td>
-                                    <td>@entrie.CNIC</td>
-                                    <td>@entrie.ReferencedBy</td>
-                                    <td>@entrie.Recommended</td>
-                                    <td>@entrie.UnionCounsil</td>
-                                    <td>@entrie.Taluka</td>
-                                    <td>@entrie.Deh</td>
-                                    <td>@entrie.Village</td>
-                                    <td>@entrie.City</td>
-                                    <td>@entrie.Address</td>
-                                </tr>
-                            }
-                        }
-                        @if (loading)
-                        {
-                            <tr>
-                                <td colspan="12" class="text-center">
-                                <span class="spinner-border spinner-border-lg align-center"></span>
-                                </td>
-                            </tr>
-                        }
+                      @if (loading)
+                      {
+                          <tr>
+                              <td colspan="12" class="text-center">
+                                  <span class="spinner-border spinner-border-lg align-center"></span>
+                              </td>
+                          </tr>
+                      }
+                      else
+                      {
+                          @if (entries != null)
+                          {
+                              foreach (var entrie in entries)
+                              {
+                                  <tr>
+                                      <td>@entrie.Name</td>
+                                      <td>@entrie.Surname</td>
+                                      <td>@entrie.ContactNumber</td>
+                                      <td>@entrie.CNIC</td>
+                                      <td>@entrie.ReferencedBy</td>
+                                      <td>@entrie.Recommended</td>
+                                      <td>@entrie.UnionCounsil</td>
+                                      <td>@entrie.Taluka</td>
+                                      <td>@entrie.Deh</td>
+                                      <td>@entrie.Village</td>
+                                      <td>@entrie.City</td>
+                                      <td>@entrie.Address</td>
+                                  </tr>
+                              }
+                          }
+                      }
                   </tbody>
                 </table>
               </div>
               <!-- /.card-body -->
-
             <!-- pagination -->
             @if (totalPages > 0)
             {

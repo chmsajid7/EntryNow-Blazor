@@ -719,8 +719,14 @@
         {
             model.Village = null;
         }
-
         model.Id = Int32.Parse(Id);
+        foreach(var item in searchList)
+        {
+            if(item.Value == this.referenceValue)
+            {
+                model.ReferenceId = item.Id;
+            }
+        }
         using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
         {
             var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);

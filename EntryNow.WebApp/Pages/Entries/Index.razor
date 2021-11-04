@@ -56,49 +56,52 @@
                     </tr>
                   </thead>
                   <tbody>
-                      @if (entries != null)
-                        {
-                            foreach (var entrie in entries)
-                            {
-                                <tr>
-                                    <td>@entrie.Name</td>
-                                    <td>@entrie.Surname</td>
-                                    <td>@entrie.ContactNumber</td>
-                                    <td>@entrie.CNIC</td>
-                                    <td>@entrie.Reference</td>
-                                    <td>@entrie.UnionCounsil</td>
-                                    <td>@entrie.Taluka</td>
-                                    @*<td>@entrie.Deh</td>*@
-                                    <td>@entrie.Village</td>
-                                    <td>@entrie.City</td>
-                                    <td>@entrie.Address</td>
-                                    <td style="white-space: nowrap">
-                                        <a href="" @onclick="@(() => EditBtn(entrie.Id))" @onclick:preventDefault >
-                                            <i class="far fa-edit" style="color:blue;"></i>
-                                        </a>
-                                        &nbsp;
-                                        @if (IsDeleting && currentId == entrie.Id)
-                                        {
-                                            <span class="spinner-border spinner-border-sm" style="color:black;"></span>
-                                        }
-                                        else
-                                        {
-                                            <a href="" @onclick="@(() => TemporaryEntryId(entrie.Id))" @onclick:preventDefault data-toggle="modal" data-target="#modal-default" >
-                                                <i class="far fa-trash-alt" style="color:red;"></i>
-                                            </a>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        @if (loading)
-                        {
-                            <tr>
-                                <td colspan="12" class="text-center">
-                                <span class="spinner-border spinner-border-lg align-center"></span>
-                                </td>
-                            </tr>
-                        }
+                      @if (loading)
+                      {
+                          <tr>
+                              <td colspan="12" class="text-center">
+                                  <span class="spinner-border spinner-border-lg align-center"></span>
+                              </td>
+                          </tr>
+                      }
+                      else
+                      {
+                          @if (entries != null)
+                          {
+                              foreach (var entrie in entries)
+                              {
+                                  <tr>
+                                      <td>@entrie.Name</td>
+                                      <td>@entrie.Surname</td>
+                                      <td>@entrie.ContactNumber</td>
+                                      <td>@entrie.CNIC</td>
+                                      <td>@entrie.Reference</td>
+                                      <td>@entrie.UnionCounsil</td>
+                                      <td>@entrie.Taluka</td>
+                                      @*<td>@entrie.Deh</td>*@
+                                      <td>@entrie.Village</td>
+                                      <td>@entrie.City</td>
+                                      <td>@entrie.Address</td>
+                                      <td style="white-space: nowrap">
+                                          <a href="" @onclick="@(() => EditBtn(entrie.Id))" @onclick:preventDefault>
+                                              <i class="far fa-edit" style="color:blue;"></i>
+                                          </a>
+                                          &nbsp;
+                                          @if (IsDeleting && currentId == entrie.Id)
+                                          {
+                                              <span class="spinner-border spinner-border-sm" style="color:black;"></span>
+                                          }
+                                          else
+                                          {
+                                              <a href="" @onclick="@(() => TemporaryEntryId(entrie.Id))" @onclick:preventDefault data-toggle="modal" data-target="#modal-default">
+                                                  <i class="far fa-trash-alt" style="color:red;"></i>
+                                              </a>
+                                          }
+                                      </td>
+                                  </tr>
+                              }
+                          }
+                      }
                   </tbody>
                 </table>
               </div>
