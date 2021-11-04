@@ -695,36 +695,46 @@
     }
     private async Task AddEntryAsync()
     {
-        if (surname.Length >= 7 && surname.Substring(0, 6) == "Select")
-        {
-            model.SurnameId = null;
-        }
-        if (model.District.Length >= 7 && model.District.Substring(0, 6) == "Select")
-        {
-            model.District = null;
-        }
-        if (model.City.Length >= 7 && model.City.Substring(0, 6) == "Select")
-        {
-            model.City = null;
-        }
-        if (model.Taluka.Length >= 7 && model.Taluka.Substring(0, 6) == "Select")
-        {
-            model.Taluka = null;
-        }
-        if (model.UnionCouncil.Length >= 7 && model.UnionCouncil.Substring(0, 6) == "Select")
-        {
-            model.UnionCouncil = null;
-        }
-        if (model.Village.Length >= 7 && model.Village.Substring(0, 6) == "Select")
-        {
-            model.Village = null;
-        }
+        //if (surname.Length >= 7 && surname.Substring(0, 6) == "Select")
+        //{
+        //    model.SurnameId = null;
+        //}
+        //if (model.District.Length >= 7 && model.District.Substring(0, 6) == "Select")
+        //{
+        //    model.District = null;
+        //}
+        //if (model.City.Length >= 7 && model.City.Substring(0, 6) == "Select")
+        //{
+        //    model.City = null;
+        //}
+        //if (model.Taluka.Length >= 7 && model.Taluka.Substring(0, 6) == "Select")
+        //{
+        //    model.Taluka = null;
+        //}
+        //if (model.UnionCouncil.Length >= 7 && model.UnionCouncil.Substring(0, 6) == "Select")
+        //{
+        //    model.UnionCouncil = null;
+        //}
+        //if (model.Village.Length >= 7 && model.Village.Substring(0, 6) == "Select")
+        //{
+        //    model.Village = null;
+        //}
         model.Id = Int32.Parse(Id);
-        foreach(var item in searchList)
+
+        if (string.IsNullOrEmpty(referenceValue))
         {
-            if(item.Value == this.referenceValue)
+            model.ReferenceId = null;
+        }
+
+
+        if (searchList != null)
+        {
+            foreach (var item in searchList)
             {
-                model.ReferenceId = item.Id;
+                if (item.Value == this.referenceValue)
+                {
+                    model.ReferenceId = item.Id;
+                }
             }
         }
         using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
