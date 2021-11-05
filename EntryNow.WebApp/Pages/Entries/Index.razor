@@ -30,7 +30,7 @@
                   <NavLink href="entries/add">
                     <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Click to add a Entry! </h3>
                   </NavLink>
-                    @if (totalEntries != 0)
+                    @if (totalEntries !< 0)
                     {
                         <a href="#" style="float:right; color:grey;"><i class="fas fa-download"></i></a>
                         <a style="float:right; color:grey;">Total @totalEntries Entries Found&nbsp;&nbsp;</a>
@@ -48,7 +48,6 @@
                       <th>Reference</th>
                       <th>UC</th>
                       <th>Taluka</th>
-                      @*<th>Deh</th>*@
                       <th>Village</th>
                       <th>City</th>
                       <th>Address</th>
@@ -78,7 +77,6 @@
                                       <td>@entrie.Reference</td>
                                       <td>@entrie.UnionCounsil</td>
                                       <td>@entrie.Taluka</td>
-                                      @*<td>@entrie.Deh</td>*@
                                       <td>@entrie.Village</td>
                                       <td>@entrie.City</td>
                                       <td>@entrie.Address</td>

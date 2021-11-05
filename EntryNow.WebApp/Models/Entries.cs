@@ -84,9 +84,11 @@ namespace EntryNow.WebApp.Models
         public string CNIC { get; set; }
         public string District { get; set; }
         public string Taluka { get; set; }
+        public int? UnionCounsilId { get; set; }
         public string UnionCouncil { get; set; }
         public string Deh { get; set; }
         public string City { get; set; }
+        public int? VillageId { get; set; }
         public string Village { get; set; }
         public string Address { get; set; }
         public int? ReferenceId { get; set; }
