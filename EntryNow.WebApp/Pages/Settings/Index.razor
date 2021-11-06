@@ -145,7 +145,7 @@
                                       <th></th>
                                       <th></th>
                                       <th>
-                                          <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default">
+                                          <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-uc">
                                               <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add new Union Council! </h3>
                                           </NavLink>
                                       </th>
@@ -171,9 +171,9 @@
                                                   <td></td>
                                                   <td></td>
                                                   <td>
-                                                      @*<NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit" @onclick="@(() => CurrentSurname(surname.Id, surname.SurnameName))">
+                                                      <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit-uc" @onclick="@(() => CurrentUC(uc.Id, uc.UnionCounsilName))">
                                                           <i class="far fa-edit" style="color:blue;"></i>
-                                                      </NavLink>*@
+                                                      </NavLink>
                                                   </td>
                                               </tr>
                                           }
@@ -238,7 +238,7 @@
                                       <th></th>
                                       <th></th>
                                       <th>
-                                          <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default">
+                                          <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-village">
                                               <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add new Village! </h3>
                                           </NavLink>
                                       </th>
@@ -264,9 +264,9 @@
                                                   <td></td>
                                                   <td></td>
                                                   <td>
-                                                      @*<NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit" @onclick="@(() => CurrentSurname(surname.Id, surname.SurnameName))">
+                                                      <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit-village" @onclick="@(() => CurrentVillage(villages.Id, villages.VillageName))">
                                                           <i class="far fa-edit" style="color:blue;"></i>
-                                                      </NavLink>*@
+                                                      </NavLink>
                                                   </td>
                                               </tr>
                                           }
@@ -397,6 +397,142 @@
       </div>
     </section>
 
+    <!-- Pop Up for add uc -->
+    <section class="content">
+      <div class="modal fade" id="modal-default-uc">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">New Union Counsil</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <EditForm Model="@model_uc" OnValidSubmit="OnValidSubmit_UC">
+                <DataAnnotationsValidator />
+                <div class="modal-body">
+                    <label>Union Counsil: </label>
+                    <InputText @bind-Value="model_uc.UnionCounsilName" class="form-control" />
+                    <ValidationMessage For="@(() => model_uc.UnionCounsilName)" style="color:red;" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddUC">
+                      @if (loadBtn)
+                      {
+                          <span class="spinner-border spinner-border-sm mr-1"></span>
+                      }
+                      Submit
+                  </button>
+                </div>
+            </EditForm>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pop Up for edit uc -->
+    <section class="content">
+      <div class="modal fade" id="modal-default-edit-uc">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit Union Counsil : @this.UnionCounsilName</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <EditForm Model="@model" OnValidSubmit="OnValidSubmit_UC">
+                <DataAnnotationsValidator />
+                <div class="modal-body">
+                    <label>New Value: </label>
+                    <InputText @bind-Value="model_uc.UnionCounsilName" class="form-control" />
+                    <ValidationMessage For="@(() => model_uc.UnionCounsilName)" style="color:red;" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditUC">
+                      @if (loadBtn)
+                      {
+                          <span class="spinner-border spinner-border-sm mr-1"></span>
+                      }
+                      Submit
+                  </button>
+                </div>
+            </EditForm>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pop Up for add village -->
+    <section class="content">
+      <div class="modal fade" id="modal-default-village">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">New Village</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <EditForm Model="@model_village" OnValidSubmit="OnValidSubmit_Village">
+                <DataAnnotationsValidator />
+                <div class="modal-body">
+                    <label>Village: </label>
+                    <InputText @bind-Value="model_village.VillageName" class="form-control" />
+                    <ValidationMessage For="@(() => model_village.VillageName)" style="color:red;" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddVillage">
+                      @if (loadBtn)
+                      {
+                          <span class="spinner-border spinner-border-sm mr-1"></span>
+                      }
+                      Submit
+                  </button>
+                </div>
+            </EditForm>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pop Up for edit village -->
+    <section class="content">
+      <div class="modal fade" id="modal-default-edit-village">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit Village : @this.village</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <EditForm Model="@model_village" OnValidSubmit="OnValidSubmit_Village">
+                <DataAnnotationsValidator />
+                <div class="modal-body">
+                    <label>New Value: </label>
+                    <InputText @bind-Value="model_village.VillageName" class="form-control" />
+                    <ValidationMessage For="@(() => model_village.VillageName)" style="color:red;" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditVillage">
+                      @if (loadBtn)
+                      {
+                          <span class="spinner-border spinner-border-sm mr-1"></span>
+                      }
+                      Submit
+                  </button>
+                </div>
+            </EditForm>
+          </div>
+        </div>
+      </div>
+    </section>
+
 @code {
     private int _page = 1;
     private int _UCpage = 1;
@@ -407,13 +543,19 @@
     private int totalVillagePages;
     private int totalSurnames;
     private DropDownSettings model = new DropDownSettings();
+    private DropDownSettings_UC model_uc = new DropDownSettings_UC();
+    private DropDownSettings_Village model_village = new DropDownSettings_Village();
     private IList<DropDownSettings> surnames;
     private IList<DropDownSettings_UC> UCs;
     private IList<DropDownSettings_Village> villages;
     private bool loading;
     private bool loadBtn;
     private int surnameId;
+    private int ucId;
+    private int villageId;
     private string surname;
+    private string UnionCounsilName;
+    private string village;
     private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
 
     protected override async Task OnInitializedAsync()
@@ -544,7 +686,75 @@
     }
     private async void OnValidSubmit()
     {
-        surname = model.SurnameName;
+        this.surname = model.SurnameName;
+    }
+    private async void OnValidSubmit_UC()
+    {
+        this.UnionCounsilName = model_uc.UnionCounsilName;
+    }
+    private async void OnValidSubmit_Village()
+    {
+        this.village = model_village.VillageName;
+    }
+    private async Task AddUC()
+    {
+        AlertService.Clear();
+        loadBtn = true;
+        try
+        {
+            if (!string.IsNullOrEmpty(model_uc.UnionCounsilName))
+            {
+                model_uc.Id = 0;
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_uc);
+                    var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
+                }
+                AlertService.Success("New Union Counsil Added Successfully", keepAfterRouteChange: true);
+                loadBtn = false;
+                await OnInitializedAsync_UC();
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error("Failed to Add New Surname, Error: " + ex.Message);
+            loadBtn = false;
+            StateHasChanged();
+        }
+    }
+    private async Task AddVillage()
+    {
+        AlertService.Clear();
+        loadBtn = true;
+        try
+        {
+            if (!string.IsNullOrEmpty(model_village.VillageName))
+            {
+                model_village.Id = 0;
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_village);
+                    var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
+                }
+                AlertService.Success("New Village Added Successfully", keepAfterRouteChange: true);
+                loadBtn = false;
+                await OnInitializedAsync_Village();
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error("Failed to Add New Village, Error: " + ex.Message);
+            loadBtn = false;
+            StateHasChanged();
+        }
     }
     private async Task AddSurname()
     {
@@ -580,6 +790,76 @@
     {
         this.surnameId = id;
         this.surname = value;
+    }
+    private async void CurrentUC(int id, string value)
+    {
+        this.ucId = id;
+        this.UnionCounsilName = value;
+    }
+    private async void CurrentVillage(int id, string value)
+    {
+        this.villageId = id;
+        this.village = value;
+    }
+    private async void EditUC()
+    {
+        AlertService.Clear();
+        loadBtn = true;
+        try
+        {
+            if (!string.IsNullOrEmpty(this.UnionCounsilName))
+            {
+                model_uc.Id = this.ucId;
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_uc);
+                    var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
+                }
+                AlertService.Success("Union Council Edited Successfully", keepAfterRouteChange: true);
+                loadBtn = false;
+                await OnInitializedAsync_UC();
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error("Failed to Edit Surname, Error: " + ex.Message);
+            loadBtn = false;
+            StateHasChanged();
+        }
+    }
+    private async void EditVillage()
+    {
+        AlertService.Clear();
+        loadBtn = true;
+        try
+        {
+            if (!string.IsNullOrEmpty(this.village))
+            {
+                model_village.Id = this.villageId;
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_village);
+                    var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
+                }
+                AlertService.Success("Village Edited Successfully", keepAfterRouteChange: true);
+                loadBtn = false;
+                await OnInitializedAsync_Village();
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error("Failed to Edit Village, Error: " + ex.Message);
+            loadBtn = false;
+            StateHasChanged();
+        }
     }
     private async void EditSurname()
     {
