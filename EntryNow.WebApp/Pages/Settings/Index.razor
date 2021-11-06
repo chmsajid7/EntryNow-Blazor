@@ -27,16 +27,24 @@
             <div class="card card-primary card-outline card-tabs" style="width:50%">
               <div class="card-header p-0 pt-1 border-bottom-0">
                 <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
+
                   <li class="nav-item">
                     <a class="nav-link active" id="custom-tabs-three-home-tab" data-toggle="pill" href="#custom-tabs-three-home" role="tab" aria-controls="custom-tabs-three-home" aria-selected="true">Surnames</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#custom-tabs-three-profile" role="tab" aria-controls="custom-tabs-three-profile" aria-selected="false">Others</a>
+
+                  <li class="nav-item" @onclick="OnInitializedAsync_UC">
+                    <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#custom-tabs-three-profile" role="tab" aria-controls="custom-tabs-three-profile" aria-selected="false">Union Council</a>
                   </li>
+
+                  <li class="nav-item" @onclick="OnInitializedAsync_Village">
+                    <a class="nav-link" id="custom-tabs-three-village-tab" data-toggle="pill" href="#custom-tabs-three-village" role="tab" aria-controls="custom-tabs-three-village" aria-selected="false">Villages</a>
+                  </li>
+
                 </ul>
               </div>
               <div class="card-body">
                 <div class="tab-content" id="custom-tabs-three-tabContent">
+
                   <div class="tab-pane fade show active" id="custom-tabs-three-home" role="tabpanel" aria-labelledby="custom-tabs-three-home-tab">
                       <div class="card-body table-responsive p-0">
 
@@ -86,40 +94,232 @@
                               <ul class="pagination pagination-sm m-0 float-right">
                                   @if (_page == 1)
                                   {
-                                      <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetSurnamesDataOnPreviousPage">&laquo;</a></li>
                                   }
                                   @if (_page != 1)
                                   {
-                                      <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetSurnamesDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetSurnamesDataOnPreviousPage" href="" @onclick:preventDefault>...</a></li>
                                   }
                                   @if (totalPages > 0)
                                   {
-                                      @for (int i = 1; i <= totalPages; i++)
-                                      {
-                                          int buttonNumber = i;
-                                          @if (buttonNumber == _page)
-                                          {
-                                              <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
-                                          }
-                                          else
-                                          {
-                                              <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
-                                          }
-                                      }
+                                        @for (int i = _page - 1; i < _page + 2 ; i++)
+                                        {
+                                            int buttonNumber = i;
+                                            @if (buttonNumber < 1 || buttonNumber > totalPages)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                @if (buttonNumber == _page)
+                                                {
+                                                        <li class="page-item active"><a class="page-link" @onclick="@(() => GetSurnamesDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                                }
+                                                else
+                                                {
+                                                        <li class="page-item"><a class="page-link" @onclick="@(() => GetSurnamesDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                                }
+                                            }
+                                        }
                                   }
                                   @if (_page == totalPages)
                                   {
-                                      <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetSurnamesDataOnNextPage">&raquo;</a></li>
                                   }
                                   @if (_page != totalPages)
                                   {
-                                      <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetSurnamesDataOnNextPage" href="" @onclick:preventDefault>...</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetSurnamesDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
                                   }
                               </ul>
                           }
                       </div>
                   </div>
+
                   <div class="tab-pane fade" id="custom-tabs-three-profile" role="tabpanel" aria-labelledby="custom-tabs-three-profile-tab">
+                      <div class="card-body table-responsive p-0">
+                          <table class="table text-nowrap">
+                              <thead>
+                                  <tr>
+                                      <th>All Union Councils</th>
+                                      <th></th>
+                                      <th></th>
+                                      <th>
+                                          <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default">
+                                              <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add new Union Council! </h3>
+                                          </NavLink>
+                                      </th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  @if (loading)
+                                  {
+                                      <tr>
+                                          <td colspan="12" class="text-center">
+                                              <span class="spinner-border spinner-border-lg align-center"></span>
+                                          </td>
+                                      </tr>
+                                  }
+                                  else
+                                  {
+                                      if (UCs!=null)
+                                      {
+                                          @foreach (var uc in UCs)
+                                          {
+                                              <tr>
+                                                  <td>@uc.UnionCounsilName</td>
+                                                  <td></td>
+                                                  <td></td>
+                                                  <td>
+                                                      @*<NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit" @onclick="@(() => CurrentSurname(surname.Id, surname.SurnameName))">
+                                                          <i class="far fa-edit" style="color:blue;"></i>
+                                                      </NavLink>*@
+                                                  </td>
+                                              </tr>
+                                          }
+                                      }
+                                  }
+                              </tbody>
+                          </table>
+                          @if (totalUCPages > 0)
+                          {
+                              <br />
+                              <ul class="pagination pagination-sm m-0 float-right">
+                                  @if (_UCpage == 1)
+                                  {
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetUCDataOnPreviousPage">&laquo;</a></li>
+                                  }
+                                  @if (_UCpage != 1)
+                                  {
+                                      <li class="page-item"><a class="page-link" @onclick="GetUCDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetUCDataOnPreviousPage" href="" @onclick:preventDefault>...</a></li>
+                                  }
+                                  @if (totalUCPages > 0)
+                                  {
+                                        @for (int i = _UCpage - 1; i < _UCpage + 2 ; i++)
+                                        {
+                                            int buttonNumber = i;
+                                            @if (buttonNumber < 1 || buttonNumber > totalUCPages)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                @if (buttonNumber == _UCpage)
+                                                {
+                                                        <li class="page-item active"><a class="page-link" @onclick="@(() => GetUCDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                                }
+                                                else
+                                                {
+                                                        <li class="page-item"><a class="page-link" @onclick="@(() => GetUCDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                                }
+                                            }
+                                        }
+                                  }
+                                  @if (_UCpage == totalUCPages)
+                                  {
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetUCDataOnNextPage">&raquo;</a></li>
+                                  }
+                                  @if (_UCpage != totalUCPages)
+                                  {
+                                      <li class="page-item"><a class="page-link" @onclick="GetUCDataOnNextPage" href="" @onclick:preventDefault>...</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetUCDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
+                                  }
+                              </ul>
+                          }
+                      </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="custom-tabs-three-village" role="tabpanel" aria-labelledby="custom-tabs-three-village-tab">
+                      <div class="card-body table-responsive p-0">
+                          <table class="table text-nowrap">
+                              <thead>
+                                  <tr>
+                                      <th>All Villages</th>
+                                      <th></th>
+                                      <th></th>
+                                      <th>
+                                          <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default">
+                                              <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add new Village! </h3>
+                                          </NavLink>
+                                      </th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  @if (loading)
+                                  {
+                                      <tr>
+                                          <td colspan="12" class="text-center">
+                                              <span class="spinner-border spinner-border-lg align-center"></span>
+                                          </td>
+                                      </tr>
+                                  }
+                                  else
+                                  {
+                                      if (villages != null)
+                                      {
+                                          @foreach (var villages in villages)
+                                          {
+                                              <tr>
+                                                  <td>@villages.VillageName</td>
+                                                  <td></td>
+                                                  <td></td>
+                                                  <td>
+                                                      @*<NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit" @onclick="@(() => CurrentSurname(surname.Id, surname.SurnameName))">
+                                                          <i class="far fa-edit" style="color:blue;"></i>
+                                                      </NavLink>*@
+                                                  </td>
+                                              </tr>
+                                          }
+                                      }
+                                  }
+                              </tbody>
+                          </table>
+                          @if (totalVillagePages > 0)
+                          {
+                              <br />
+                              <ul class="pagination pagination-sm m-0 float-right">
+                                  @if (_villagePage == 1)
+                                  {
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetVillageDataOnPreviousPage">&laquo;</a></li>
+                                  }
+                                  @if (_villagePage != 1)
+                                  {
+                                      <li class="page-item"><a class="page-link" @onclick="GetVillageDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetVillageDataOnPreviousPage" href="" @onclick:preventDefault>...</a></li>
+                                  }
+                                  @if (totalVillagePages > 0)
+                                  {
+                                        @for (int i = _villagePage - 1; i < _villagePage + 2 ; i++)
+                                        {
+                                            int buttonNumber = i;
+                                            @if (buttonNumber < 1 || buttonNumber > totalVillagePages)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                @if (buttonNumber == _villagePage)
+                                                {
+                                                        <li class="page-item active"><a class="page-link" @onclick="@(() => GetVillageDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                                }
+                                                else
+                                                {
+                                                        <li class="page-item"><a class="page-link" @onclick="@(() => GetVillageDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                                }
+                                            }
+                                        }
+                                  }
+                                  @if (_villagePage == totalVillagePages)
+                                  {
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetVillageDataOnNextPage">&raquo;</a></li>
+                                  }
+                                  @if (_villagePage != totalVillagePages)
+                                  {
+                                      <li class="page-item"><a class="page-link" @onclick="GetVillageDataOnNextPage" href="" @onclick:preventDefault>...</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetVillageDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
+                                  }
+                              </ul>
+                          }
+                      </div>
                   </div>
                 </div>
               </div>
@@ -199,11 +399,17 @@
 
 @code {
     private int _page = 1;
+    private int _UCpage = 1;
+    private int _villagePage = 1;
     private int pageSize = 10;
     private int totalPages;
+    private int totalUCPages;
+    private int totalVillagePages;
     private int totalSurnames;
     private DropDownSettings model = new DropDownSettings();
     private IList<DropDownSettings> surnames;
+    private IList<DropDownSettings_UC> UCs;
+    private IList<DropDownSettings_Village> villages;
     private bool loading;
     private bool loadBtn;
     private int surnameId;
@@ -217,6 +423,104 @@
         await GetSurnames();
         await GetSurnamesCount();
         loading = false;
+    }
+    protected async Task OnInitializedAsync_UC()
+    {
+        //model.SurnameName = "";
+        loading = true;
+        await GetUCs();
+        await GetUCsCount();
+        loading = false;
+    }
+    protected async Task OnInitializedAsync_Village()
+    {
+        //model.SurnameName = "";
+        loading = true;
+        await GetVillages();
+        await GetVillagesCount();
+        loading = false;
+    }
+    private async Task GetVillages()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/get?pageNumber=" + this._villagePage + "&perPage=" + this.pageSize))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.villages = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDownSettings_Village>>(apiResponse);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task GetVillagesCount()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/get/count"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    int total = Int32.Parse(apiResponse);
+                    totalVillagePages = (int)Math.Ceiling((decimal)total / (decimal)pageSize);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task GetUCs()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/get?pageNumber=" + this._UCpage + "&perPage=" + this.pageSize))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.UCs = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDownSettings_UC>>(apiResponse);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task GetUCsCount()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/get/count"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    int totalUCs = Int32.Parse(apiResponse);
+                    totalUCPages = (int)Math.Ceiling((decimal)totalUCs / (decimal)pageSize);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
     }
     private async Task GetSurnames()
     {
@@ -329,25 +633,67 @@
             StateHasChanged();
         }
     }
-    private async Task GetDataOnPreviousPage()
+    private async Task GetUCDataOnPreviousPage()
+    {
+        loading = true;
+        _UCpage -= 1;
+        await GetUCs();
+        loading = false;
+    }
+    private async Task GetUCDataByPageNumber(int pageNumber)
+    {
+        loading = true;
+        _UCpage = pageNumber;
+        await GetUCs();
+        loading = false;
+    }
+    private async Task GetUCDataOnNextPage()
+    {
+        loading = true;
+        _UCpage += 1;
+        await GetUCs();
+        loading = false;
+    }
+    private async Task GetSurnamesDataOnPreviousPage()
     {
         loading = true;
         _page -= 1;
         await GetSurnames();
         loading = false;
     }
-    private async Task GetDataByPageNumber(int pageNumber)
+    private async Task GetSurnamesDataByPageNumber(int pageNumber)
     {
         loading = true;
         _page = pageNumber;
         await GetSurnames();
         loading = false;
     }
-    private async Task GetDataOnNextPage()
+    private async Task GetSurnamesDataOnNextPage()
     {
         loading = true;
         _page += 1;
         await GetSurnames();
+        loading = false;
+    }
+    private async Task GetVillageDataOnPreviousPage()
+    {
+        loading = true;
+        _villagePage -= 1;
+        await GetVillages();
+        loading = false;
+    }
+    private async Task GetVillageDataByPageNumber(int pageNumber)
+    {
+        loading = true;
+        _villagePage = pageNumber;
+        await GetVillages();
+        loading = false;
+    }
+    private async Task GetVillageDataOnNextPage()
+    {
+        loading = true;
+        _villagePage += 1;
+        await GetVillages();
         loading = false;
     }
 }
