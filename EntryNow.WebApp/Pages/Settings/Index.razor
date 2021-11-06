@@ -90,7 +90,9 @@
                           </table>
                           @if (totalPages > 0)
                           {
+                              
                               <br />
+                              <a style="color:grey;">Total @totalSurnames Surnames Found.</a>
                               <ul class="pagination pagination-sm m-0 float-right">
                                   @if (_page == 1)
                                   {
@@ -184,6 +186,7 @@
                           @if (totalUCPages > 0)
                           {
                               <br />
+                              <a style="color:grey;">Total @totalUCs UCs Found.</a>
                               <ul class="pagination pagination-sm m-0 float-right">
                                   @if (_UCpage == 1)
                                   {
@@ -277,6 +280,7 @@
                           @if (totalVillagePages > 0)
                           {
                               <br />
+                              <a style="color:grey;">Total @totalvillages Villages Found.</a>
                               <ul class="pagination pagination-sm m-0 float-right">
                                   @if (_villagePage == 1)
                                   {
@@ -542,6 +546,8 @@
     private int totalUCPages;
     private int totalVillagePages;
     private int totalSurnames;
+    private int totalUCs;
+    private int totalvillages;
     private DropDownSettings model = new DropDownSettings();
     private DropDownSettings_UC model_uc = new DropDownSettings_UC();
     private DropDownSettings_Village model_village = new DropDownSettings_Village();
@@ -560,6 +566,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await SurnamesMethod();
+    }
+    private async Task SurnamesMethod()
+    {
         model.SurnameName = "";
         loading = true;
         await GetSurnames();
@@ -568,7 +578,11 @@
     }
     protected async Task OnInitializedAsync_UC()
     {
-        //model.SurnameName = "";
+        await UcMethod();
+    }
+    private async Task UcMethod()
+    {
+        model_uc.UnionCounsilName = "";
         loading = true;
         await GetUCs();
         await GetUCsCount();
@@ -576,7 +590,11 @@
     }
     protected async Task OnInitializedAsync_Village()
     {
-        //model.SurnameName = "";
+        await VillageMethod();
+    }
+    private async Task VillageMethod()
+    {
+        model_village.VillageName = "";
         loading = true;
         await GetVillages();
         await GetVillagesCount();
@@ -611,8 +629,8 @@
                 using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/get/count"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
-                    int total = Int32.Parse(apiResponse);
-                    totalVillagePages = (int)Math.Ceiling((decimal)total / (decimal)pageSize);
+                    totalvillages = Int32.Parse(apiResponse);
+                    totalVillagePages = (int)Math.Ceiling((decimal)totalvillages / (decimal)pageSize);
                 }
             }
         }
@@ -652,7 +670,7 @@
                 using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/get/count"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
-                    int totalUCs = Int32.Parse(apiResponse);
+                    totalUCs = Int32.Parse(apiResponse);
                     totalUCPages = (int)Math.Ceiling((decimal)totalUCs / (decimal)pageSize);
                 }
             }
@@ -716,7 +734,8 @@
                 }
                 AlertService.Success("New Union Counsil Added Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                await OnInitializedAsync_UC();
+                StateHasChanged();
+                await UcMethod();
             }
         }
         catch (Exception ex)
@@ -746,7 +765,8 @@
                 }
                 AlertService.Success("New Village Added Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                await OnInitializedAsync_Village();
+                StateHasChanged();
+                await VillageMethod();
             }
         }
         catch (Exception ex)
@@ -776,7 +796,8 @@
                 }
                 AlertService.Success("New Surname Added Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                await OnInitializedAsync();
+                StateHasChanged();
+                await SurnamesMethod();
             }
         }
         catch (Exception ex)
@@ -821,7 +842,8 @@
                 }
                 AlertService.Success("Union Council Edited Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                await OnInitializedAsync_UC();
+                StateHasChanged();
+                await UcMethod();
             }
         }
         catch (Exception ex)
@@ -851,7 +873,8 @@
                 }
                 AlertService.Success("Village Edited Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                await OnInitializedAsync_Village();
+                StateHasChanged();
+                await VillageMethod();
             }
         }
         catch (Exception ex)
@@ -870,7 +893,6 @@
             if (!string.IsNullOrEmpty(this.surname))
             {
                 model.Id = this.surnameId;
-                //model.SurnameName = this.surname;
                 using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
                 {
                     var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
@@ -882,7 +904,8 @@
                 }
                 AlertService.Success("Surname Edited Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                await OnInitializedAsync();
+                StateHasChanged();
+                await SurnamesMethod();
             }
         }
         catch (Exception ex)

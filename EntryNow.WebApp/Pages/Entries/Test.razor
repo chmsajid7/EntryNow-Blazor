@@ -290,19 +290,19 @@
         talukas.AddRange(Global.Talukas);
         cities.AddRange(Global.Cities);
         model = await GetEntryById();
-        if (model.ReferenceId != 0)
+        if (model.ReferenceId.HasValue == true)
         {
             await FindReferenceById();
         }
-        if (model.SurnameId != 0)
+        if (model.SurnameId.HasValue == true)
         {
             await FindSurnameById();
         }
-        if (model.UnionCounsilId != 0)
+        if (model.UnionCounsilId.HasValue == true)
         {
             await UnionCounsilById();
         }
-        if (model.VillageId != 0)
+        if (model.VillageId.HasValue == true)
         {
             await FindVillageById();
         }
