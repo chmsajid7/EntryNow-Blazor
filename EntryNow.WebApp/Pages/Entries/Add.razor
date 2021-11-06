@@ -91,7 +91,7 @@
                               </div>
                               <div class="form-group">
                                   <label>Taluka</label>
-                                  <select class="form-control select2" style="width: 100%;" @onchange="@FillUcDropDown">
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.Taluka">
                                         <option disabled selected hidden>Select Taluka ...</option>
                                         @foreach(var taluka in talukas)
                                         {
@@ -221,7 +221,6 @@
         districts.AddRange(Global.Districts);
         talukas.AddRange(Global.Talukas);
         cities.AddRange(Global.Cities);
-        await FillDropDowns();
         pageLoading = false;
     }
     private async Task AutoCompleteReference(string value)

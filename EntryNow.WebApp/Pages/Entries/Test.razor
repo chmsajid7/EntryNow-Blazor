@@ -37,7 +37,6 @@
           <div class="card-body">
               <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
                 <DataAnnotationsValidator />
-                @*@if (surnames != null)*@
                 @if (pageLoading)
                 {
                     <tr>
@@ -272,7 +271,6 @@
     private IList<SearchValues> surnamesSearchList;
     private IList<SearchValues> ucsSearchList;
     private IList<SearchValues> villagesSearchList;
-    //private IList<DropDowns> surnames;
     private List<string> cities = new List<string>();
     private List<string> districts = new List<string>();
     private List<string> talukas = new List<string>();
@@ -296,13 +294,19 @@
         {
             await FindReferenceById();
         }
-        //await FillDropDowns();
-        //if (surnames!=null)
-        //{
-        //    await FindSurname();
-        //}
-        //_FillUcDropDown();
-        //_FillVillagesDropDown();
+        if (model.SurnameId != 0)
+        {
+            await FindSurnameById();
+        }
+        if (model.UnionCounsilId != 0)
+        {
+            await UnionCounsilById();
+        }
+        if (model.VillageId != 0)
+        {
+            await FindVillageById();
+        }
+
         if (model.District != null)
         {
             districts.Remove(model.District);
@@ -334,6 +338,69 @@
         catch(Exception e)
         {
             AlertService.Error("Reference Not Found!");
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task FindSurnameById()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/findSurname?id=" + model.SurnameId))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    SearchValues searchedValue = Newtonsoft.Json.JsonConvert.DeserializeObject<SearchValues>(apiResponse);
+                    surnameValue = searchedValue.Value;
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error("Surname Not Found!");
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task UnionCounsilById()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "UnionCounsil/findUnionCounsil?id=" + model.UnionCounsilId))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    SearchValues searchedValue = Newtonsoft.Json.JsonConvert.DeserializeObject<SearchValues>(apiResponse);
+                    ucValue = searchedValue.Value;
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error("UnionCounsil Not Found!");
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task FindVillageById()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "Village/findVillage?id=" + model.VillageId))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    SearchValues searchedValue = Newtonsoft.Json.JsonConvert.DeserializeObject<SearchValues>(apiResponse);
+                    villageValue = searchedValue.Value;
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error("Village Not Found!");
             loading = false;
             StateHasChanged();
         }
