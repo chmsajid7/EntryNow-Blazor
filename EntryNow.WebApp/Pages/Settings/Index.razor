@@ -709,7 +709,7 @@
                 {
                     var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_uc);
                     var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
-                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "unioncounsil/save", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                     }
@@ -739,7 +739,7 @@
                 {
                     var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_village);
                     var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
-                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "village/save", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                     }
@@ -814,7 +814,7 @@
                 {
                     var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_uc);
                     var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
-                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "unioncounsil/save", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                     }
@@ -844,7 +844,7 @@
                 {
                     var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_village);
                     var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
-                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "village/save", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                     }
