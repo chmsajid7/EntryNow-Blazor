@@ -256,7 +256,7 @@
                                           </td>
                                       </tr>
                                   }
-                                  else
+                                  @if (!loading)
                                   {
                                       if (villages != null)
                                       {
@@ -734,8 +734,8 @@
                 }
                 AlertService.Success("New Union Counsil Added Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                StateHasChanged();
                 await UcMethod();
+                StateHasChanged();
             }
         }
         catch (Exception ex)
@@ -765,8 +765,8 @@
                 }
                 AlertService.Success("New Village Added Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                StateHasChanged();
                 await VillageMethod();
+                StateHasChanged();
             }
         }
         catch (Exception ex)
@@ -796,8 +796,8 @@
                 }
                 AlertService.Success("New Surname Added Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                StateHasChanged();
                 await SurnamesMethod();
+                StateHasChanged();
             }
         }
         catch (Exception ex)
@@ -842,8 +842,8 @@
                 }
                 AlertService.Success("Union Council Edited Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                StateHasChanged();
                 await UcMethod();
+                StateHasChanged();
             }
         }
         catch (Exception ex)
@@ -873,8 +873,8 @@
                 }
                 AlertService.Success("Village Edited Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                StateHasChanged();
                 await VillageMethod();
+                StateHasChanged();
             }
         }
         catch (Exception ex)
@@ -904,8 +904,8 @@
                 }
                 AlertService.Success("Surname Edited Successfully", keepAfterRouteChange: true);
                 loadBtn = false;
-                StateHasChanged();
                 await SurnamesMethod();
+                StateHasChanged();
             }
         }
         catch (Exception ex)
