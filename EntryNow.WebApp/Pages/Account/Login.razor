@@ -73,7 +73,7 @@
         {
             if (await AccountService.Login(login))
             {
-                await Task.Delay(2000);
+                await Task.Delay(200);
                 var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
                 NavigationManager.NavigateTo(returnUrl);
             }
