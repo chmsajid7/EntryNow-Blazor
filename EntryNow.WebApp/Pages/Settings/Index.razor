@@ -348,19 +348,28 @@
                 <DataAnnotationsValidator />
                 <div class="modal-body">
                     <label>Surname: </label>
-                    <InputText @bind-Value="model.SurnameName" class="form-control" />
+                    <InputText @bind-Value="model.SurnameName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
                     <ValidationMessage For="@(() => model.SurnameName)" style="color:red;" />
                 </div>
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddSurname">
-                      @if (loadBtn)
-                      {
-                          <span class="spinner-border spinner-border-sm mr-1"></span>
-                      }
-                      Submit
-                  </button>
-                </div>
+                        @if (isModalValid)
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddSurname">
+                                  @if (loadBtn)
+                                  {
+                                      <span class="spinner-border spinner-border-sm mr-1"></span>
+                                  }
+                                  Submit
+                            </button>
+                        }
+                        else
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary disabled" style="float:right;">
+                                  Submit
+                            </button>
+                        }
+                    </div>
             </EditForm>
           </div>
         </div>
@@ -382,18 +391,27 @@
                 <DataAnnotationsValidator />
                 <div class="modal-body">
                     <label>New Value: </label>
-                    <InputText @bind-Value="model.SurnameName" class="form-control" />
+                    <InputText @bind-Value="model.SurnameName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
                     <ValidationMessage For="@(() => model.SurnameName)" style="color:red;" />
                 </div>
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditSurname">
-                      @if (loadBtn)
-                      {
-                          <span class="spinner-border spinner-border-sm mr-1"></span>
-                      }
-                      Submit
-                  </button>
+                        @if (isModalValid)
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditSurname">
+                                  @if (loadBtn)
+                                  {
+                                      <span class="spinner-border spinner-border-sm mr-1"></span>
+                                  }
+                                  Submit
+                            </button>
+                        }
+                        else
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary disabled" style="float:right;">
+                                  Submit
+                            </button>
+                        }
                 </div>
             </EditForm>
           </div>
@@ -416,18 +434,27 @@
                 <DataAnnotationsValidator />
                 <div class="modal-body">
                     <label>Union Counsil: </label>
-                    <InputText @bind-Value="model_uc.UnionCounsilName" class="form-control" />
+                    <InputText @bind-Value="model_uc.UnionCounsilName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
                     <ValidationMessage For="@(() => model_uc.UnionCounsilName)" style="color:red;" />
                 </div>
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddUC">
-                      @if (loadBtn)
-                      {
-                          <span class="spinner-border spinner-border-sm mr-1"></span>
-                      }
-                      Submit
-                  </button>
+                        @if (isModalValid)
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddUC">
+                                  @if (loadBtn)
+                                  {
+                                      <span class="spinner-border spinner-border-sm mr-1"></span>
+                                  }
+                                  Submit
+                            </button>
+                        }
+                        else
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary disabled" style="float:right;">
+                                  Submit
+                            </button>
+                        }
                 </div>
             </EditForm>
           </div>
@@ -450,18 +477,27 @@
                 <DataAnnotationsValidator />
                 <div class="modal-body">
                     <label>New Value: </label>
-                    <InputText @bind-Value="model_uc.UnionCounsilName" class="form-control" />
+                    <InputText @bind-Value="model_uc.UnionCounsilName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
                     <ValidationMessage For="@(() => model_uc.UnionCounsilName)" style="color:red;" />
                 </div>
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditUC">
-                      @if (loadBtn)
-                      {
-                          <span class="spinner-border spinner-border-sm mr-1"></span>
-                      }
-                      Submit
-                  </button>
+                        @if (isModalValid)
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditUC">
+                                  @if (loadBtn)
+                                  {
+                                      <span class="spinner-border spinner-border-sm mr-1"></span>
+                                  }
+                                  Submit
+                            </button>
+                        }
+                        else
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary disabled" style="float:right;">
+                                  Submit
+                            </button>
+                        }
                 </div>
             </EditForm>
           </div>
@@ -484,18 +520,27 @@
                 <DataAnnotationsValidator />
                 <div class="modal-body">
                     <label>Village: </label>
-                    <InputText @bind-Value="model_village.VillageName" class="form-control" />
+                    <InputText @bind-Value="model_village.VillageName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
                     <ValidationMessage For="@(() => model_village.VillageName)" style="color:red;" />
                 </div>
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddVillage">
-                      @if (loadBtn)
-                      {
-                          <span class="spinner-border spinner-border-sm mr-1"></span>
-                      }
-                      Submit
-                  </button>
+                        @if (isModalValid)
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddVillage">
+                                  @if (loadBtn)
+                                  {
+                                      <span class="spinner-border spinner-border-sm mr-1"></span>
+                                  }
+                                  Submit
+                            </button>
+                        }
+                        else
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary disabled" style="float:right;">
+                                  Submit
+                            </button>
+                        }
                 </div>
             </EditForm>
           </div>
@@ -518,18 +563,27 @@
                 <DataAnnotationsValidator />
                 <div class="modal-body">
                     <label>New Value: </label>
-                    <InputText @bind-Value="model_village.VillageName" class="form-control" />
+                    <InputText @bind-Value="model_village.VillageName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
                     <ValidationMessage For="@(() => model_village.VillageName)" style="color:red;" />
                 </div>
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditVillage">
-                      @if (loadBtn)
-                      {
-                          <span class="spinner-border spinner-border-sm mr-1"></span>
-                      }
-                      Submit
-                  </button>
+                        @if (isModalValid)
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditVillage">
+                                  @if (loadBtn)
+                                  {
+                                      <span class="spinner-border spinner-border-sm mr-1"></span>
+                                  }
+                                  Submit
+                            </button>
+                        }
+                        else
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary disabled" style="float:right;">
+                                  Submit
+                            </button>
+                        }
                 </div>
             </EditForm>
           </div>
@@ -562,6 +616,7 @@
     private string surname;
     private string UnionCounsilName;
     private string village;
+    private bool isModalValid = false;
     private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
 
     protected override async Task OnInitializedAsync()
@@ -571,6 +626,7 @@
     private async Task SurnamesMethod()
     {
         model.SurnameName = "";
+        isModalValid = false;
         loading = true;
         await GetSurnames();
         await GetSurnamesCount();
@@ -583,6 +639,7 @@
     private async Task UcMethod()
     {
         model_uc.UnionCounsilName = "";
+        isModalValid = false;
         loading = true;
         await GetUCs();
         await GetUCsCount();
@@ -595,10 +652,22 @@
     private async Task VillageMethod()
     {
         model_village.VillageName = "";
+        isModalValid = false;
         loading = true;
         await GetVillages();
         await GetVillagesCount();
         loading = false;
+    }
+    private async Task ModalValidation(string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            isModalValid = true;
+        }
+        else
+        {
+            isModalValid = false;
+        }
     }
     private async Task GetVillages()
     {
@@ -717,11 +786,11 @@
     private async Task AddUC()
     {
         AlertService.Clear();
-        loadBtn = true;
         try
         {
             if (!string.IsNullOrEmpty(model_uc.UnionCounsilName))
             {
+                loadBtn = true;
                 model_uc.Id = 0;
                 using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
                 {
@@ -748,11 +817,11 @@
     private async Task AddVillage()
     {
         AlertService.Clear();
-        loadBtn = true;
         try
         {
             if (!string.IsNullOrEmpty(model_village.VillageName))
             {
+                loadBtn = true;
                 model_village.Id = 0;
                 using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
                 {
@@ -779,11 +848,11 @@
     private async Task AddSurname()
     {
         AlertService.Clear();
-        loadBtn = true;
         try
         {
             if (!string.IsNullOrEmpty(model.SurnameName))
             {
+                loadBtn = true;
                 model.Id = 0;
                 using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
                 {
@@ -825,11 +894,11 @@
     private async void EditUC()
     {
         AlertService.Clear();
-        loadBtn = true;
         try
         {
             if (!string.IsNullOrEmpty(this.UnionCounsilName))
             {
+                loadBtn = true;
                 model_uc.Id = this.ucId;
                 using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
                 {
@@ -856,11 +925,11 @@
     private async void EditVillage()
     {
         AlertService.Clear();
-        loadBtn = true;
         try
         {
             if (!string.IsNullOrEmpty(this.village))
             {
+                loadBtn = true;
                 model_village.Id = this.villageId;
                 using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
                 {
@@ -887,11 +956,11 @@
     private async void EditSurname()
     {
         AlertService.Clear();
-        loadBtn = true;
         try
         {
             if (!string.IsNullOrEmpty(this.surname))
             {
+                loadBtn = true;
                 model.Id = this.surnameId;
                 using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
                 {
