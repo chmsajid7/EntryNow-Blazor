@@ -3,7 +3,6 @@
 @inject IAlertService AlertService
 @inject NavigationManager NavigationManager
 
-@*<div class="login-box">*@
   <div class="login-logo">
     <a href=""><b>Entry</b>&nbsp;Now</a>
   </div>
@@ -25,7 +24,6 @@
                 <div class="row">
                   <div class="col-8">
                     <div class="icheck-primary">
-                      @*<input type="checkbox" id="remember" @onchange="@(async (e) => await BtnRememberMeAsync(true))">*@
                       <input type="checkbox" id="remember" @bind="login.RememberMe">
                       <label for="remember">
                         Remember Me
@@ -45,15 +43,11 @@
          </EditForm>
     </div>
   </div>
-@*</div>*@
 
 @code {
     private Models.Account.Login login = new Models.Account.Login();
     private bool loading;
 
-    //private async Task BtnRememberMeAsync(bool isClicked)
-    //{
-    //}
     protected override async Task OnInitializedAsync()
     {
         var res = await AccountService.Rememberedredentials();
@@ -66,7 +60,6 @@
 
     private async void OnValidSubmit()
     {
-        // reset alerts on submit
         AlertService.Clear();
         loading = true;
         try

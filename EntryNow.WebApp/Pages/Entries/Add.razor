@@ -417,62 +417,62 @@
     {
         //try
         //{
-            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            //{
-            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown")) 
-            //    {
-            //        string apiResponse = await response.Content.ReadAsStringAsync();
-            //        this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-            //    }
-            //}
-            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            //{
-            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "deh/dropdown"))
-            //    {
-            //        string apiResponse = await response.Content.ReadAsStringAsync();
-            //        this.dehs = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-            //    }
-            //}
-            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            //{
-            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "district/dropdown"))
-            //    {
-            //        string apiResponse = await response.Content.ReadAsStringAsync();
-            //        this.districts = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-            //    }
-            //}
-            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            //{
-            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/dropdown"))
-            //    {
-            //        string apiResponse = await response.Content.ReadAsStringAsync();
-            //        this.surnames = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-            //    }
-            //}
-            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            //{
-            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/dropdown"))
-            //    {
-            //        string apiResponse = await response.Content.ReadAsStringAsync();
-            //        this.talukas = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-            //    }
-            //}
-            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            //{
-            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/dropdown"))
-            //    {
-            //        string apiResponse = await response.Content.ReadAsStringAsync();
-            //        this.unioncounsils = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-            //    }
-            //}
-            //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            //{
-            //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/dropdown"))
-            //    {
-            //        string apiResponse = await response.Content.ReadAsStringAsync();
-            //        this.villages = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-            //    }
-            //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown")) 
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "deh/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.dehs = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "district/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.districts = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.surnames = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.talukas = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.unioncounsils = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.villages = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
         //}
         //catch(Exception e)
         //{
@@ -487,9 +487,18 @@
         loading = true;
         try
         {
-            await AddEntryAsync();
-            AlertService.Success("New Entry Added Successfully", keepAfterRouteChange: true);
-            NavigationManager.NavigateTo("entries/index");
+            if (await AddEntryAsync())
+            {
+                AlertService.Success("New Entry Added Successfully", keepAfterRouteChange: true);
+                loading = false;
+                StateHasChanged();
+                NavigationManager.NavigateTo("entries/index");
+            }
+            else
+            {
+                loading = false;
+                StateHasChanged();
+            }
         }
         catch (Exception ex)
         {
@@ -498,45 +507,85 @@
             StateHasChanged();
         }
     }
-    private async Task AddEntryAsync()
+    private async Task<bool> AddEntryAsync()
     {
         if (!string.IsNullOrEmpty(referenceValue))
         {
+            if (referencesSearchList == null)
+            {
+                AlertService.Error("Incorrect Reference Entered!");
+                return false;
+            }
             foreach(var item in referencesSearchList)
             {
                 if(item.Value == referenceValue)
                 {
                     model.ReferenceId = item.Id;
                 }
+                else
+                {
+                    AlertService.Error("Incorrect Reference Entered!");
+                    return false;
+                }
             }
         }
         if (!string.IsNullOrEmpty(surnameValue))
         {
+            if (surnamesSearchList == null)
+            {
+                AlertService.Error("Incorrect Surname Entered!");
+                return false;
+            }
             foreach(var item in surnamesSearchList)
             {
                 if(item.Value == surnameValue)
                 {
                     model.SurnameId = item.Id;
                 }
+                else
+                {
+                    AlertService.Error("Incorrect Surname Entered!");
+                    return false;
+                }
             }
         }
         if (!string.IsNullOrEmpty(ucValue))
         {
+            if (ucsSearchList == null)
+            {
+                AlertService.Error("Incorrect Union Counsil Entered!");
+                return false;
+            }
             foreach(var item in ucsSearchList)
             {
                 if(item.Value == ucValue)
                 {
                     model.UnionCounsilId = item.Id;
                 }
+                else
+                {
+                    AlertService.Error("Incorrect Union Counsil Entered!");
+                    return false;
+                }
             }
         }
         if (!string.IsNullOrEmpty(villageValue))
         {
+            if (villagesSearchList == null)
+            {
+                AlertService.Error("Incorrect Village Name Entered!");
+                return false;
+            }
             foreach(var item in villagesSearchList)
             {
-                if(item.Value == villageValue)
+                if (item.Value == villageValue)
                 {
                     model.VillageId = item.Id;
+                }
+                else
+                {
+                    AlertService.Error("Incorrect Village Name Entered!");
+                    return false;
                 }
             }
         }
@@ -549,5 +598,6 @@
                 string apiResponse = await response.Content.ReadAsStringAsync();
             }
         }
+        return true;
     }
 }

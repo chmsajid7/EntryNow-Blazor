@@ -127,46 +127,19 @@
                                 int buttonNumber = i;
                                 @if (buttonNumber < 1 || buttonNumber > totalPages)
                                 {
-                                   @* buttonNumber = 1;
-                                    @if (buttonNumber == _page)
-                                    {
-                                        <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@buttonNumber</a></li>
-                                    }
-                                    else
-                                    {
-                                        <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@buttonNumber</a></li>
-                                    }*@
                                 }
                                 else
                                 {
                                     @if (buttonNumber == _page)
                                     {
-                                        @*@if (i != 0)*@
-                                        @*{*@
                                             <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
-                                        @*}*@
                                     }
                                     else
                                     {
-                                        @*@if (i != 0)*@
-                                        @*{*@
                                             <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
-                                        @*}*@
                                     }
                                 }
                             }
-                            @*@for (int i = 1; i <= totalPages; i++)
-                            {
-                                int buttonNumber = i;
-                                @if (buttonNumber == _page)
-                                {
-                                    <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
-                                }
-                                else
-                                {
-                                    <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
-                                }
-                            }*@
                         }
                         @if(_page == totalPages)
                         {
@@ -232,6 +205,7 @@
 
     private async Task TemporaryEntryId(int id)
     {
+        await Task.Yield();
         currentId = id;
     }
 

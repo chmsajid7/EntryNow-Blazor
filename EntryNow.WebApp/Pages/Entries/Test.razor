@@ -115,7 +115,7 @@
                              <div class="form-group">
                                   <label>Taluka</label>
                                   @*<select class="form-control select2" style="width: 100%;" @onchange="@FillUcDropDown">*@
-                                  <select class="form-control select2" style="width: 100%;">
+                                  <select class="form-control select2" style="width: 100%;"  @bind="model.Taluka">
                                         @if (string.IsNullOrEmpty(model.Taluka))
                                         {
                                             <option disabled selected hidden>Select Taluka ...</option>
@@ -144,7 +144,7 @@
                                 <div class="form-group">
                                   <label>District</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.District">
-                                        @if (string.IsNullOrEmpty(model.City))
+                                        @if (string.IsNullOrEmpty(model.District))
                                         {
                                             <option disabled selected hidden>Select District ...</option>
                                         }
@@ -264,10 +264,14 @@
 
 @code {
     private string surname = "";
-    private string referenceValue = "NA";
-    private string surnameValue = "NA";
-    private string ucValue = "NA";
-    private string villageValue = "NA";
+    private string referenceValue = "";
+    private string oldReferenceValue = "";
+    private string surnameValue = "";
+    private string oldSurnameValue = "";
+    private string ucValue = "";
+    private string oldUcValue = "";
+    private string villageValue = "";
+    private string oldVillageValue = "";
     private Entries_CreateViewModel model = new Entries_CreateViewModel();
     private IList<SearchValues> referencesSearchList;
     private IList<SearchValues> surnamesSearchList;
@@ -309,18 +313,18 @@
             await FindVillageById();
         }
 
-        if (model.District != null)
-        {
-            districts.Remove(model.District);
-        }
-        if (model.Taluka != null)
-        {
-            talukas.Remove(model.Taluka);
-        }
-        if (model.City != null)
-        {
-            cities.Remove(model.City);
-        }
+        //if (model.District != null)
+        //{
+        districts.Remove(model.District);
+        //}
+        //if (model.Taluka != null)
+        //{
+        talukas.Remove(model.Taluka);
+        //}
+        //if (model.City != null)
+        //{
+        cities.Remove(model.City);
+        //}
         pageLoading = false;
     }
     private async Task FindReferenceById()
@@ -334,6 +338,7 @@
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     SearchValues searchedValue = Newtonsoft.Json.JsonConvert.DeserializeObject<SearchValues>(apiResponse);
                     referenceValue = searchedValue.Value;
+                    oldReferenceValue = searchedValue.Value;
                 }
             }
         }
@@ -355,6 +360,7 @@
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     SearchValues searchedValue = Newtonsoft.Json.JsonConvert.DeserializeObject<SearchValues>(apiResponse);
                     surnameValue = searchedValue.Value;
+                    oldSurnameValue = searchedValue.Value;
                 }
             }
         }
@@ -376,6 +382,7 @@
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     SearchValues searchedValue = Newtonsoft.Json.JsonConvert.DeserializeObject<SearchValues>(apiResponse);
                     ucValue = searchedValue.Value;
+                    oldUcValue = searchedValue.Value;
                 }
             }
         }
@@ -397,6 +404,7 @@
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     SearchValues searchedValue = Newtonsoft.Json.JsonConvert.DeserializeObject<SearchValues>(apiResponse);
                     villageValue = searchedValue.Value;
+                    oldVillageValue = searchedValue.Value;
                 }
             }
         }
@@ -764,9 +772,18 @@
         loading = true;
         try
         {
-            await AddEntryAsync();
-            AlertService.Success("Entry Edited Successfully", keepAfterRouteChange: true);
-            NavigationManager.NavigateTo("entries/index");
+            if (await AddEntryAsync())
+            {
+                AlertService.Success("Entry Edited Successfully", keepAfterRouteChange: true);
+                loading = false;
+                StateHasChanged();
+                NavigationManager.NavigateTo("entries/index");
+            }
+            else
+            {
+                loading = false;
+                StateHasChanged();
+            }
         }
         catch (Exception ex)
         {
@@ -775,7 +792,7 @@
             StateHasChanged();
         }
     }
-    private async Task AddEntryAsync()
+    private async Task<bool> AddEntryAsync()
     {
         model.Id = Int32.Parse(Id);
         if (string.IsNullOrEmpty(referenceValue))
@@ -794,46 +811,187 @@
         {
             model.VillageId = null;
         }
-        if (referencesSearchList != null)
+
+        if (!string.IsNullOrEmpty(referenceValue) && referencesSearchList != null)
         {
-            foreach (var item in referencesSearchList)
+            foreach(var item in referencesSearchList)
             {
-                if (item.Value == this.referenceValue)
+                if(item.Value == referenceValue)
                 {
                     model.ReferenceId = item.Id;
                 }
+                else
+                {
+                    AlertService.Error("Incorrect Reference Entered!");
+                    return false;
+                }
             }
         }
-        if (surnamesSearchList != null)
+        else
         {
-            foreach (var item in surnamesSearchList)
+            if (!string.IsNullOrEmpty(referenceValue))
             {
-                if (item.Value == this.surnameValue)
+                try
+                {
+                    if(referenceValue != oldReferenceValue)
+                    {
+                        foreach(var item in referencesSearchList)
+                        {
+                            if(item.Value == referenceValue)
+                            {
+                                model.ReferenceId = item.Id;
+                            }
+                            else
+                            {
+                                AlertService.Error("Incorrect Reference Entered!");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    AlertService.Error("Incorrect Reference Entered!");
+                    return false;
+                }
+            }
+        }
+
+        if (!string.IsNullOrEmpty(surnameValue) && surnamesSearchList != null)
+        {
+            foreach(var item in surnamesSearchList)
+            {
+                if(item.Value == surnameValue)
                 {
                     model.SurnameId = item.Id;
                 }
+                else
+                {
+                    AlertService.Error("Incorrect Surname Entered!");
+                    return false;
+                }
             }
         }
-        if (ucsSearchList != null)
+        else
         {
-            foreach (var item in ucsSearchList)
+            if (!string.IsNullOrEmpty(surnameValue))
             {
-                if (item.Value == this.ucValue)
+                try
+                {
+                    if (surnameValue != oldSurnameValue)
+                    {
+                        foreach(var item in surnamesSearchList)
+                        {
+                            if(item.Value == surnameValue)
+                            {
+                                model.SurnameId = item.Id;
+                            }
+                            else
+                            {
+                                AlertService.Error("Incorrect Surname Entered!");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    AlertService.Error("Incorrect Surname Entered!");
+                    return false;
+                }
+            }
+        }
+
+        if (!string.IsNullOrEmpty(ucValue) && ucsSearchList != null)
+        {
+            foreach(var item in ucsSearchList)
+            {
+                if(item.Value == ucValue)
                 {
                     model.UnionCounsilId = item.Id;
                 }
-            }
-        }
-        if (villagesSearchList != null)
-        {
-            foreach (var item in villagesSearchList)
-            {
-                if (item.Value == this.villageValue)
+                else
                 {
-                    model.VillageId = item.Id;
+                    AlertService.Error("Incorrect Union Counsil Entered!");
+                    return false;
                 }
             }
         }
+        else
+        {
+            if (!string.IsNullOrEmpty(ucValue))
+            {
+                try
+                {
+                    if (ucValue != oldUcValue)
+                    {
+                        foreach(var item in ucsSearchList)
+                        {
+                            if(item.Value == ucValue)
+                            {
+                                model.UnionCounsilId = item.Id;
+                            }
+                            else
+                            {
+                                AlertService.Error("Incorrect Union Counsil Entered!");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    AlertService.Error("Incorrect Union Counsil Entered!");
+                    return false;
+                }
+            }
+        }
+
+        if (!string.IsNullOrEmpty(villageValue) && villagesSearchList != null)
+        {
+            foreach(var item in villagesSearchList)
+            {
+                if (item.Value == villageValue)
+                {
+                    model.VillageId = item.Id;
+                }
+                else
+                {
+                    AlertService.Error("Incorrect Village Name Entered!");
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(villageValue))
+            {
+                try
+                {
+                    if (villageValue != oldVillageValue)
+                    {
+                        foreach(var item in villagesSearchList)
+                        {
+                            if (item.Value == villageValue)
+                            {
+                                model.VillageId = item.Id;
+                            }
+                            else
+                            {
+                                AlertService.Error("Incorrect Village Name Entered!");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    AlertService.Error("Incorrect Village Name Entered!");
+                    return false;
+                }
+            }
+        }
+
         using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
         {
             var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
@@ -843,5 +1001,6 @@
                 string apiResponse = await response.Content.ReadAsStringAsync();
             }
         }
+        return true;
     }
 }
