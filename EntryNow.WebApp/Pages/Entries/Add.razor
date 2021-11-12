@@ -54,11 +54,11 @@
                                   <InputText @bind-Value="model.Name" class="form-control" />
                                   <ValidationMessage For="@(() => model.Name)" style="color:red;"/>
                               </div>
-                              <div class="form-group">
+                              @*<div class="form-group">
                                   <label>Email</label>
                                   <InputText @bind-Value="model.EmailAddress" class="form-control" />
                                   <ValidationMessage For="@(() => model.EmailAddress)" />
-                              </div>
+                              </div>*@
                               <div class="form-group">
                                   <label>City</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.City">
@@ -84,11 +84,11 @@
                                         }
                                       </datalist>
                               </div>
-                              <div class="form-group">
+                              @*<div class="form-group">
                                   <label>CNIC</label>
                                   <InputText @bind-Value="model.CNIC" class="form-control" />
                                   <ValidationMessage For="@(() => model.CNIC)" />
-                              </div>
+                              </div>*@
                               <div class="form-group">
                                   <label>Taluka</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.Taluka">
@@ -110,7 +110,7 @@
                                     <InputText @bind-Value="model.ContactNumber" class="form-control" data-inputmask='"mask": "0399-999 9999"' data-mask />
                                   </div>
                                 </div>
-                                <div class="form-group">
+                                @*<div class="form-group">
                                   <label>District</label>
                                   <select class="form-control select2" style="width: 100%;" @bind="model.District">
                                         <option disabled selected hidden>Select District ...</option>
@@ -119,7 +119,7 @@
                                             <option value="@district">@district</option>
                                         }
                                   </select>
-                              </div>
+                              </div>*@
                               <div class="form-group">
                                   <label>Union Council</label>
                                   <InputText @bind-Value="this.ucValue" class="form-control select2" @oninput="(e)=> AutoCompleteUC(e.Value.ToString())" list="_uc"/>

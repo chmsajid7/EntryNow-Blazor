@@ -1,4 +1,5 @@
 ﻿@page "/settings/index"
+@using System.Net.Http
 @attribute [Authorize]
 @inject IAlertService AlertService
 @inject NavigationManager NavigationManager
@@ -799,12 +800,23 @@
                     using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "unioncounsil/save", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
+                        if(response.StatusCode == System.Net.HttpStatusCode.Created)
+                        {
+                            AlertService.Success("New Union Counsil Added Successfully", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await UcMethod();
+                            StateHasChanged();
+                        }
+                        if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                        {
+                            AlertService.Success("Union Counsil Added Exists!", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await UcMethod();
+                            StateHasChanged();
+                        }
                     }
                 }
-                AlertService.Success("New Union Counsil Added Successfully", keepAfterRouteChange: true);
-                loadBtn = false;
-                await UcMethod();
-                StateHasChanged();
+                
             }
         }
         catch (Exception ex)
@@ -830,12 +842,22 @@
                     using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "village/save", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
+                        if(response.StatusCode == System.Net.HttpStatusCode.Created)
+                        {
+                            AlertService.Success("New Village Added Successfully", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await VillageMethod();
+                            StateHasChanged();
+                        }
+                        if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                        {
+                            AlertService.Success("Village Already Exists!", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await VillageMethod();
+                            StateHasChanged();
+                        }
                     }
                 }
-                AlertService.Success("New Village Added Successfully", keepAfterRouteChange: true);
-                loadBtn = false;
-                await VillageMethod();
-                StateHasChanged();
             }
         }
         catch (Exception ex)
@@ -861,12 +883,23 @@
                     using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
+                        if(response.StatusCode == System.Net.HttpStatusCode.Created)
+                        {
+                            AlertService.Success("New Surname Added Successfully", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await SurnamesMethod();
+                            StateHasChanged();
+                        }
+                        if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                        {
+                            AlertService.Success("Surname Already Exists!", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await SurnamesMethod();
+                            StateHasChanged();
+                        }
                     }
                 }
-                AlertService.Success("New Surname Added Successfully", keepAfterRouteChange: true);
-                loadBtn = false;
-                await SurnamesMethod();
-                StateHasChanged();
+                
             }
         }
         catch (Exception ex)
@@ -907,12 +940,22 @@
                     using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "unioncounsil/save", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
+                        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            AlertService.Success("Union Counsil Edited Successfully", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await UcMethod();
+                            StateHasChanged();
+                        }
+                        if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                        {
+                            AlertService.Success("Union Counsil Added Exists!", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await UcMethod();
+                            StateHasChanged();
+                        }
                     }
                 }
-                AlertService.Success("Union Council Edited Successfully", keepAfterRouteChange: true);
-                loadBtn = false;
-                await UcMethod();
-                StateHasChanged();
             }
         }
         catch (Exception ex)
@@ -938,12 +981,22 @@
                     using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "village/save", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
+                        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            AlertService.Success("Village Edited Successfully", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await VillageMethod();
+                            StateHasChanged();
+                        }
+                        if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                        {
+                            AlertService.Success("Village Already Exists!", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await VillageMethod();
+                            StateHasChanged();
+                        }
                     }
                 }
-                AlertService.Success("Village Edited Successfully", keepAfterRouteChange: true);
-                loadBtn = false;
-                await VillageMethod();
-                StateHasChanged();
             }
         }
         catch (Exception ex)
@@ -969,12 +1022,22 @@
                     using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "surname/save", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
+                        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            AlertService.Success("Surname Edited Successfully", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await SurnamesMethod();
+                            StateHasChanged();
+                        }
+                        if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                        {
+                            AlertService.Success("Surname Already Exists!", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await SurnamesMethod();
+                            StateHasChanged();
+                        }
                     }
                 }
-                AlertService.Success("Surname Edited Successfully", keepAfterRouteChange: true);
-                loadBtn = false;
-                await SurnamesMethod();
-                StateHasChanged();
             }
         }
         catch (Exception ex)
