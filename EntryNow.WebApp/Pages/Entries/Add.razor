@@ -166,6 +166,14 @@
                                       </datalist>
                               </div>
                           </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <div class="form-check" style="margin-top:33px;">
+                                      <input type="checkbox" class="form-check-input" id="exampleCheck1" @bind="@checkboxvalue" style="height:20px;width:20px;">
+                                      <label class="form-check-label" for="exampleCheck1" style="margin-top:1px;">&nbsp;&nbsp;Is a Reference?</label>
+                                  </div>
+                              </div>
+                          </div>
                        </div>
                        <div class="row">
                            <div class="col-md-8">
@@ -211,6 +219,7 @@
     private List<string> talukas = new List<string>();
     private List<string> unioncounsils = new List<string>();
     private List<string> villages = new List<string>();
+    private bool checkboxvalue { get; set; }
     private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
     private bool loading;
     private bool pageLoading;
@@ -589,6 +598,16 @@
                 }
             }
         }
+
+        if (checkboxvalue)
+        {
+            model.IsAReference = true;
+        }
+        else
+        {
+            model.IsAReference = false;
+        }
+
         using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
         {
             var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
