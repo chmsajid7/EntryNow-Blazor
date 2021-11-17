@@ -496,24 +496,16 @@
         loading = true;
         try
         {
-            var res = await AddEntryAsync();
-            if (res.StatusCode == System.Net.HttpStatusCode.OK)
+            if (await AddEntryAsync())
             {
                 AlertService.Success("New Entry Added Successfully", keepAfterRouteChange: true);
                 loading = false;
                 StateHasChanged();
                 NavigationManager.NavigateTo("entries/index");
             }
-            else if (res.StatusCode == System.Net.HttpStatusCode.Conflict)
-            {
-                loading = false;
-                AlertService.Error("Entry Already Exists!");
-                StateHasChanged();
-            }
             else
             {
                 loading = false;
-                AlertService.Error("Sorry, An Unknown Error Has Occured!");
                 StateHasChanged();
             }
         }
@@ -524,7 +516,7 @@
             StateHasChanged();
         }
     }
-    private async Task<System.Net.Http.HttpResponseMessage> AddEntryAsync()
+    private async Task<bool> AddEntryAsync()
     {
         if (!string.IsNullOrEmpty(referenceValue))
         {
@@ -616,15 +608,24 @@
             model.IsAReference = false;
         }
 
-        System.Net.Http.HttpResponseMessage response;
         using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
         {
             var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
             var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
-            using (response = await httpClient.PutAsync(baseUrl + "voter/save", content))
+            using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "voter/save", content))
             {
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return true;
+                }
+                if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                {
+                    AlertService.Error("Entry Already Exists!");
+                    return false;
+                }
             }
         }
-        return response;
+        AlertService.Error("Sorry, An Unknown Error Has Occured!");
+        return false;
     }
 }
