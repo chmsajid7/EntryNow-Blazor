@@ -1,0 +1,241 @@
+﻿@page "/references/index"
+@attribute [Authorize]
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>All References</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">List of all the References</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <!-- /.col -->
+            <div class="card">
+              <div class="card-header">
+                  <h3 class="card-title">View the List of References</h3>
+                    @if (totalReferences != 0)
+                    {
+                        <a href="#" style="float:right; color:grey;"><i class="fas fa-download"></i></a>
+                        <a style="float:right; color:grey;">Total @totalReferences References Found&nbsp;&nbsp;</a>
+                    }
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <table class="table text-nowrap">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Contact</th>
+                      @*<th>CNIC</th>*@
+                      <th>Referenced By</th>
+                      <th>Recommended</th>
+                      <th>UC</th>
+                      <th>Taluka</th>
+                      @*<th>Deh</th>*@
+                      <th>Village</th>
+                      <th>City</th>
+                      <th>Address</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      @if (loading)
+                      {
+                          <tr>
+                              <td colspan="12" class="text-center">
+                                  <span class="spinner-border spinner-border-lg align-center"></span>
+                              </td>
+                          </tr>
+                      }
+                      else
+                      {
+                          @if (entries != null)
+                          {
+                              foreach (var entrie in entries)
+                              {
+                                  <tr>
+                                      <td>@entrie.Name</td>
+                                      <td>@entrie.Surname</td>
+                                      <td>@entrie.ContactNumber</td>
+                                      @*<td>@entrie.CNIC</td>*@
+                                      <td>@entrie.ReferencedBy</td>
+                                      <td>@entrie.Recommended</td>
+                                      <td>@entrie.UnionCounsil</td>
+                                      <td>@entrie.Taluka</td>
+                                      @*<td>@entrie.Deh</td>*@
+                                      <td>@entrie.Village</td>
+                                      <td>@entrie.City</td>
+                                      <td>@entrie.Address</td>
+                                  </tr>
+                              }
+                          }
+                      }
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            <!-- pagination -->
+            @if (totalPages > 0)
+            {
+            <div class="card-footer clearfix">
+                    Page @_page of @totalPages Selected
+                    <ul class="pagination pagination-sm m-0 float-right">
+                        @if (_page == 1)
+                        {
+                            <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
+                        }
+                        @if (_page != 1)
+                        {
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>...</a></li>
+                        }
+                        @if (totalPages > 0)
+                        {
+                            @for (int i = _page - 1; i < _page + 2 ; i++)
+                            {
+                                int buttonNumber = i;
+                                @if (buttonNumber < 1 || buttonNumber > totalPages)
+                                {
+                                }
+                                else
+                                {
+                                    @if (buttonNumber == _page)
+                                    {
+                                            <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                    }
+                                    else
+                                    {
+                                            <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                    }
+                                }
+                            }
+                            @*@for (int i = 1; i <= totalPages; i++)
+                            {
+                                int buttonNumber = i;
+                                @if (buttonNumber == _page)
+                                {
+                                    <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                }
+                                else
+                                {
+                                    <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                }
+                            }*@
+                        }
+                        @if (_page == totalPages)
+                        {
+                            <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
+                        }
+                        @if (_page != totalPages)
+                        {
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>...</a></li>
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
+                        }
+                    </ul>
+            </div>
+            }
+            </div>
+            <!-- /.card -->
+          <!-- /.col -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+
+@code {
+    private int _page = 1;
+    private int pageSize = 10;
+    private int totalReferences;
+    private bool loading;
+    private IList<References> entries;
+    private int totalPages;
+    private readonly System.Net.Http.HttpClient _httpClient;
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+        await GetData();
+        await GetReferencesCount();
+        loading = false;
+    }
+
+    private async Task GetDataOnNextPage()
+    {
+        loading = true;
+        _page += 1;
+        await GetData();
+        loading = false;
+    }
+
+    private async Task GetDataByPageNumber(int pageNumber)
+    {
+        loading = true;
+        _page = pageNumber;
+        await GetData();
+        loading = false;
+    }
+
+    private async Task GetDataOnPreviousPage()
+    {
+        loading = true;
+        _page -= 1;
+        await GetData();
+        loading = false;
+    }
+
+    private async Task GetData()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync("https://entrynowapi.azurewebsites.net/api/reference/get?pageNumber=" + _page + "&perPage=" + pageSize))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<References>>(apiResponse);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GetReferencesCount()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync("https://entrynowapi.azurewebsites.net/api/reference/get/count"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    totalReferences = Int32.Parse(apiResponse);
+                    totalPages = (int)Math.Ceiling((decimal)totalReferences / (decimal)pageSize);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

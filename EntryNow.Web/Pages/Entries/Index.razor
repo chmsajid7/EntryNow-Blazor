@@ -1,0 +1,309 @@
+﻿@page "/entries/index"
+@attribute [Authorize]
+@inject PageNumberHelper PageNumberHelper
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>All Entries</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">List of all the Entries</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <!-- /.col -->
+            <div class="card">
+              <div class="card-header">
+                  <NavLink href="entries/add">
+                    <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Click to add a Entry! </h3>
+                  </NavLink>
+                    @if (totalEntries >= 0 && !loading)
+                    {
+                        <a href="#" style="float:right; color:grey;"><i class="fas fa-download"></i></a>
+                        <a style="float:right; color:grey;">Total @totalEntries Entries Found&nbsp;&nbsp;</a>
+                    }
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <table class="table text-nowrap">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Contact</th>
+                      @*<th>CNIC</th>*@
+                      <th>Reference</th>
+                      <th>UC</th>
+                      <th>Taluka</th>
+                      <th>Village</th>
+                      <th>City</th>
+                      <th>Address</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      @if (loading)
+                      {
+                          <tr>
+                              <td colspan="12" class="text-center">
+                                  <span class="spinner-border spinner-border-lg align-center"></span>
+                              </td>
+                          </tr>
+                      }
+                      else
+                      {
+                          @if (entries != null)
+                          {
+                              foreach (var entrie in entries)
+                              {
+                                  <tr>
+                                      <td>@entrie.Name</td>
+                                      <td>@entrie.Surname</td>
+                                      <td>@entrie.ContactNumber</td>
+                                      @*<td>@entrie.CNIC</td>*@
+                                      <td>@entrie.Reference</td>
+                                      <td>@entrie.UnionCounsil</td>
+                                      <td>@entrie.Taluka</td>
+                                      <td>@entrie.Village</td>
+                                      <td>@entrie.City</td>
+                                      <td>@entrie.Address</td>
+                                      <td style="white-space: nowrap">
+                                          <a href="" @onclick="@(() => EditBtn(entrie.Id))" @onclick:preventDefault>
+                                              <i class="far fa-edit" style="color:blue;"></i>
+                                          </a>
+                                          &nbsp;
+                                          @if (IsDeleting && currentId == entrie.Id)
+                                          {
+                                              <span class="spinner-border spinner-border-sm" style="color:black;"></span>
+                                          }
+                                          else
+                                          {
+                                              <a href="" @onclick="@(() => TemporaryEntryId(entrie.Id))" @onclick:preventDefault data-toggle="modal" data-target="#modal-default">
+                                                  <i class="far fa-trash-alt" style="color:red;"></i>
+                                              </a>
+                                          }
+                                      </td>
+                                  </tr>
+                              }
+                          }
+                      }
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+
+            <!-- pagination -->
+            @if (totalPages > 0)
+            {
+                <div class="card-footer clearfix">
+                  Page @_page of @totalPages Selected
+                  <ul class="pagination pagination-sm m-0 float-right">
+                        @if(_page == 1)
+                        {
+                            <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
+                        }
+                        @if(_page != 1)
+                        {
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>...</a></li>
+                        }
+                        @if (totalPages > 0)
+                        {
+                            @for (int i = _page - 1; i < _page + 2 ; i++)
+                            {
+                                int buttonNumber = i;
+                                @if (buttonNumber < 1 || buttonNumber > totalPages)
+                                {
+                                }
+                                else
+                                {
+                                    @if (buttonNumber == _page)
+                                    {
+                                            <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                    }
+                                    else
+                                    {
+                                            <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                    }
+                                }
+                            }
+                        }
+                        @if(_page == totalPages)
+                        {
+                            <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
+                        }
+                        @if(_page != totalPages)
+                        {
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>...</a></li>
+                            <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
+                        }
+                  </ul>
+              </div>
+            }
+            </div>
+            <!-- /.card -->
+          <!-- /.col -->
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Pop Up for Delete Btn -->
+    <section class="content">
+      <div class="modal fade" id="modal-default">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Confirm Delete</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure, you want to delete this Entry?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => DeleteBtn())">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+@code {
+    private int _page = 1;
+    private int pageSize = 10;
+    private int totalEntries;
+    private int currentId;
+    private bool loading;
+    private bool IsDeleting;
+    private IList<Entries> entries;
+    private int totalPages;
+    private readonly System.Net.Http.HttpClient _httpClient;
+    private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+        _page = await PageNumberHelper.GetEntriesPageNo();
+        await GetData();
+        await GetEntriesCount();
+        loading = false;
+    }
+
+    private async Task TemporaryEntryId(int id)
+    {
+        await Task.Yield();
+        currentId = id;
+    }
+
+    private async Task GetDataOnNextPage()
+    {
+        loading = true;
+        _page += 1;
+        await GetData();
+        loading = false;
+    }
+
+    private async Task GetDataByPageNumber(int pageNumber)
+    {
+        loading = true;
+        _page = pageNumber;
+        await GetData();
+        loading = false;
+    }
+
+    private async Task GetDataOnPreviousPage()
+    {
+        loading = true;
+        _page -= 1;
+        await GetData();
+        loading = false;
+    }
+
+    private async Task GetData()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get?pageNumber=" + _page + "&perPage=" + pageSize))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GetEntriesCount()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get/count"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    totalEntries = Int32.Parse(apiResponse);
+                    totalPages = (int)Math.Ceiling((decimal)totalEntries / (decimal)pageSize);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async void EditBtn(int id)
+    {
+        await PageNumberHelper.SaveEntriesPageNo(_page);
+        NavigationManager.NavigateTo($"entries/test/" + id);
+    }
+
+    private async Task DeleteBtn()
+    {
+        IsDeleting = true;
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.DeleteAsync(baseUrl + "voter/delete/" + currentId))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                }
+            }
+            AlertService.Clear();
+            AlertService.Success("Entry was Deleted Successfully", keepAfterRouteChange: true);
+            await OnInitializedAsync();
+        }
+        catch(Exception e)
+        {
+            AlertService.Error("Not able to delete, Error : " + e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+        IsDeleting = false;
+    }
+}

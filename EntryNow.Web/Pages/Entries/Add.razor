@@ -1,0 +1,630 @@
+﻿@page "/entries/add"
+@using EntryNow.Web.Constants
+@attribute [Authorize]
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>New Entry</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Entries</a></li>
+              <li class="breadcrumb-item active">Add New Enty</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="container-fluid">
+        <div class="card card-default">
+          <div class="card-header">
+            <h3 class="card-title">Add Entry's details in the fields below</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+              <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                @if (pageLoading)
+                {
+                      <tr>
+                          <td colspan="12" style="text-align:center;">
+                              <span class="spinner-border spinner-border-lg align-center"></span>
+                          </td>
+                      </tr>
+                }
+                else
+                {
+                    <div class="row">
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Name</label>
+                                  <InputText @bind-Value="model.Name" class="form-control" />
+                                  <ValidationMessage For="@(() => model.Name)" style="color:red;"/>
+                              </div>
+                              @*<div class="form-group">
+                                  <label>Email</label>
+                                  <InputText @bind-Value="model.EmailAddress" class="form-control" />
+                                  <ValidationMessage For="@(() => model.EmailAddress)" />
+                              </div>*@
+                              <div class="form-group">
+                                  <label>City</label>
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.City">
+                                        <option disabled selected hidden>Select City ...</option>
+                                        @foreach(var city in cities)
+                                        {
+                                            <option value="@city">@city</option>
+                                        }
+                                  </select>
+                              </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Surname</label>
+                                  <InputText @bind-Value="this.surnameValue" class="form-control select2" @oninput="(e)=> AutoCompleteSurname(e.Value.ToString())" list="_surname"/>
+                                      <datalist id="_surname">
+                                        @if (surnamesSearchList != null)
+                                        {
+                                            @foreach (var item in surnamesSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                      </datalist>
+                              </div>
+                              @*<div class="form-group">
+                                  <label>CNIC</label>
+                                  <InputText @bind-Value="model.CNIC" class="form-control" />
+                                  <ValidationMessage For="@(() => model.CNIC)" />
+                              </div>*@
+                              <div class="form-group">
+                                  <label>Taluka</label>
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.Taluka">
+                                        <option disabled selected hidden>Select Taluka ...</option>
+                                        @foreach(var taluka in talukas)
+                                        {
+                                            <option value="@taluka">@taluka</option>
+                                        }
+                                  </select>
+                              </div>
+                          </div>
+                          <div class="col-md-4">
+                                <div class="form-group">
+                                  <label>Contact Number</label>
+                                  <div class="input-group">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    </div>
+                                    <InputText @bind-Value="model.ContactNumber" class="form-control" data-inputmask='"mask": "0399-999 9999"' data-mask />
+                                  </div>
+                                </div>
+                                @*<div class="form-group">
+                                  <label>District</label>
+                                  <select class="form-control select2" style="width: 100%;" @bind="model.District">
+                                        <option disabled selected hidden>Select District ...</option>
+                                        @foreach(var district in districts)
+                                        {
+                                            <option value="@district">@district</option>
+                                        }
+                                  </select>
+                              </div>*@
+                              <div class="form-group">
+                                  <label>Union Council</label>
+                                  <InputText @bind-Value="this.ucValue" class="form-control select2" @oninput="(e)=> AutoCompleteUC(e.Value.ToString())" list="_uc"/>
+                                      <datalist id="_uc">
+                                        @if (ucsSearchList != null)
+                                        {
+                                            @foreach (var item in ucsSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                      </datalist>
+                              </div>
+                          </div>
+                       </div>
+                       <div class="row">
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Village</label>
+                                  <InputText @bind-Value="this.villageValue" class="form-control select2" @oninput="(e)=> AutoCompleteVillage(e.Value.ToString())" list="_village"/>
+                                      <datalist id="_village">
+                                        @if (villagesSearchList != null)
+                                        {
+                                            @foreach (var item in villagesSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                      </datalist>
+                              </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <label>Reference</label>
+                                  <InputText @bind-Value="this.referenceValue" class="form-control select2" @oninput="(e)=> AutoCompleteReference(e.Value.ToString())" list="_ref"/>
+                                      <datalist id="_ref">
+                                        @if (referencesSearchList != null)
+                                        {
+                                            @foreach (var item in referencesSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                      </datalist>
+                              </div>
+                          </div>
+                          <div class="col-md-4">
+                              <div class="form-group">
+                                  <div class="form-check" style="margin-top:33px;">
+                                      <input type="checkbox" class="form-check-input" id="exampleCheck1" @bind="@checkboxvalue" style="height:20px;width:20px;">
+                                      <label class="form-check-label" for="exampleCheck1" style="margin-top:1px;">&nbsp;&nbsp;Is a Reference?</label>
+                                  </div>
+                              </div>
+                          </div>
+                       </div>
+                       <div class="row">
+                           <div class="col-md-8">
+                              <div class="form-group">
+                                      <label>Complete Address</label>
+                                      <InputText @bind-Value="model.Address" class="form-control" />
+                                      <ValidationMessage For="@(() => model.Address)" />
+                              </div>
+                          </div>
+                           <div class="col-md-4">
+                              <div class="form-group">
+                                    <NavLink href="entries/index" class="btn btn-link" style="float:right; margin-top:34px;">Cancel</NavLink>
+                                    <button disabled="@loading" class="btn btn-primary" style="float:right; margin-top:34px;">
+                                        @if (loading)
+                                        {
+                                            <span class="spinner-border spinner-border-sm mr-1"></span>
+                                        }
+                                        Submit
+                                    </button>
+                              </div>
+                          </div>
+                       </div>
+                }
+              </EditForm>
+          </div>
+        </div>
+      </div>
+    </section>
+
+@code {
+    private Entries_CreateViewModel model = new Entries_CreateViewModel();
+    private string referenceValue = "";
+    private string surnameValue = "";
+    private string ucValue = "";
+    private string villageValue = "";
+    private IList<SearchValues> referencesSearchList;
+    private IList<SearchValues> surnamesSearchList;
+    private IList<SearchValues> ucsSearchList;
+    private IList<SearchValues> villagesSearchList;
+    private IList<DropDowns> surnames;
+    private List<string> cities = new List<string>();
+    private List<string> districts = new List<string>();
+    private List<string> talukas = new List<string>();
+    private List<string> unioncounsils = new List<string>();
+    private List<string> villages = new List<string>();
+    private bool checkboxvalue { get; set; }
+    private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
+    private bool loading;
+    private bool pageLoading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        pageLoading = true;
+        districts.AddRange(Global.Districts);
+        talukas.AddRange(Global.Talukas);
+        cities.AddRange(Global.Cities);
+        pageLoading = false;
+    }
+    private async Task AutoCompleteReference(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >=3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.referencesSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+    private async Task AutoCompleteSurname(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >=3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.surnamesSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+    private async Task AutoCompleteUC(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >=3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.ucsSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+    private async Task AutoCompleteVillage(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >=3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.villagesSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+    private void FillUcDropDown (ChangeEventArgs e)
+    {
+        //model.Taluka = e.Value.ToString();
+        //if(model.Taluka == "Hala")
+        //{
+        //    unioncounsils = new List<string>();
+        //    unioncounsils.AddRange(Global.UnionCounsil_Hala);
+        //}
+        //if(model.Taluka == "Saeedabad")
+        //{
+        //    unioncounsils = new List<string>();
+        //    unioncounsils.AddRange(Global.UnionCounsil_Saeedabad);
+        //}
+        //if(model.Taluka == "Matiari")
+        //{
+        //    unioncounsils = new List<string>();
+        //    unioncounsils.AddRange(Global.UnionCounsil_Matiari);
+        //}
+    }
+    private void FillVillagesDropDown (ChangeEventArgs e)
+    {
+        //model.UnionCouncil = e.Value.ToString();
+        //if(model.UnionCouncil == "Khandu")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_Khandu);   
+        //}
+        //if(model.UnionCouncil == "Karam Khan Nizamani")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_KaramKhanNizamani);   
+        //}
+        //if(model.UnionCouncil == "Ajan Shah")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_AjanShah);   
+        //}
+        //if(model.UnionCouncil == "Bhanoth")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_Bhanoth);   
+        //}
+        //if(model.UnionCouncil == "Bhit Shah")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_BhitShah);   
+        //}
+        //if(model.UnionCouncil == "Fateh Muhammad Shah Ajnani")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_FatehMuhammadShahAjnani);   
+        //}
+        //if(model.UnionCouncil == "Abdul Wahid Burira")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_AbdulWahidBurira);   
+        //}
+        //if(model.UnionCouncil == "BD Kaka")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_BDKaka);   
+        //}
+        //if(model.UnionCouncil == "Faqeerabad")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_Faqeerabad);   
+        //}
+        //if(model.UnionCouncil == "Makhdoom joon Landhiyoon")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_MakhdoomjoonLandhiyoon);   
+        //}
+        //if(model.UnionCouncil == "Old Saeedabad")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_OldSaeedabad);   
+        //}
+        //if(model.UnionCouncil == "Ramzan Unar")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_RamzanUnar);   
+        //}
+        //if(model.UnionCouncil == "Shahmir Rahu")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_ShahmirRahu);   
+        //}
+        //if(model.UnionCouncil == "Sikandarabad")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_Sikandarabad);   
+        //}
+        //if(model.UnionCouncil == "Zair Peer")
+        //{
+        //    villages = new List<string>();
+        //    villages.AddRange(Global.Villages_ZairPeer);   
+        //}
+    }
+    private async Task FillDropDowns()
+    {
+        //try
+        //{
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown")) 
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "deh/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.dehs = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "district/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.districts = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.surnames = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.talukas = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.unioncounsils = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //{
+        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/dropdown"))
+        //    {
+        //        string apiResponse = await response.Content.ReadAsStringAsync();
+        //        this.villages = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
+        //    }
+        //}
+        //}
+        //catch(Exception e)
+        //{
+        //    AlertService.Error(e.Message);
+        //    loading = false;
+        //    StateHasChanged();
+        //}
+    }
+    private async void OnValidSubmit()
+    {
+        AlertService.Clear();
+        loading = true;
+        try
+        {
+            var res = await AddEntryAsync();
+            if (res.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                AlertService.Success("New Entry Added Successfully", keepAfterRouteChange: true);
+                loading = false;
+                StateHasChanged();
+                NavigationManager.NavigateTo("entries/index");
+            }
+            else if (res.StatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                loading = false;
+                AlertService.Error("Entry Already Exists!");
+                StateHasChanged();
+            }
+            else
+            {
+                loading = false;
+                AlertService.Error("Sorry, An Unknown Error Has Occured!");
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task<System.Net.Http.HttpResponseMessage> AddEntryAsync()
+    {
+        if (!string.IsNullOrEmpty(referenceValue))
+        {
+            if (referencesSearchList == null)
+            {
+                AlertService.Error("Incorrect Reference Entered!");
+                return false;
+            }
+            foreach(var item in referencesSearchList)
+            {
+                if(item.Value == referenceValue)
+                {
+                    model.ReferenceId = item.Id;
+                }
+                else
+                {
+                    AlertService.Error("Incorrect Reference Entered!");
+                    return false;
+                }
+            }
+        }
+        if (!string.IsNullOrEmpty(surnameValue))
+        {
+            if (surnamesSearchList == null)
+            {
+                AlertService.Error("Incorrect Surname Entered!");
+                return false;
+            }
+            foreach(var item in surnamesSearchList)
+            {
+                if(item.Value == surnameValue)
+                {
+                    model.SurnameId = item.Id;
+                }
+                else
+                {
+                    AlertService.Error("Incorrect Surname Entered!");
+                    return false;
+                }
+            }
+        }
+        if (!string.IsNullOrEmpty(ucValue))
+        {
+            if (ucsSearchList == null)
+            {
+                AlertService.Error("Incorrect Union Counsil Entered!");
+                return false;
+            }
+            foreach(var item in ucsSearchList)
+            {
+                if(item.Value == ucValue)
+                {
+                    model.UnionCounsilId = item.Id;
+                }
+                else
+                {
+                    AlertService.Error("Incorrect Union Counsil Entered!");
+                    return false;
+                }
+            }
+        }
+        if (!string.IsNullOrEmpty(villageValue))
+        {
+            if (villagesSearchList == null)
+            {
+                AlertService.Error("Incorrect Village Name Entered!");
+                return false;
+            }
+            foreach(var item in villagesSearchList)
+            {
+                if (item.Value == villageValue)
+                {
+                    model.VillageId = item.Id;
+                }
+                else
+                {
+                    AlertService.Error("Incorrect Village Name Entered!");
+                    return false;
+                }
+            }
+        }
+
+        if (checkboxvalue)
+        {
+            model.IsAReference = true;
+        }
+        else
+        {
+            model.IsAReference = false;
+        }
+
+        System.Net.Http.HttpResponseMessage response;
+        using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        {
+            var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+            var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+            using (response = await httpClient.PutAsync(baseUrl + "voter/save", content))
+            {
+            }
+        }
+        return response;
+    }
+}
