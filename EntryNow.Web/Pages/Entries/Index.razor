@@ -41,16 +41,45 @@
                 <table class="table text-nowrap">
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Surname</th>
-                      <th>Contact</th>
-                      @*<th>CNIC</th>*@
-                      <th>Reference</th>
-                      <th>UC</th>
-                      <th>Taluka</th>
-                      <th>Village</th>
-                      <th>City</th>
-                      <th>Address</th>
+                      <th>
+                          <p style="text-align:center">Name</p>
+                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._Name.ToString() + e.Value.ToString())" />
+                      </th>
+                      <th>
+                          <p style="text-align:center">Surname</p>
+                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._SurnameId.ToString() + e.Value.ToString())" />
+                      </th>
+                      <th>
+                          <p style="text-align:center">Contact</p>
+                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._ContactNumber.ToString() + e.Value.ToString())" />
+                      </th>
+                      @*<th>CNIC
+                          <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                      </th>*@
+                      <th>
+                          <p style="text-align:center">Reference</p>
+                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._ReferenceId.ToString() + e.Value.ToString())" />
+                      </th>
+                      <th>
+                          <p style="text-align:center">UC</p>
+                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._UnionCounsilId.ToString() + e.Value.ToString())" />
+                      </th>
+                      <th>
+                          <p style="text-align:center">Taluka</p>
+                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._Taluka.ToString() + e.Value.ToString())" />
+                      </th>
+                      <th>
+                          <p style="text-align:center">Village</p>
+                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._VillageId.ToString() + e.Value.ToString())" />
+                      </th>
+                      <th>
+                          <p style="text-align:center">City</p>
+                          <input class="form-control" />
+                      </th>
+                      <th>
+                          <p style="text-align:center">Address</p>
+                          <input class="form-control" />
+                      </th>
                       <th></th>
                     </tr>
                   </thead>
@@ -183,6 +212,7 @@
     </section>
 
 @code {
+    Entries model = new Entries();
     private int _page = 1;
     private int pageSize = 10;
     private int totalEntries;
@@ -194,10 +224,28 @@
     private readonly System.Net.Http.HttpClient _httpClient;
     private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
 
+    private string EmptyString = "";
+    private string _Name = "_Name ";
+    private string _ReferenceId = "_ReferenceId ";
+    private string _ContactNumber = "_ContactNumber ";
+    private string _SurnameId = "_SurnameId ";
+    private string _VillageId = "_VillageId ";
+    private string _UnionCounsilId= "_UnionCounsilId ";
+    private string _Taluka= "_Taluka ";
+
+    private string _Name_ = "";
+    private string _ReferenceId_ = "";
+    private string _ContactNumber_ = "";
+    private string _SurnameId_ = "";
+    private string _VillageId_ = "";
+    private string _UnionCounsilId_ = "";
+    private string _Taluka_ = "";
+
     protected override async Task OnInitializedAsync()
     {
+        model.Name = "abc";
         loading = true;
-        _page = await PageNumberHelper.GetEntriesPageNo();
+        this._page = await PageNumberHelper.GetEntriesPageNo();
         await GetData();
         await GetEntriesCount();
         loading = false;
@@ -242,7 +290,7 @@
                 using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get?pageNumber=" + _page + "&perPage=" + pageSize))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
-                    entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
+                    this.entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
                 }
             }
         }
@@ -305,5 +353,76 @@
             StateHasChanged();
         }
         IsDeleting = false;
+    }
+
+    private async Task SearchInGrid(string value)
+    {
+        loading = true;
+
+        string str = value.Substring(0, 6);
+        if (str == "_Name ")
+        {
+            this._Name_ = value.Substring(6);
+        }
+        if (str == "_Refer")
+        {
+            this._ReferenceId_ = value.Substring(13); //reference name
+            if (!string.IsNullOrEmpty(_ReferenceId_))
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/find?name=" + value))
+                    {
+                        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                        {
+                            string apiResponse = await response.Content.ReadAsStringAsync();
+                            //this.ucsSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                        }
+                    }
+                }
+            }
+        }
+        if (str == "_Conta")
+        {
+            this._ContactNumber_ = value.Substring(15);
+        }
+        if (str == "_Surna")
+        {
+            this._SurnameId_ = value.Substring(11);
+        }
+        if (str == "_Villa")
+        {
+            this._VillageId_ = value.Substring(11);
+        }
+        if (str == "_Union")
+        {
+            this._UnionCounsilId_ = value.Substring(16);
+        }
+        if (str == "_Taluk")
+        {
+            this._Taluka_ = value.Substring(8);
+        }
+
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get?pageNumber=1&perPage=10000" + 
+                "&Name="+_Name_+"&ReferenceId="+_ReferenceId_+"&ContactNumber="+_ContactNumber_+"&SurnameId="+_SurnameId_+
+                "&VillageId="+_VillageId_+"&UnionCounsilId="+_UnionCounsilId_+"&Taluka="+_Taluka_))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
+                }
+            }
+            loading = false;
+            StateHasChanged();
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
     }
 }
