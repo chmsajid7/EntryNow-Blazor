@@ -256,7 +256,11 @@
                     using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/find?name=" + value))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
-                        this.referencesSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                        IList<SearchValues> _referencesSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                        if(_referencesSearchList != null)
+                        {
+                            this.referencesSearchList = _referencesSearchList;
+                        }
                     }
                 }
             }
@@ -507,6 +511,15 @@
     {
         AlertService.Clear();
         loading = true;
+
+        if (string.IsNullOrEmpty(this.referenceValue))
+        {
+            AlertService.Error("Reference is required!", keepAfterRouteChange: true);
+            loading = false;
+            StateHasChanged();
+            return;
+        }
+
         try
         {
             if (await AddEntryAsync())
@@ -515,7 +528,6 @@
                 loading = false;
                 await OnInitializedAsync();
                 StateHasChanged();
-                //NavigationManager.NavigateTo("entries/index");
             }
             else
             {
@@ -532,7 +544,7 @@
     }
     private async Task<bool> AddEntryAsync()
     {
-        if (!string.IsNullOrEmpty(referenceValue))
+        if (!string.IsNullOrEmpty(this.referenceValue))
         {
             if (referencesSearchList == null)
             {
@@ -541,7 +553,7 @@
             }
             foreach(var item in referencesSearchList)
             {
-                if(item.Value == referenceValue)
+                if(item.Value == this.referenceValue)
                 {
                     model.ReferenceId = item.Id;
                 }
