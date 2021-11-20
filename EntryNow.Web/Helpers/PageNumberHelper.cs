@@ -8,6 +8,7 @@ namespace EntryNow.Web.Helpers
     {
         private ILocalStorageService localStorageService;
         private string entriesPageNoStorageKey = "entriesPageNumber";
+        private string referencesPageNoStorageKey = "referencesPageNumber";
         public PageNumber pageNumber { get; private set; }
 
         public PageNumberHelper(ILocalStorageService localStorageService)
@@ -31,6 +32,26 @@ namespace EntryNow.Web.Helpers
                 return 1;
             }
             await localStorageService.RemoveItem(entriesPageNoStorageKey);
+            return this.pageNumber.pageNumber;
+        }
+        
+        public async Task SaveReferencesPageNo(int pageNumber)
+        {
+            this.pageNumber = new PageNumber()
+            {
+                pageNumber = pageNumber
+            };
+            await localStorageService.SetItem(referencesPageNoStorageKey, this.pageNumber);
+        }
+
+        public async Task<int> GetReferencesPageNo()
+        {
+            this.pageNumber = await localStorageService.GetItem<PageNumber>(referencesPageNoStorageKey);
+            if (this.pageNumber == null)
+            {
+                return 1;
+            }
+            await localStorageService.RemoveItem(referencesPageNoStorageKey);
             return this.pageNumber.pageNumber;
         }
     }

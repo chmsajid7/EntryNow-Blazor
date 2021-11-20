@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31815.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntryNow.WebApp", "EntryNow.WebApp\EntryNow.WebApp.csproj", "{4AB8A8CD-3C9D-4FBF-9208-2EB352FF2C8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntryNow.Web", "EntryNow.Web\EntryNow.Web.csproj", "{BE3452B0-B5B1-4EDF-8C75-9004DCBFBD50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntryNow.Web", "EntryNow.Web\EntryNow.Web.csproj", "{BE3452B0-B5B1-4EDF-8C75-9004DCBFBD50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

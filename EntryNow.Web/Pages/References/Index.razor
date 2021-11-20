@@ -2,6 +2,9 @@
 @attribute [Authorize]
 @inject IAlertService AlertService
 @inject NavigationManager NavigationManager
+@inject PageNumberHelper PageNumberHelper
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime;
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -26,7 +29,9 @@
           <!-- /.col -->
             <div class="card">
               <div class="card-header">
-                  <h3 class="card-title">View the List of References</h3>
+                  <NavLink href="#">
+                      <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Click to add a Reference! </h3>
+                  </NavLink>
                     @if (totalReferences != 0)
                     {
                         <a href="#" style="float:right; color:grey;"><i class="fas fa-download"></i></a>
@@ -38,18 +43,18 @@
                 <table class="table text-nowrap">
                   <thead>
                     <tr>
+                      <th></th>
                       <th>Name</th>
                       <th>Surname</th>
                       <th>Contact</th>
-                      @*<th>CNIC</th>*@
                       <th>Referenced By</th>
                       <th>Recommended</th>
                       <th>UC</th>
                       <th>Taluka</th>
-                      @*<th>Deh</th>*@
                       <th>Village</th>
                       <th>City</th>
                       <th>Address</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -68,18 +73,26 @@
                               foreach (var entrie in entries)
                               {
                                   <tr>
+                                      <td>
+                                            <a href="" @onclick="@(() => AddByThis(@entrie.Id.ToString() + "/" + @entrie.Name))" @onclick:preventDefault>
+                                                <i class="far fa-plus" style="color:white; background-color:black"></i>
+                                            </a>
+                                      </td>
                                       <td>@entrie.Name</td>
                                       <td>@entrie.Surname</td>
                                       <td>@entrie.ContactNumber</td>
-                                      @*<td>@entrie.CNIC</td>*@
                                       <td>@entrie.ReferencedBy</td>
                                       <td>@entrie.Recommended</td>
                                       <td>@entrie.UnionCounsil</td>
                                       <td>@entrie.Taluka</td>
-                                      @*<td>@entrie.Deh</td>*@
                                       <td>@entrie.Village</td>
                                       <td>@entrie.City</td>
                                       <td>@entrie.Address</td>
+                                      <td style="white-space: nowrap">
+                                            <a href="" @onclick="@(() => EditBtn(@entrie.Id))" @onclick:preventDefault>
+                                                <i class="far fa-edit" style="color:blue;"></i>
+                                            </a>
+                                      </td>
                                   </tr>
                               }
                           }
@@ -87,7 +100,6 @@
                   </tbody>
                 </table>
               </div>
-              <!-- /.card-body -->
             <!-- pagination -->
             @if (totalPages > 0)
             {
@@ -166,6 +178,7 @@
     protected override async Task OnInitializedAsync()
     {
         loading = true;
+        _page = await PageNumberHelper.GetReferencesPageNo();
         await GetData();
         await GetReferencesCount();
         loading = false;
@@ -236,5 +249,19 @@
             loading = false;
             StateHasChanged();
         }
+    }
+
+    private async void EditBtn(int id)
+    {
+        await PageNumberHelper.SaveReferencesPageNo(_page);
+        string url = $"entries/edit/{id}";
+        await JSRuntime.InvokeAsync<object>("open", url, "_blank");
+    }
+
+    private async void AddByThis(string val)
+    {
+        await PageNumberHelper.SaveReferencesPageNo(_page);
+        string url = $"entries/addByRef/{val}";
+        await JSRuntime.InvokeAsync<object>("open", url, "_blank");
     }
 }

@@ -630,8 +630,7 @@
     private async void EditBtn(int id)
     {
         await PageNumberHelper.SaveEntriesPageNo(_page);
-        //NavigationManager.NavigateTo($"entries/test/" + id);
-        string url = $"entries/test/{id}";
+        string url = $"entries/edit/{id}";
         await JSRuntime.InvokeAsync<object>("open", url, "_blank");
     }
 
