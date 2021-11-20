@@ -214,7 +214,6 @@
     private IList<SearchValues> surnamesSearchList;
     private IList<SearchValues> ucsSearchList;
     private IList<SearchValues> villagesSearchList;
-    private IList<DropDowns> surnames;
     private List<string> cities = new List<string>();
     private List<string> districts = new List<string>();
     private List<string> talukas = new List<string>();
@@ -227,6 +226,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await Task.Yield();
         pageLoading = true;
 
         model = new Entries_CreateViewModel();
@@ -437,74 +437,6 @@
         //{
         //    villages = new List<string>();
         //    villages.AddRange(Global.Villages_ZairPeer);   
-        //}
-    }
-    private async Task FillDropDowns()
-    {
-        //try
-        //{
-        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-        //{
-        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown")) 
-        //    {
-        //        string apiResponse = await response.Content.ReadAsStringAsync();
-        //        this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-        //    }
-        //}
-        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-        //{
-        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "deh/dropdown"))
-        //    {
-        //        string apiResponse = await response.Content.ReadAsStringAsync();
-        //        this.dehs = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-        //    }
-        //}
-        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-        //{
-        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "district/dropdown"))
-        //    {
-        //        string apiResponse = await response.Content.ReadAsStringAsync();
-        //        this.districts = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-        //    }
-        //}
-        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-        //{
-        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/dropdown"))
-        //    {
-        //        string apiResponse = await response.Content.ReadAsStringAsync();
-        //        this.surnames = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-        //    }
-        //}
-        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-        //{
-        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/dropdown"))
-        //    {
-        //        string apiResponse = await response.Content.ReadAsStringAsync();
-        //        this.talukas = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-        //    }
-        //}
-        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-        //{
-        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/dropdown"))
-        //    {
-        //        string apiResponse = await response.Content.ReadAsStringAsync();
-        //        this.unioncounsils = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-        //    }
-        //}
-        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-        //{
-        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/dropdown"))
-        //    {
-        //        string apiResponse = await response.Content.ReadAsStringAsync();
-        //        this.villages = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-        //    }
-        //}
-        //}
-        //catch(Exception e)
-        //{
-        //    AlertService.Error(e.Message);
-        //    loading = false;
-        //    StateHasChanged();
         //}
     }
     private async void OnValidSubmit()

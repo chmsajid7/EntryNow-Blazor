@@ -856,6 +856,7 @@
     }
     private async Task ModalValidation(string value)
     {
+        await Task.Yield();
         if (!string.IsNullOrEmpty(value))
         {
             isModalValid = true;
@@ -1099,22 +1100,27 @@
     }
     private async void OnValidSubmit()
     {
+        await Task.Yield();
         this.surname = model.SurnameName;
     }
     private async void OnValidSubmit_UC()
     {
+        await Task.Yield();
         this.UnionCounsilName = model_uc.UnionCounsilName;
     }
     private async void OnValidSubmit_Village()
     {
+        await Task.Yield();
         this.village = model_village.VillageName;
     }
     private async void OnValidSubmit_City()
     {
+        await Task.Yield();
         this.city = model_city.CityName;
     }
     private async Task AddUC()
     {
+        await Task.Yield();
         AlertService.Clear();
         try
         {
@@ -1281,16 +1287,19 @@
     }
     private async void CurrentSurname(int id, string value)
     {
+        await Task.Yield();
         this.surnameId = id;
         this.surname = value;
     }
     private async void CurrentUC(int id, string value)
     {
+        await Task.Yield();
         this.ucId = id;
         this.UnionCounsilName = value;
     }
     private async void CurrentVillage(int id, string value)
     {
+        await Task.Yield();
         this.villageId = id;
         this.village = value;
     }

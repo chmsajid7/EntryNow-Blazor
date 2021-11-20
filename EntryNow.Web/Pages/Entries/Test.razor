@@ -271,7 +271,6 @@
 
 
 @code {
-    private string surname = "";
     private string referenceValue = "";
     private string oldReferenceValue = "";
     private string surnameValue = "";
@@ -355,7 +354,7 @@
                 }
             }
         }
-        catch(Exception e)
+        catch(Exception)
         {
             AlertService.Error("Reference Not Found!");
             loading = false;
@@ -377,7 +376,7 @@
                 }
             }
         }
-        catch(Exception e)
+        catch(Exception)
         {
             AlertService.Error("Surname Not Found!");
             loading = false;
@@ -399,7 +398,7 @@
                 }
             }
         }
-        catch(Exception e)
+        catch(Exception)
         {
             AlertService.Error("UnionCounsil Not Found!");
             loading = false;
@@ -421,7 +420,7 @@
                 }
             }
         }
-        catch(Exception e)
+        catch(Exception)
         {
             AlertService.Error("Village Not Found!");
             loading = false;

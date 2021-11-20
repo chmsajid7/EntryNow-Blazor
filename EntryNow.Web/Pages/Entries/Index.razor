@@ -288,7 +288,6 @@
     private bool IsDeleting;
     private IList<Entries> entries;
     private int totalPages;
-    private readonly System.Net.Http.HttpClient _httpClient;
     private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
     string query = string.Empty;
 
@@ -663,7 +662,8 @@
 
     private async void OnValidSubmit()
     {
-        GetDataByPageNumber(2);
+        await Task.Yield();
+        await GetDataByPageNumber(2);
         /*
         AlertService.Clear();
         loading = true;
