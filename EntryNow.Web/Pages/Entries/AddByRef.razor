@@ -3,8 +3,8 @@
 @attribute [Authorize]
 @inject IAlertService AlertService
 @inject NavigationManager NavigationManager
-@using Microsoft.JSInterop
-@inject IJSRuntime JSRuntime;
+@*@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime;*@
 
 
     <section class="content-header">
@@ -323,10 +323,11 @@
             {
                 AlertService.Success("New Entry Added Successfully", keepAfterRouteChange: true);
                 loading = false;
+                await OnInitializedAsync();
                 StateHasChanged();
 
-                await Task.Delay(2000);
-                await JSRuntime.InvokeVoidAsync($"window.close");
+                //await Task.Delay(2000);
+                //await JSRuntime.InvokeVoidAsync($"window.close");
             }
             else
             {
