@@ -4,6 +4,7 @@
 @inject IAlertService AlertService
 @inject NavigationManager NavigationManager
 
+
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -227,6 +228,18 @@
     protected override async Task OnInitializedAsync()
     {
         pageLoading = true;
+
+        model = new Entries_CreateViewModel();
+        referenceValue = "";
+        surnameValue = "";
+        ucValue = "";
+        villageValue = "";
+        checkboxvalue = false;
+
+        districts.Clear();
+        talukas.Clear();
+        cities.Clear();
+
         districts.AddRange(Global.Districts);
         talukas.AddRange(Global.Talukas);
         cities.AddRange(Global.Cities);
@@ -500,8 +513,9 @@
             {
                 AlertService.Success("New Entry Added Successfully", keepAfterRouteChange: true);
                 loading = false;
+                await OnInitializedAsync();
                 StateHasChanged();
-                NavigationManager.NavigateTo("entries/index");
+                //NavigationManager.NavigateTo("entries/index");
             }
             else
             {
@@ -531,13 +545,14 @@
                 {
                     model.ReferenceId = item.Id;
                 }
-                else
-                {
-                    AlertService.Error("Incorrect Reference Entered!");
-                    return false;
-                }
+            }
+            if(model.ReferenceId==null)
+            {
+                AlertService.Error("Incorrect Reference Entered!");
+                return false;
             }
         }
+
         if (!string.IsNullOrEmpty(surnameValue))
         {
             if (surnamesSearchList == null)
@@ -551,13 +566,14 @@
                 {
                     model.SurnameId = item.Id;
                 }
-                else
-                {
-                    AlertService.Error("Incorrect Surname Entered!");
-                    return false;
-                }
+            }
+            if(model.SurnameId==null)
+            {
+                AlertService.Error("Incorrect Surname Entered!");
+                return false;
             }
         }
+
         if (!string.IsNullOrEmpty(ucValue))
         {
             if (ucsSearchList == null)
@@ -571,13 +587,14 @@
                 {
                     model.UnionCounsilId = item.Id;
                 }
-                else
-                {
-                    AlertService.Error("Incorrect Union Counsil Entered!");
-                    return false;
-                }
+            }
+            if(model.UnionCounsilId==null)
+            {
+                AlertService.Error("Incorrect Union Counsil Entered!");
+                return false;
             }
         }
+
         if (!string.IsNullOrEmpty(villageValue))
         {
             if (villagesSearchList == null)
@@ -591,11 +608,11 @@
                 {
                     model.VillageId = item.Id;
                 }
-                else
-                {
-                    AlertService.Error("Incorrect Village Name Entered!");
-                    return false;
-                }
+            }
+            if(model.VillageId==null)
+            {
+                AlertService.Error("Incorrect Village Name Entered!");
+                return false;
             }
         }
 
@@ -614,7 +631,7 @@
             var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
             using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "voter/save", content))
             {
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.StatusCode == System.Net.HttpStatusCode.Created)
                 {
                     return true;
                 }

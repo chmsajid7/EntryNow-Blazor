@@ -41,6 +41,14 @@
                     <a class="nav-link" id="custom-tabs-three-village-tab" data-toggle="pill" href="#custom-tabs-three-village" role="tab" aria-controls="custom-tabs-three-village" aria-selected="false">Villages</a>
                   </li>
 
+                  <li class="nav-item" @onclick="OnInitializedAsync_City">
+                    <a class="nav-link" id="custom-tabs-three-city-tab" data-toggle="pill" href="#custom-tabs-three-city" role="tab" aria-controls="custom-tabs-three-city" aria-selected="false">Cities</a>
+                  </li>
+
+                  <li class="nav-item" @onclick="OnInitializedAsync_Taluka">
+                    <a class="nav-link" id="custom-tabs-three-taluka-tab" data-toggle="pill" href="#custom-tabs-three-taluka" role="tab" aria-controls="custom-tabs-three-taluka" aria-selected="false">Taluka</a>
+                  </li>
+
                 </ul>
               </div>
               <div class="card-body">
@@ -591,6 +599,178 @@
         </div>
       </div>
     </section>
+    
+    <!-- Pop Up for add city -->
+    <section class="content">
+      <div class="modal fade" id="modal-default-city">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">New City</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <EditForm Model="@model_city" OnValidSubmit="OnValidSubmit_City">
+                <DataAnnotationsValidator />
+                <div class="modal-body">
+                    <label>City: </label>
+                    <InputText @bind-Value="model_city.CityName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
+                    <ValidationMessage For="@(() => model_city.CityName)" style="color:red;" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        @if (isModalValid)
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddCity">
+                                  @if (loadBtn)
+                                  {
+                                      <span class="spinner-border spinner-border-sm mr-1"></span>
+                                  }
+                                  Submit
+                            </button>
+                        }
+                        else
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary disabled" style="float:right;">
+                                  Submit
+                            </button>
+                        }
+                </div>
+            </EditForm>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pop Up for edit city -->
+    <section class="content">
+      <div class="modal fade" id="modal-default-edit-city">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit City : @this.city</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <EditForm Model="@model_city" OnValidSubmit="OnValidSubmit_City">
+                <DataAnnotationsValidator />
+                <div class="modal-body">
+                    <label>New Value: </label>
+                    <InputText @bind-Value="model_city.CityName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
+                    <ValidationMessage For="@(() => model_city.CityName)" style="color:red;" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        @if (isModalValid)
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditCity">
+                                  @if (loadBtn)
+                                  {
+                                      <span class="spinner-border spinner-border-sm mr-1"></span>
+                                  }
+                                  Submit
+                            </button>
+                        }
+                        else
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary disabled" style="float:right;">
+                                  Submit
+                            </button>
+                        }
+                </div>
+            </EditForm>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pop Up for add taluka -->
+    <section class="content">
+      <div class="modal fade" id="modal-default-village">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">New Village</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <EditForm Model="@model_village" OnValidSubmit="OnValidSubmit_Village">
+                <DataAnnotationsValidator />
+                <div class="modal-body">
+                    <label>Village: </label>
+                    <InputText @bind-Value="model_village.VillageName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
+                    <ValidationMessage For="@(() => model_village.VillageName)" style="color:red;" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        @if (isModalValid)
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddVillage">
+                                  @if (loadBtn)
+                                  {
+                                      <span class="spinner-border spinner-border-sm mr-1"></span>
+                                  }
+                                  Submit
+                            </button>
+                        }
+                        else
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary disabled" style="float:right;">
+                                  Submit
+                            </button>
+                        }
+                </div>
+            </EditForm>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pop Up for edit village -->
+    <section class="content">
+      <div class="modal fade" id="modal-default-edit-village">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit Village : @this.village</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <EditForm Model="@model_village" OnValidSubmit="OnValidSubmit_Village">
+                <DataAnnotationsValidator />
+                <div class="modal-body">
+                    <label>New Value: </label>
+                    <InputText @bind-Value="model_village.VillageName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
+                    <ValidationMessage For="@(() => model_village.VillageName)" style="color:red;" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        @if (isModalValid)
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditVillage">
+                                  @if (loadBtn)
+                                  {
+                                      <span class="spinner-border spinner-border-sm mr-1"></span>
+                                  }
+                                  Submit
+                            </button>
+                        }
+                        else
+                        {
+                            <button disabled="@loadBtn" class="btn btn-primary disabled" style="float:right;">
+                                  Submit
+                            </button>
+                        }
+                </div>
+            </EditForm>
+          </div>
+        </div>
+      </div>
+    </section>
 
 @code {
     private int _page = 1;
@@ -600,23 +780,29 @@
     private int totalPages;
     private int totalUCPages;
     private int totalVillagePages;
+    private int totalcityPages;
     private int totalSurnames;
     private int totalUCs;
     private int totalvillages;
+    private int totalcities;
     private DropDownSettings model = new DropDownSettings();
     private DropDownSettings_UC model_uc = new DropDownSettings_UC();
     private DropDownSettings_Village model_village = new DropDownSettings_Village();
+    private DropDownSettings_City model_city = new DropDownSettings_City();
     private IList<DropDownSettings> surnames;
     private IList<DropDownSettings_UC> UCs;
     private IList<DropDownSettings_Village> villages;
+    private IList<DropDownSettings_City> cities;
     private bool loading;
     private bool loadBtn;
     private int surnameId;
     private int ucId;
     private int villageId;
+    private int cityId;
     private string surname;
     private string UnionCounsilName;
     private string village;
+    private string city;
     private bool isModalValid = false;
     private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
 
@@ -659,6 +845,15 @@
         await GetVillagesCount();
         loading = false;
     }
+    private async Task CityMethod()
+    {
+        model_city.CityName = "";
+        isModalValid = false;
+        loading = true;
+        await GetCity();
+        await GetCityCount();
+        loading = false;
+    }
     private async Task ModalValidation(string value)
     {
         if (!string.IsNullOrEmpty(value))
@@ -691,6 +886,136 @@
         }
     }
     private async Task GetVillagesCount()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/get/count"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    totalvillages = Int32.Parse(apiResponse);
+                    totalVillagePages = (int)Math.Ceiling((decimal)totalvillages / (decimal)pageSize);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    protected async Task OnInitializedAsync_City()
+    {
+        await CityMethod();
+    }
+    //private async Task CityMethod()
+    //{
+    //    model_city.CityName = "";
+    //    isModalValid = false;
+    //    loading = true;
+    //    await GetCity();
+    //    await GetCityCount();
+    //    loading = false;
+    //}
+    //private async Task ModalValidation(string value)
+    //{
+    //    if (!string.IsNullOrEmpty(value))
+    //    {
+    //        isModalValid = true;
+    //    }
+    //    else
+    //    {
+    //        isModalValid = false;
+    //    }
+    //}
+    private async Task GetCity()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/get?pageNumber=" + this._villagePage + "&perPage=" + this.pageSize))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDownSettings_City>>(apiResponse);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task GetCityCount()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/get/count"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    totalcities = Int32.Parse(apiResponse);
+                    totalcityPages = (int)Math.Ceiling((decimal)totalcities / (decimal)pageSize);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    protected async Task OnInitializedAsync_Taluka()
+    {
+        await TalukaMethod();
+    }
+    private async Task TalukaMethod()
+    {
+        model_village.VillageName = "";
+        isModalValid = false;
+        loading = true;
+        await GetTaluka();
+        await GetTalukaCount();
+        loading = false;
+    }
+    //private async Task ModalValidation(string value)
+    //{
+    //    if (!string.IsNullOrEmpty(value))
+    //    {
+    //        isModalValid = true;
+    //    }
+    //    else
+    //    {
+    //        isModalValid = false;
+    //    }
+    //}
+    private async Task GetTaluka()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/get?pageNumber=" + this._villagePage + "&perPage=" + this.pageSize))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    this.villages = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDownSettings_Village>>(apiResponse);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task GetTalukaCount()
     {
         try
         {
@@ -784,6 +1109,10 @@
     {
         this.village = model_village.VillageName;
     }
+    private async void OnValidSubmit_City()
+    {
+        this.city = model_city.CityName;
+    }
     private async Task AddUC()
     {
         AlertService.Clear();
@@ -867,6 +1196,47 @@
             StateHasChanged();
         }
     }
+    private async Task AddCity()
+    {
+        AlertService.Clear();
+        try
+        {
+            if (!string.IsNullOrEmpty(model_city.CityName))
+            {
+                loadBtn = true;
+                model_city.Id = 0;
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_city);
+                    var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "city/save", content))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        if(response.StatusCode == System.Net.HttpStatusCode.Created)
+                        {
+                            AlertService.Success("New City Added Successfully", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await CityMethod();
+                            StateHasChanged();
+                        }
+                        if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                        {
+                            AlertService.Success("City Already Exists!", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await CityMethod();
+                            StateHasChanged();
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error("Failed to Add New City, Error: " + ex.Message);
+            loadBtn = false;
+            StateHasChanged();
+        }
+    }
     private async Task AddSurname()
     {
         AlertService.Clear();
@@ -892,7 +1262,7 @@
                         }
                         if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
                         {
-                            AlertService.Success("Surname Already Exists!", keepAfterRouteChange: true);
+                            AlertService.Error("Surname Already Exists!", keepAfterRouteChange: true);
                             loadBtn = false;
                             await SurnamesMethod();
                             StateHasChanged();
@@ -1006,6 +1376,47 @@
             StateHasChanged();
         }
     }
+    private async void EditCity()
+    {
+        AlertService.Clear();
+        try
+        {
+            if (!string.IsNullOrEmpty(this.city))
+            {
+                loadBtn = true;
+                model_city.Id = this.cityId;
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_city);
+                    var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "village/save", content))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            AlertService.Success("City Edited Successfully", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await VillageMethod();
+                            StateHasChanged();
+                        }
+                        if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                        {
+                            AlertService.Success("City Already Exists!", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await VillageMethod();
+                            StateHasChanged();
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error("Failed to Edit City, Error: " + ex.Message);
+            loadBtn = false;
+            StateHasChanged();
+        }
+    }
     private async void EditSurname()
     {
         AlertService.Clear();
@@ -1031,7 +1442,7 @@
                         }
                         if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
                         {
-                            AlertService.Success("Surname Already Exists!", keepAfterRouteChange: true);
+                            AlertService.Error("Surname Already Exists!", keepAfterRouteChange: true);
                             loadBtn = false;
                             await SurnamesMethod();
                             StateHasChanged();

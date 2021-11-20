@@ -3,155 +3,222 @@
 @inject PageNumberHelper PageNumberHelper
 @inject IAlertService AlertService
 @inject NavigationManager NavigationManager
+@using EntryNow.Web.Constants
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime;
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1>All Entries</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">List of all the Entries</li>
-            </ol>
-          </div>
+<EditForm Model="@model">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Name</label>
+                <InputText @bind-Value="model.Name" class="form-control" />
+            </div>
         </div>
-      </div><!-- /.container-fluid -->
-    </section>
-
-    <!-- Main content -->
-    <section class="content">
-      <div class="container-fluid">
-          <!-- /.col -->
-            <div class="card">
-              <div class="card-header">
-                  <NavLink href="entries/add">
-                    <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Click to add a Entry! </h3>
-                  </NavLink>
-                    @if (totalEntries >= 0 && !loading)
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Surname</label>
+                <InputText @bind-Value="this.surnameValue" class="form-control select2" @oninput="(e)=> AutoCompleteSurname(e.Value.ToString())" list="_surname" />
+                <datalist id="_surname">
+                    @if (surnamesSearchList != null)
                     {
-                        <a href="#" style="float:right; color:grey;"><i class="fas fa-download"></i></a>
-                        <a style="float:right; color:grey;">Total @totalEntries Entries Found&nbsp;&nbsp;</a>
+                        @foreach (var item in surnamesSearchList)
+                        {
+                            <option value="@item.Value">@item.Value</option>
+                        }
                     }
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body table-responsive p-0">
-                <table class="table text-nowrap">
-                  <thead>
-                    <tr>
-                      <th>
-                          <p style="text-align:center">Name</p>
-                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._Name.ToString() + e.Value.ToString())" />
-                      </th>
-                      <th>
-                          <p style="text-align:center">Surname</p>
-                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._SurnameId.ToString() + e.Value.ToString())" />
-                      </th>
-                      <th>
-                          <p style="text-align:center">Contact</p>
-                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._ContactNumber.ToString() + e.Value.ToString())" />
-                      </th>
-                      @*<th>CNIC
-                          <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-                      </th>*@
-                      <th>
-                          <p style="text-align:center">Reference</p>
-                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._ReferenceId.ToString() + e.Value.ToString())" />
-                      </th>
-                      <th>
-                          <p style="text-align:center">UC</p>
-                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._UnionCounsilId.ToString() + e.Value.ToString())" />
-                      </th>
-                      <th>
-                          <p style="text-align:center">Taluka</p>
-                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._Taluka.ToString() + e.Value.ToString())" />
-                      </th>
-                      <th>
-                          <p style="text-align:center">Village</p>
-                          <input class="form-control" @oninput="(e)=> SearchInGrid(this._VillageId.ToString() + e.Value.ToString())" />
-                      </th>
-                      <th>
-                          <p style="text-align:center">City</p>
-                          <input class="form-control" />
-                      </th>
-                      <th>
-                          <p style="text-align:center">Address</p>
-                          <input class="form-control" />
-                      </th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                      @if (loading)
-                      {
-                          <tr>
-                              <td colspan="12" class="text-center">
-                                  <span class="spinner-border spinner-border-lg align-center"></span>
-                              </td>
-                          </tr>
-                      }
-                      else
-                      {
-                          @if (entries != null)
-                          {
-                              foreach (var entrie in entries)
-                              {
-                                  <tr>
-                                      <td>@entrie.Name</td>
-                                      <td>@entrie.Surname</td>
-                                      <td>@entrie.ContactNumber</td>
-                                      @*<td>@entrie.CNIC</td>*@
-                                      <td>@entrie.Reference</td>
-                                      <td>@entrie.UnionCounsil</td>
-                                      <td>@entrie.Taluka</td>
-                                      <td>@entrie.Village</td>
-                                      <td>@entrie.City</td>
-                                      <td>@entrie.Address</td>
-                                      <td style="white-space: nowrap">
-                                          <a href="" @onclick="@(() => EditBtn(entrie.Id))" @onclick:preventDefault>
-                                              <i class="far fa-edit" style="color:blue;"></i>
-                                          </a>
-                                          &nbsp;
-                                          @if (IsDeleting && currentId == entrie.Id)
-                                          {
-                                              <span class="spinner-border spinner-border-sm" style="color:black;"></span>
-                                          }
-                                          else
-                                          {
-                                              <a href="" @onclick="@(() => TemporaryEntryId(entrie.Id))" @onclick:preventDefault data-toggle="modal" data-target="#modal-default">
-                                                  <i class="far fa-trash-alt" style="color:red;"></i>
-                                              </a>
-                                          }
-                                      </td>
-                                  </tr>
-                              }
-                          }
-                      }
-                  </tbody>
-                </table>
-              </div>
-              <!-- /.card-body -->
+                </datalist>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Contact Number</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                    </div>
+                    <InputText @bind-Value="model.ContactNumber" class="form-control" data-inputmask='"mask": "0399-999 9999"' data-mask />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Village</label>
+                <InputText @bind-Value="this.villageValue" class="form-control select2" @oninput="(e)=> AutoCompleteVillage(e.Value.ToString())" list="_village" />
+                <datalist id="_village">
+                    @if (villagesSearchList != null)
+                    {
+                        @foreach (var item in villagesSearchList)
+                        {
+                            <option value="@item.Value">@item.Value</option>
+                        }
+                    }
+                </datalist>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Reference</label>
+                <InputText @bind-Value="this.referenceValue" class="form-control select2" @oninput="(e)=> AutoCompleteReference(e.Value.ToString())" list="_ref" />
+                <datalist id="_ref">
+                    @if (referencesSearchList != null)
+                    {
+                        @foreach (var item in referencesSearchList)
+                        {
+                            <option value="@item.Value">@item.Value</option>
+                        }
+                    }
+                </datalist>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Union Council</label>
+                <InputText @bind-Value="this.ucValue" class="form-control select2" @oninput="(e)=> AutoCompleteUC(e.Value.ToString())" list="_uc" />
+                <datalist id="_uc">
+                    @if (ucsSearchList != null)
+                    {
+                        @foreach (var item in ucsSearchList)
+                        {
+                            <option value="@item.Value">@item.Value</option>
+                        }
+                    }
+                </datalist>
+            </div>
+        </div>
+        <div class="row" dir="rtl">
+        <div class="col-md-4">
+            <div class="form-group">
+                <button class="btn btn-primary page-link" style="float:right; margin-top:34px;" type="button" @onclick="@(() => GetDataByPageNumber(_page))" href="" @onclick:preventDefault>
+                    Search
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
+</EditForm>
 
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>All Entries</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">List of all the Entries</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- /.col -->
+        <div class="card">
+            <div class="card-header">
+                <NavLink href="entries/add">
+                    <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Click to add a Entry! </h3>
+                </NavLink>
+                @if (totalEntries >= 0 && !loading)
+                {
+                    <a href="#" style="float:right; color:grey;"><i class="fas fa-download"></i></a>
+                    <a style="float:right; color:grey;">Total @totalEntries Entries Found&nbsp;&nbsp;</a>
+                }
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body table-responsive p-0">
+                <table class="table text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>Contact</th>
+                            @*<th>CNIC</th>*@
+                            <th>Reference</th>
+                            <th>UC</th>
+                            <th>Taluka</th>
+                            <th>Village</th>
+                            <th>City</th>
+                            <th>Address</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (loading)
+                        {
+                            <tr>
+                                <td colspan="12" class="text-center">
+                                    <span class="spinner-border spinner-border-lg align-center"></span>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @if (entries != null)
+                            {
+                                foreach (var entrie in entries)
+                                {
+                                    <tr>
+                                        <td>@entrie.Name</td>
+                                        <td>@entrie.Surname</td>
+                                        <td>@entrie.ContactNumber</td>
+                                        @*<td>@entrie.CNIC</td>*@
+                                        <td>@entrie.Reference</td>
+                                        <td>@entrie.UnionCounsil</td>
+                                        <td>@entrie.Taluka</td>
+                                        <td>@entrie.Village</td>
+                                        <td>@entrie.City</td>
+                                        <td>@entrie.Address</td>
+                                        <td style="white-space: nowrap">
+                                            <a href="" @onclick="@(() => EditBtn(entrie.Id))" @onclick:preventDefault>
+                                                <i class="far fa-edit" style="color:blue;"></i>
+                                            </a>
+                                            &nbsp;
+                                            @if (IsDeleting && currentId == entrie.Id)
+                                            {
+                                                <span class="spinner-border spinner-border-sm" style="color:black;"></span>
+                                            }
+                                            else
+                                            {
+                                                <a href="" @onclick="@(() => TemporaryEntryId(entrie.Id))" @onclick:preventDefault data-toggle="modal" data-target="#modal-default">
+                                                    <i class="far fa-trash-alt" style="color:red;"></i>
+                                                </a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
             <!-- pagination -->
             @if (totalPages > 0)
             {
                 <div class="card-footer clearfix">
-                  Page @_page of @totalPages Selected
-                  <ul class="pagination pagination-sm m-0 float-right">
-                        @if(_page == 1)
+                    Page @_page of @totalPages Selected
+                    <ul class="pagination pagination-sm m-0 float-right">
+                        @if (_page == 1)
                         {
                             <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnPreviousPage">&laquo;</a></li>
                         }
-                        @if(_page != 1)
+                        @if (_page != 1)
                         {
                             <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
                             <li class="page-item"><a class="page-link" @onclick="GetDataOnPreviousPage" href="" @onclick:preventDefault>...</a></li>
                         }
                         @if (totalPages > 0)
                         {
-                            @for (int i = _page - 1; i < _page + 2 ; i++)
+                            @for (int i = _page - 1; i < _page + 2; i++)
                             {
                                 int buttonNumber = i;
                                 @if (buttonNumber < 1 || buttonNumber > totalPages)
@@ -161,58 +228,58 @@
                                 {
                                     @if (buttonNumber == _page)
                                     {
-                                            <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                        <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
                                     }
                                     else
                                     {
-                                            <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                        <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
                                     }
                                 }
                             }
                         }
-                        @if(_page == totalPages)
+                        @if (_page == totalPages)
                         {
                             <li class="page-item disabled"><a class="page-link" @onclick="GetDataOnNextPage">&raquo;</a></li>
                         }
-                        @if(_page != totalPages)
+                        @if (_page != totalPages)
                         {
                             <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>...</a></li>
                             <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
                         }
-                  </ul>
-              </div>
+                    </ul>
+                </div>
             }
-            </div>
-            <!-- /.card -->
-          <!-- /.col -->
-      </div><!-- /.container-fluid -->
-    </section>
-
-    <!-- Pop Up for Delete Btn -->
-    <section class="content">
-      <div class="modal fade" id="modal-default">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Confirm Delete</h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <p>Are you sure, you want to delete this Entry?</p>
-            </div>
-            <div class="modal-footer justify-content-between">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => DeleteBtn())">Delete</button>
-            </div>
-          </div>
         </div>
-      </div>
-    </section>
+        <!-- /.card -->
+        <!-- /.col -->
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Pop Up for Delete Btn -->
+<section class="content">
+    <div class="modal fade" id="modal-default">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirm Delete</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure, you want to delete this Entry?</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => DeleteBtn())">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 
 @code {
-    Entries model = new Entries();
     private int _page = 1;
     private int pageSize = 10;
     private int totalEntries;
@@ -223,32 +290,129 @@
     private int totalPages;
     private readonly System.Net.Http.HttpClient _httpClient;
     private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
+    string query = string.Empty;
 
-    private string EmptyString = "";
-    private string _Name = "_Name ";
-    private string _ReferenceId = "_ReferenceId ";
-    private string _ContactNumber = "_ContactNumber ";
-    private string _SurnameId = "_SurnameId ";
-    private string _VillageId = "_VillageId ";
-    private string _UnionCounsilId= "_UnionCounsilId ";
-    private string _Taluka= "_Taluka ";
 
-    private string _Name_ = "";
-    private string _ReferenceId_ = "";
-    private string _ContactNumber_ = "";
-    private string _SurnameId_ = "";
-    private string _VillageId_ = "";
-    private string _UnionCounsilId_ = "";
-    private string _Taluka_ = "";
+
+    private Entries_CreateViewModel model = new Entries_CreateViewModel();
+    private List<string> cities = new List<string>();
+    private List<string> talukas = new List<string>();
+    private string surnameValue = "";
+    private string ucValue = "";
+    private string referenceValue = "";
+    private string villageValue = "";
+    private IList<SearchValues> surnamesSearchList;
+    private IList<SearchValues> ucsSearchList;
+    private IList<SearchValues> villagesSearchList;
+    private IList<SearchValues> referencesSearchList;
+
+
 
     protected override async Task OnInitializedAsync()
     {
-        model.Name = "abc";
         loading = true;
-        this._page = await PageNumberHelper.GetEntriesPageNo();
+        _page = await PageNumberHelper.GetEntriesPageNo();
         await GetData();
         await GetEntriesCount();
         loading = false;
+        cities.AddRange(Global.Cities);
+        talukas.AddRange(Global.Talukas);
+    }
+
+    private async Task AutoCompleteSurname(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >= 3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.surnamesSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task AutoCompleteUC(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >= 3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.ucsSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task AutoCompleteVillage(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >= 3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.villagesSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task AutoCompleteReference(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >= 3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.referencesSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task TemporaryEntryId(int id)
@@ -283,18 +447,133 @@
 
     private async Task GetData()
     {
-        try
+        if (!string.IsNullOrEmpty(referenceValue))
         {
-            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            if (referencesSearchList == null)
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get?pageNumber=" + _page + "&perPage=" + pageSize))
+                //AlertService.Error("Incorrect Reference Entered!");
+            }
+            foreach (var item in referencesSearchList)
+            {
+                if (item.Value == referenceValue)
                 {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    this.entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
+                    model.ReferenceId = item.Id;
+                }
+                else
+                {
+                    //AlertService.Error("Incorrect Reference Entered!");
                 }
             }
         }
-        catch(Exception e)
+
+        else
+            model.ReferenceId = null;
+
+        if (!string.IsNullOrEmpty(surnameValue))
+        {
+            if (surnamesSearchList == null)
+            {
+                AlertService.Error("Incorrect Surname Entered!");
+            }
+            foreach (var item in surnamesSearchList)
+            {
+                if (item.Value == surnameValue)
+                {
+                    model.SurnameId = item.Id;
+                }
+                else
+                {
+                    //AlertService.Error("Incorrect Surname Entered!");
+                }
+            }
+        }
+
+        else
+            model.SurnameId = null;
+
+        if (!string.IsNullOrEmpty(ucValue))
+        {
+            if (ucsSearchList == null)
+            {
+                //AlertService.Error("Incorrect Union Counsil Entered!");
+            }
+            foreach (var item in ucsSearchList)
+            {
+                if (item.Value == ucValue)
+                {
+                    model.UnionCounsilId = item.Id;
+                }
+                else
+                {
+                    //AlertService.Error("Incorrect Union Counsil Entered!");
+                }
+            }
+        }
+
+        else
+            model.UnionCounsilId = null;
+
+        if (!string.IsNullOrEmpty(villageValue))
+        {
+            if (villagesSearchList == null)
+            {
+                //AlertService.Error("Incorrect Village Name Entered!");
+            }
+            foreach (var item in villagesSearchList)
+            {
+                if (item.Value == villageValue)
+                {
+                    model.VillageId = item.Id;
+                }
+                else
+                {
+                    //AlertService.Error("Incorrect Village Name Entered!");
+                }
+            }
+        }
+
+        else
+            model.VillageId = null;
+
+        try
+        {
+            await GetEntriesCount();
+
+            query = null;
+
+            query = "voter/get?pageNumber=" + _page + "&perPage=" + pageSize + "&";
+
+            string name = model.Name;
+
+            @if (!string.IsNullOrWhiteSpace(name))
+                query += "name=" + model.Name + "&";
+
+            @if (model.ReferenceId != null && model.ReferenceId > 0)
+                query += "referenceId=" + model.ReferenceId + "&";
+
+            @if (!string.IsNullOrWhiteSpace(model.ContactNumber))
+                query += "contactNumber=" + model.ContactNumber + "&";
+
+            @if (model.SurnameId != null && model.SurnameId > 0)
+                query += "surnameId=" + model.SurnameId + "&";
+
+            @if (model.VillageId != null && model.VillageId > 0)
+                query += "villageId=" + model.VillageId + "&";
+
+            @if (model.UnionCounsilId != null && model.UnionCounsilId > 0)
+                query += "unionCounsilId=" + model.UnionCounsilId + "&";
+
+
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + query))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
+                }
+            }
+        }
+        catch (Exception e)
         {
             AlertService.Error(e.Message);
             loading = false;
@@ -306,9 +585,34 @@
     {
         try
         {
+            query = null;
+
+            query = "?";
+
+            string name = model.Name;
+
+            @if (!string.IsNullOrWhiteSpace(name))
+                query += "name=" + model.Name + "&";
+
+            @if (model.ReferenceId != null && model.ReferenceId > 0)
+                query += "referenceId=" + model.ReferenceId + "&";
+
+            @if (!string.IsNullOrWhiteSpace(model.ContactNumber))
+                query += "contactNumber=" + model.ContactNumber + "&";
+
+            @if (model.SurnameId != null && model.SurnameId > 0)
+                query += "surnameId=" + model.SurnameId + "&";
+
+            @if (model.VillageId != null && model.VillageId > 0)
+                query += "villageId=" + model.VillageId + "&";
+
+            @if (model.UnionCounsilId != null && model.UnionCounsilId > 0)
+                query += "unionCounsilId=" + model.UnionCounsilId + "&";
+
+
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get/count"))
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get/count" + query))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     totalEntries = Int32.Parse(apiResponse);
@@ -316,7 +620,7 @@
                 }
             }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             AlertService.Error(e.Message);
             loading = false;
@@ -327,7 +631,9 @@
     private async void EditBtn(int id)
     {
         await PageNumberHelper.SaveEntriesPageNo(_page);
-        NavigationManager.NavigateTo($"entries/test/" + id);
+        //NavigationManager.NavigateTo($"entries/test/" + id);
+        string url = $"entries/test/{id}";
+        await JSRuntime.InvokeAsync<object>("open", url, "_blank");
     }
 
     private async Task DeleteBtn()
@@ -346,7 +652,7 @@
             AlertService.Success("Entry was Deleted Successfully", keepAfterRouteChange: true);
             await OnInitializedAsync();
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             AlertService.Error("Not able to delete, Error : " + e.Message);
             loading = false;
@@ -355,74 +661,128 @@
         IsDeleting = false;
     }
 
-    private async Task SearchInGrid(string value)
+    private async void OnValidSubmit()
     {
+        GetDataByPageNumber(2);
+        /*
+        AlertService.Clear();
         loading = true;
-
-        string str = value.Substring(0, 6);
-        if (str == "_Name ")
-        {
-            this._Name_ = value.Substring(6);
-        }
-        if (str == "_Refer")
-        {
-            this._ReferenceId_ = value.Substring(13); //reference name
-            if (!string.IsNullOrEmpty(_ReferenceId_))
-            {
-                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-                {
-                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "reference/find?name=" + value))
-                    {
-                        if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                        {
-                            string apiResponse = await response.Content.ReadAsStringAsync();
-                            //this.ucsSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
-                        }
-                    }
-                }
-            }
-        }
-        if (str == "_Conta")
-        {
-            this._ContactNumber_ = value.Substring(15);
-        }
-        if (str == "_Surna")
-        {
-            this._SurnameId_ = value.Substring(11);
-        }
-        if (str == "_Villa")
-        {
-            this._VillageId_ = value.Substring(11);
-        }
-        if (str == "_Union")
-        {
-            this._UnionCounsilId_ = value.Substring(16);
-        }
-        if (str == "_Taluk")
-        {
-            this._Taluka_ = value.Substring(8);
-        }
-
         try
         {
-            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            if (await AddEntryAsync())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "voter/get?pageNumber=1&perPage=10000" + 
-                "&Name="+_Name_+"&ReferenceId="+_ReferenceId_+"&ContactNumber="+_ContactNumber_+"&SurnameId="+_SurnameId_+
-                "&VillageId="+_VillageId_+"&UnionCounsilId="+_UnionCounsilId_+"&Taluka="+_Taluka_))
+                AlertService.Success("New Entry Added Successfully", keepAfterRouteChange: true);
+                loading = false;
+                StateHasChanged();
+                NavigationManager.NavigateTo("entries/index");
+            }
+            else
+            {
+                loading = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+        */
+    }
+
+    private async Task<bool> AddEntryAsync()
+    {
+        if (!string.IsNullOrEmpty(referenceValue))
+        {
+            if (referencesSearchList == null)
+            {
+                AlertService.Error("Incorrect Reference Entered!");
+                return false;
+            }
+            foreach (var item in referencesSearchList)
+            {
+                if (item.Value == referenceValue)
                 {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    this.entries = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<Entries>>(apiResponse);
+                    model.ReferenceId = item.Id;
+                }
+                else
+                {
+                    AlertService.Error("Incorrect Reference Entered!");
+                    return false;
                 }
             }
-            loading = false;
-            StateHasChanged();
         }
-        catch(Exception e)
+        if (!string.IsNullOrEmpty(surnameValue))
         {
-            AlertService.Error(e.Message);
-            loading = false;
-            StateHasChanged();
+            if (surnamesSearchList == null)
+            {
+                AlertService.Error("Incorrect Surname Entered!");
+                return false;
+            }
+            foreach (var item in surnamesSearchList)
+            {
+                if (item.Value == surnameValue)
+                {
+                    model.SurnameId = item.Id;
+                }
+                else
+                {
+                    AlertService.Error("Incorrect Surname Entered!");
+                    return false;
+                }
+            }
         }
+        if (!string.IsNullOrEmpty(ucValue))
+        {
+            if (ucsSearchList == null)
+            {
+                AlertService.Error("Incorrect Union Counsil Entered!");
+                return false;
+            }
+            foreach (var item in ucsSearchList)
+            {
+                if (item.Value == ucValue)
+                {
+                    model.UnionCounsilId = item.Id;
+                }
+                else
+                {
+                    AlertService.Error("Incorrect Union Counsil Entered!");
+                    return false;
+                }
+            }
+        }
+        if (!string.IsNullOrEmpty(villageValue))
+        {
+            if (villagesSearchList == null)
+            {
+                AlertService.Error("Incorrect Village Name Entered!");
+                return false;
+            }
+            foreach (var item in villagesSearchList)
+            {
+                if (item.Value == villageValue)
+                {
+                    model.VillageId = item.Id;
+                }
+                else
+                {
+                    AlertService.Error("Incorrect Village Name Entered!");
+                    return false;
+                }
+            }
+        }
+
+        using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        {
+            var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+            var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+            using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "voter/save", content))
+            {
+                string apiResponse = await response.Content.ReadAsStringAsync();
+            }
+        }
+        return true;
     }
 }
