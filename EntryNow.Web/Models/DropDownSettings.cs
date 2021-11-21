@@ -26,6 +26,12 @@ namespace EntryNow.Web.Models
         [Required(ErrorMessage = "Please enter City")]
         public string CityName { get; set; }
     }
+    public class DropDownSettings_Taluka
+    {
+        public int Id { get; set; }
+        [Required(ErrorMessage = "Please enter Taluka")]
+        public string TalukaName { get; set; }
+    }
 
     //public class DropDownSettings_ViewModel
     //{

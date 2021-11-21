@@ -88,6 +88,7 @@
                                               <td></td>
                                               <td></td>
                                               <td>
+                                                  @*edit button*@
                                                   <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit" @onclick="@(() => CurrentSurname(surname.Id, surname.SurnameName))">
                                                       <i class="far fa-edit" style="color:blue;"></i>
                                                   </NavLink>
@@ -334,6 +335,195 @@
                           }
                       </div>
                   </div>
+
+                  <div class="tab-pane fade" id="custom-tabs-three-city" role="tabpanel" aria-labelledby="custom-tabs-three-city-tab">
+                      <div class="card-body table-responsive p-0">
+                          <table class="table text-nowrap">
+                              <thead>
+                                  <tr>
+                                      <th>All Cities</th>
+                                      <th></th>
+                                      <th></th>
+                                      <th>
+                                          <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-city">
+                                              <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add new City! </h3>
+                                          </NavLink>
+                                      </th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  @if (loading)
+                                  {
+                                      <tr>
+                                          <td colspan="12" class="text-center">
+                                              <span class="spinner-border spinner-border-lg align-center"></span>
+                                          </td>
+                                      </tr>
+                                  }
+                                  @if (!loading)
+                                  {
+                                      if (cities != null)
+                                      {
+                                          @foreach (var city in cities)
+                                          {
+                                              <tr>
+                                                  <td>@city.CityName</td>
+                                                  <td></td>
+                                                  <td></td>
+                                                  <td>
+                                                      <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit-city" @onclick="@(() => CurrentCity(city.Id, city.CityName))">
+                                                          <i class="far fa-edit" style="color:blue;"></i>
+                                                      </NavLink>
+                                                  </td>
+                                              </tr>
+                                          }
+                                      }
+                                  }
+                              </tbody>
+                          </table>
+                          @if (totalcityPages > 0)
+                          {
+                              <br />
+                              <a style="color:grey;">Total @totalcities Cities Found.</a>
+                              <ul class="pagination pagination-sm m-0 float-right">
+                                  @if (_cityPage == 1)
+                                  {
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetCityDataOnPreviousPage">&laquo;</a></li>
+                                  }
+                                  @if (_cityPage != 1)
+                                  {
+                                      <li class="page-item"><a class="page-link" @onclick="GetCityDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetCityDataOnPreviousPage" href="" @onclick:preventDefault>...</a></li>
+                                  }
+                                  @if (totalcityPages > 0)
+                                  {
+                                        @for (int i = _cityPage - 1; i < _cityPage + 2 ; i++)
+                                        {
+                                            int buttonNumber = i;
+                                            @if (buttonNumber < 1 || buttonNumber > totalcityPages)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                @if (buttonNumber == _cityPage)
+                                                {
+                                                        <li class="page-item active"><a class="page-link" @onclick="@(() => GetCityDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                                }
+                                                else
+                                                {
+                                                        <li class="page-item"><a class="page-link" @onclick="@(() => GetCityDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                                }
+                                            }
+                                        }
+                                  }
+                                  @if (_cityPage == totalcityPages)
+                                  {
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetCityDataOnNextPage">&raquo;</a></li>
+                                  }
+                                  @if (_cityPage != totalcityPages)
+                                  {
+                                      <li class="page-item"><a class="page-link" @onclick="GetCityDataOnNextPage" href="" @onclick:preventDefault>...</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetCityDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
+                                  }
+                              </ul>
+                          }
+                      </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="custom-tabs-three-taluka" role="tabpanel" aria-labelledby="custom-tabs-three-taluka-tab">
+                      <div class="card-body table-responsive p-0">
+                          <table class="table text-nowrap">
+                              <thead>
+                                  <tr>
+                                      <th>All Talukas</th>
+                                      <th></th>
+                                      <th></th>
+                                      <th>
+                                          <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-taluka">
+                                              <h3 class="card-title"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add new Taluka! </h3>
+                                          </NavLink>
+                                      </th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  @if (loading)
+                                  {
+                                      <tr>
+                                          <td colspan="12" class="text-center">
+                                              <span class="spinner-border spinner-border-lg align-center"></span>
+                                          </td>
+                                      </tr>
+                                  }
+                                  @if (!loading)
+                                  {
+                                      if (talukas != null)
+                                      {
+                                          @foreach (var tal in talukas)
+                                          {
+                                              <tr>
+                                                  <td>@tal.TalukaName</td>
+                                                  <td></td>
+                                                  <td></td>
+                                                  <td>
+                                                      <NavLink style="float:right;" href="#" data-toggle="modal" data-target="#modal-default-edit-taluka" @onclick="@(() => CurrentTaluka(tal.Id, tal.TalukaName))">
+                                                          <i class="far fa-edit" style="color:blue;"></i>
+                                                      </NavLink>
+                                                  </td>
+                                              </tr>
+                                          }
+                                      }
+                                  }
+                              </tbody>
+                          </table>
+                          @if (totaltalukaPages > 0)
+                          {
+                              <br />
+                              <a style="color:grey;">Total @totaltalukas Talukas Found.</a>
+                              <ul class="pagination pagination-sm m-0 float-right">
+                                  @if (_talukaPage == 1)
+                                  {
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetTalukaDataOnPreviousPage">&laquo;</a></li>
+                                  }
+                                  @if (_talukaPage != 1)
+                                  {
+                                      <li class="page-item"><a class="page-link" @onclick="GetTalukaDataOnPreviousPage" href="" @onclick:preventDefault>&laquo;</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetTalukaDataOnPreviousPage" href="" @onclick:preventDefault>...</a></li>
+                                  }
+                                  @if (totaltalukaPages > 0)
+                                  {
+                                        @for (int i = _talukaPage - 1; i < _talukaPage + 2 ; i++)
+                                        {
+                                            int buttonNumber = i;
+                                            @if (buttonNumber < 1 || buttonNumber > totaltalukaPages)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                @if (buttonNumber == _talukaPage)
+                                                {
+                                                        <li class="page-item active"><a class="page-link" @onclick="@(() => GetTalukaDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                                }
+                                                else
+                                                {
+                                                        <li class="page-item"><a class="page-link" @onclick="@(() => GetTalukaDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
+                                                }
+                                            }
+                                        }
+                                  }
+                                  @if (_talukaPage == totaltalukaPages)
+                                  {
+                                      <li class="page-item disabled"><a class="page-link" @onclick="GetTalukaDataOnNextPage">&raquo;</a></li>
+                                  }
+                                  @if (_talukaPage != totaltalukaPages)
+                                  {
+                                      <li class="page-item"><a class="page-link" @onclick="GetTalukaDataOnNextPage" href="" @onclick:preventDefault>...</a></li>
+                                      <li class="page-item"><a class="page-link" @onclick="GetTalukaDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
+                                  }
+                              </ul>
+                          }
+                      </div>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -688,27 +878,27 @@
 
     <!-- Pop Up for add taluka -->
     <section class="content">
-      <div class="modal fade" id="modal-default-village">
+      <div class="modal fade" id="modal-default-taluka">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">New Village</h4>
+              <h4 class="modal-title">New Taluka</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <EditForm Model="@model_village" OnValidSubmit="OnValidSubmit_Village">
+            <EditForm Model="@model_taluka" OnValidSubmit="OnValidSubmit_Taluka">
                 <DataAnnotationsValidator />
                 <div class="modal-body">
-                    <label>Village: </label>
-                    <InputText @bind-Value="model_village.VillageName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
-                    <ValidationMessage For="@(() => model_village.VillageName)" style="color:red;" />
+                    <label>Taluka: </label>
+                    <InputText @bind-Value="model_taluka.TalukaName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
+                    <ValidationMessage For="@(() => model_taluka.TalukaName)" style="color:red;" />
                 </div>
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         @if (isModalValid)
                         {
-                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddVillage">
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="AddTaluka">
                                   @if (loadBtn)
                                   {
                                       <span class="spinner-border spinner-border-sm mr-1"></span>
@@ -729,29 +919,29 @@
       </div>
     </section>
 
-    <!-- Pop Up for edit village -->
+    <!-- Pop Up for edit taluka -->
     <section class="content">
-      <div class="modal fade" id="modal-default-edit-village">
+      <div class="modal fade" id="modal-default-edit-taluka">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Edit Village : @this.village</h4>
+              <h4 class="modal-title">Edit Taluka : @this.taluka</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <EditForm Model="@model_village" OnValidSubmit="OnValidSubmit_Village">
+            <EditForm Model="@model_taluka" OnValidSubmit="OnValidSubmit_Taluka">
                 <DataAnnotationsValidator />
                 <div class="modal-body">
-                    <label>New Value: </label>
-                    <InputText @bind-Value="model_village.VillageName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
-                    <ValidationMessage For="@(() => model_village.VillageName)" style="color:red;" />
+                    <label>New Taluka: </label>
+                    <InputText @bind-Value="model_taluka.TalukaName" class="form-control" @oninput="(e)=> ModalValidation(e.Value.ToString())" />
+                    <ValidationMessage For="@(() => model_taluka.TalukaName)" style="color:red;" />
                 </div>
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         @if (isModalValid)
                         {
-                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditVillage">
+                            <button disabled="@loadBtn" class="btn btn-primary" style="float:right;" data-dismiss="modal" @onclick="EditTaluka">
                                   @if (loadBtn)
                                   {
                                       <span class="spinner-border spinner-border-sm mr-1"></span>
@@ -776,33 +966,41 @@
     private int _page = 1;
     private int _UCpage = 1;
     private int _villagePage = 1;
+    private int _cityPage = 1;
+    private int _talukaPage = 1;
     private int pageSize = 10;
     private int totalPages;
     private int totalUCPages;
     private int totalVillagePages;
     private int totalcityPages;
+    private int totaltalukaPages;
     private int totalSurnames;
     private int totalUCs;
     private int totalvillages;
     private int totalcities;
+    private int totaltalukas;
     private DropDownSettings model = new DropDownSettings();
     private DropDownSettings_UC model_uc = new DropDownSettings_UC();
     private DropDownSettings_Village model_village = new DropDownSettings_Village();
     private DropDownSettings_City model_city = new DropDownSettings_City();
+    private DropDownSettings_Taluka model_taluka = new DropDownSettings_Taluka();
     private IList<DropDownSettings> surnames;
     private IList<DropDownSettings_UC> UCs;
     private IList<DropDownSettings_Village> villages;
     private IList<DropDownSettings_City> cities;
+    private IList<DropDownSettings_Taluka> talukas;
     private bool loading;
     private bool loadBtn;
     private int surnameId;
     private int ucId;
     private int villageId;
     private int cityId;
+    private int talukaId;
     private string surname;
     private string UnionCounsilName;
     private string village;
     private string city;
+    private string taluka;
     private bool isModalValid = false;
     private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
 
@@ -911,33 +1109,13 @@
     {
         await CityMethod();
     }
-    //private async Task CityMethod()
-    //{
-    //    model_city.CityName = "";
-    //    isModalValid = false;
-    //    loading = true;
-    //    await GetCity();
-    //    await GetCityCount();
-    //    loading = false;
-    //}
-    //private async Task ModalValidation(string value)
-    //{
-    //    if (!string.IsNullOrEmpty(value))
-    //    {
-    //        isModalValid = true;
-    //    }
-    //    else
-    //    {
-    //        isModalValid = false;
-    //    }
-    //}
     private async Task GetCity()
     {
         try
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/get?pageNumber=" + this._villagePage + "&perPage=" + this.pageSize))
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/get?pageNumber=" + this._cityPage + "&perPage=" + this.pageSize))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDownSettings_City>>(apiResponse);
@@ -953,24 +1131,24 @@
     }
     private async Task GetCityCount()
     {
-        try
-        {
-            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/get/count"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    totalcities = Int32.Parse(apiResponse);
-                    totalcityPages = (int)Math.Ceiling((decimal)totalcities / (decimal)pageSize);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            AlertService.Error(e.Message);
-            loading = false;
-            StateHasChanged();
-        }
+        //try
+        //{
+        //    using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //    {
+        //        using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/get/count"))
+        //        {
+        //            string apiResponse = await response.Content.ReadAsStringAsync();
+        totalcities = 100;//Int32.Parse(apiResponse);
+        totalcityPages = (int)Math.Ceiling((decimal)totalcities / (decimal)pageSize);
+        //        }
+        //    }
+        //}
+        //catch (Exception e)
+        //{
+        //    AlertService.Error(e.Message);
+        //    loading = false;
+        //    StateHasChanged();
+        //}
     }
     protected async Task OnInitializedAsync_Taluka()
     {
@@ -1002,10 +1180,10 @@
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/get?pageNumber=" + this._villagePage + "&perPage=" + this.pageSize))
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/get?pageNumber=" + this._talukaPage + "&perPage=" + this.pageSize))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
-                    this.villages = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDownSettings_Village>>(apiResponse);
+                    this.talukas = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDownSettings_Taluka>>(apiResponse);
                 }
             }
         }
@@ -1018,24 +1196,24 @@
     }
     private async Task GetTalukaCount()
     {
-        try
-        {
-            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-            {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/get/count"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    totalvillages = Int32.Parse(apiResponse);
-                    totalVillagePages = (int)Math.Ceiling((decimal)totalvillages / (decimal)pageSize);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            AlertService.Error(e.Message);
-            loading = false;
-            StateHasChanged();
-        }
+        //try
+        //{
+        //    using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+        //    {
+        //        using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/get/count"))
+        //        {
+        //            string apiResponse = await response.Content.ReadAsStringAsync();
+        totaltalukas = 100;// Int32.Parse(apiResponse);
+        totaltalukaPages = (int)Math.Ceiling((decimal)totaltalukas / (decimal)pageSize);
+        //        }
+        //    }
+        //}
+        //catch (Exception e)
+        //{
+        //    AlertService.Error(e.Message);
+        //    loading = false;
+        //    StateHasChanged();
+        //}
     }
     private async Task GetUCs()
     {
@@ -1117,6 +1295,11 @@
     {
         await Task.Yield();
         this.city = model_city.CityName;
+    }
+    private async void OnValidSubmit_Taluka()
+    {
+        await Task.Yield();
+        this.taluka = model_taluka.TalukaName;
     }
     private async Task AddUC()
     {
@@ -1243,6 +1426,47 @@
             StateHasChanged();
         }
     }
+    private async Task AddTaluka()
+    {
+        AlertService.Clear();
+        try
+        {
+            if (!string.IsNullOrEmpty(model_taluka.TalukaName))
+            {
+                loadBtn = true;
+                model_taluka.Id = 0;
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_taluka);
+                    var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "taluka/save", content))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        if(response.StatusCode == System.Net.HttpStatusCode.Created)
+                        {
+                            AlertService.Success("New taluka Successfully", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await TalukaMethod();
+                            StateHasChanged();
+                        }
+                        if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                        {
+                            AlertService.Success("taluka Already Exists!", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await TalukaMethod();
+                            StateHasChanged();
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error("Failed to Add New taluka, Error: " + ex.Message);
+            loadBtn = false;
+            StateHasChanged();
+        }
+    }
     private async Task AddSurname()
     {
         AlertService.Clear();
@@ -1290,18 +1514,35 @@
         await Task.Yield();
         this.surnameId = id;
         this.surname = value;
+        StateHasChanged();
     }
     private async void CurrentUC(int id, string value)
     {
         await Task.Yield();
         this.ucId = id;
         this.UnionCounsilName = value;
+        StateHasChanged();
     }
     private async void CurrentVillage(int id, string value)
     {
         await Task.Yield();
         this.villageId = id;
         this.village = value;
+        StateHasChanged();
+    }
+    private async void CurrentCity(int id, string value)
+    {
+        await Task.Yield();
+        this.cityId = id;
+        this.city = value;
+        StateHasChanged();
+    }
+    private async void CurrentTaluka(int id, string value)
+    {
+        await Task.Yield();
+        this.talukaId = id;
+        this.taluka = value;
+        StateHasChanged();
     }
     private async void EditUC()
     {
@@ -1398,21 +1639,21 @@
                 {
                     var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_city);
                     var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
-                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "village/save", content))
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "city/save", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                         if(response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
                             AlertService.Success("City Edited Successfully", keepAfterRouteChange: true);
                             loadBtn = false;
-                            await VillageMethod();
+                            await CityMethod();
                             StateHasChanged();
                         }
                         if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
                         {
                             AlertService.Success("City Already Exists!", keepAfterRouteChange: true);
                             loadBtn = false;
-                            await VillageMethod();
+                            await CityMethod();
                             StateHasChanged();
                         }
                     }
@@ -1422,6 +1663,47 @@
         catch (Exception ex)
         {
             AlertService.Error("Failed to Edit City, Error: " + ex.Message);
+            loadBtn = false;
+            StateHasChanged();
+        }
+    }
+    private async void EditTaluka()
+    {
+        AlertService.Clear();
+        try
+        {
+            if (!string.IsNullOrEmpty(this.taluka))
+            {
+                loadBtn = true;
+                model_taluka.Id = this.talukaId;
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    var postData = Newtonsoft.Json.JsonConvert.SerializeObject(model_taluka);
+                    var content = new System.Net.Http.StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.PutAsync(baseUrl + "taluka/save", content))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            AlertService.Success("taluka Edited Successfully", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await TalukaMethod();
+                            StateHasChanged();
+                        }
+                        if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                        {
+                            AlertService.Success("taluka Already Exists!", keepAfterRouteChange: true);
+                            loadBtn = false;
+                            await TalukaMethod();
+                            StateHasChanged();
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error("Failed to Edit taluka, Error: " + ex.Message);
             loadBtn = false;
             StateHasChanged();
         }
@@ -1549,6 +1831,48 @@
         loading = true;
         _villagePage += 1;
         await GetVillages();
+        loading = false;
+    }
+    private async Task GetCityDataOnPreviousPage()
+    {
+        loading = true;
+        _cityPage -= 1;
+        await GetCity();
+        loading = false;
+    }
+    private async Task GetCityDataByPageNumber(int pageNumber)
+    {
+        loading = true;
+        _cityPage = pageNumber;
+        await GetCity();
+        loading = false;
+    }
+    private async Task GetCityDataOnNextPage()
+    {
+        loading = true;
+        _cityPage += 1;
+        await GetCity();
+        loading = false;
+    }
+    private async Task GetTalukaDataOnPreviousPage()
+    {
+        loading = true;
+        _talukaPage -= 1;
+        await GetTaluka();
+        loading = false;
+    }
+    private async Task GetTalukaDataByPageNumber(int pageNumber)
+    {
+        loading = true;
+        _talukaPage = pageNumber;
+        await GetTaluka();
+        loading = false;
+    }
+    private async Task GetTalukaDataOnNextPage()
+    {
+        loading = true;
+        _talukaPage += 1;
+        await GetTaluka();
         loading = false;
     }
 }

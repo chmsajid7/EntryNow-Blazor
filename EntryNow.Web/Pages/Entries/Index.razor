@@ -98,7 +98,7 @@
         </div>
     </div>
     </div>
-</EditForm>
+
 
 
 <!-- Content Header (Page header) -->
@@ -205,7 +205,8 @@
             @if (totalPages > 0)
             {
                 <div class="card-footer clearfix">
-                    Page @_page of @totalPages Selected
+                    <div class="col-md-12">
+                    Page @_page of @totalPages Selected.
                     <ul class="pagination pagination-sm m-0 float-right">
                         @if (_page == 1)
                         {
@@ -247,6 +248,15 @@
                             <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
                         }
                     </ul>
+                    </div>
+                    
+                    <div class="col-md-12" style="display:inline-block;">
+                        <input type="number" min="1" style="width:10%;" class="form-control select2" @oninput="(e)=> RenderToPage(e.Value.ToString())">
+                            @if (!string.IsNullOrEmpty(renderToPageError))
+                            {
+                                <label style="color:red;">@renderToPageError</label>
+                            }
+                    </div>
                 </div>
             }
         </div>
@@ -254,6 +264,7 @@
         <!-- /.col -->
     </div><!-- /.container-fluid -->
 </section>
+</EditForm>
 
 <!-- Pop Up for Delete Btn -->
 <section class="content">
@@ -278,7 +289,6 @@
     </div>
 </section>
 
-
 @code {
     private int _page = 1;
     private int pageSize = 10;
@@ -289,13 +299,12 @@
     private IList<Entries> entries;
     private int totalPages;
     private string baseUrl = "https://entrynowapi.azurewebsites.net/api/";
-    string query = string.Empty;
-
+    private string query = string.Empty;
+    private int renderToPage;
+    private string renderToPageError="";
 
 
     private Entries_CreateViewModel model = new Entries_CreateViewModel();
-    private List<string> cities = new List<string>();
-    private List<string> talukas = new List<string>();
     private string surnameValue = "";
     private string ucValue = "";
     private string referenceValue = "";
@@ -305,8 +314,6 @@
     private IList<SearchValues> villagesSearchList;
     private IList<SearchValues> referencesSearchList;
 
-
-
     protected override async Task OnInitializedAsync()
     {
         loading = true;
@@ -314,8 +321,31 @@
         await GetData();
         await GetEntriesCount();
         loading = false;
-        cities.AddRange(Global.Cities);
-        talukas.AddRange(Global.Talukas);
+
+        //while (0 < 1)
+        //{
+        //    await Task.Delay(3000);
+        //    _page = await PageNumberHelper.GetEntriesPageNo();
+        //    await GetData();
+        //    await GetEntriesCount();
+        //}
+    }
+
+    private async Task RenderToPage(string val)
+    {
+        if(Int32.Parse(val) > 0)
+        {
+            renderToPageError = "";
+            loading = true;
+            _page = Int32.Parse(val);
+            await GetData();
+            await GetEntriesCount();
+            loading = false;
+        }
+        else
+        {
+            renderToPageError = "Page Number must be positive";
+        }
     }
 
     private async Task AutoCompleteSurname(string value)
@@ -631,7 +661,7 @@
     {
         await PageNumberHelper.SaveEntriesPageNo(_page);
         string url = $"entries/edit/{id}";
-        await JSRuntime.InvokeAsync<object>("open", url, "_blank");
+        await JSRuntime.InvokeAsync<object>("open", url, "_blank"); 
     }
 
     private async Task DeleteBtn()
