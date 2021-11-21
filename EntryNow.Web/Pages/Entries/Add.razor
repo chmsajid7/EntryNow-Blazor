@@ -62,13 +62,23 @@
                               </div>*@
                               <div class="form-group">
                                   <label>City</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.City">
+                                  <InputText @bind-Value="this.cityValue" class="form-control select2" @oninput="(e)=> AutoCompleteCity(e.Value.ToString())" list="_city"/>
+                                      <datalist id="_city">
+                                        @if (citySearchList != null)
+                                        {
+                                            @foreach (var item in citySearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                      </datalist>
+                                  @*<select class="form-control select2" style="width: 100%;" @bind="model.City">
                                         <option disabled selected hidden>Select City ...</option>
                                         @foreach(var city in cities)
                                         {
                                             <option value="@city">@city</option>
                                         }
-                                  </select>
+                                  </select>*@
                               </div>
                           </div>
                           <div class="col-md-4">
@@ -92,13 +102,23 @@
                               </div>*@
                               <div class="form-group">
                                   <label>Taluka</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.Taluka">
+                                  <InputText @bind-Value="this.talukaValue" class="form-control select2" @oninput="(e)=> AutoCompleteTaluka(e.Value.ToString())" list="_taluka"/>
+                                      <datalist id="_taluka">
+                                        @if (talukaSearchList != null)
+                                        {
+                                            @foreach (var item in talukaSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                      </datalist>
+                                  @*<select class="form-control select2" style="width: 100%;" @bind="model.Taluka">
                                         <option disabled selected hidden>Select Taluka ...</option>
                                         @foreach(var taluka in talukas)
                                         {
                                             <option value="@taluka">@taluka</option>
                                         }
-                                  </select>
+                                  </select>*@
                               </div>
                           </div>
                           <div class="col-md-4">
@@ -210,10 +230,14 @@
     private string surnameValue = "";
     private string ucValue = "";
     private string villageValue = "";
+    private string cityValue = "";
+    private string talukaValue = "";
     private IList<SearchValues> referencesSearchList;
     private IList<SearchValues> surnamesSearchList;
     private IList<SearchValues> ucsSearchList;
     private IList<SearchValues> villagesSearchList;
+    private IList<SearchValues> citySearchList;
+    private IList<SearchValues> talukaSearchList;
     private List<string> cities = new List<string>();
     private List<string> districts = new List<string>();
     private List<string> talukas = new List<string>();
@@ -234,15 +258,17 @@
         surnameValue = "";
         ucValue = "";
         villageValue = "";
+        cityValue="";
+        talukaValue = "";
         checkboxvalue = false;
 
         districts.Clear();
-        talukas.Clear();
-        cities.Clear();
+        //talukas.Clear();
+        //cities.Clear();
 
         districts.AddRange(Global.Districts);
-        talukas.AddRange(Global.Talukas);
-        cities.AddRange(Global.Cities);
+        //talukas.AddRange(Global.Talukas);
+        //cities.AddRange(Global.Cities);
         pageLoading = false;
     }
     private async Task AutoCompleteReference(string value)
@@ -341,103 +367,51 @@
             }
         }
     }
-    private void FillUcDropDown (ChangeEventArgs e)
+    private async Task AutoCompleteCity(string value)
     {
-        //model.Taluka = e.Value.ToString();
-        //if(model.Taluka == "Hala")
-        //{
-        //    unioncounsils = new List<string>();
-        //    unioncounsils.AddRange(Global.UnionCounsil_Hala);
-        //}
-        //if(model.Taluka == "Saeedabad")
-        //{
-        //    unioncounsils = new List<string>();
-        //    unioncounsils.AddRange(Global.UnionCounsil_Saeedabad);
-        //}
-        //if(model.Taluka == "Matiari")
-        //{
-        //    unioncounsils = new List<string>();
-        //    unioncounsils.AddRange(Global.UnionCounsil_Matiari);
-        //}
+        if (!string.IsNullOrEmpty(value) && value.Length >=3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.citySearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
     }
-    private void FillVillagesDropDown (ChangeEventArgs e)
+    private async Task AutoCompleteTaluka(string value)
     {
-        //model.UnionCouncil = e.Value.ToString();
-        //if(model.UnionCouncil == "Khandu")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_Khandu);   
-        //}
-        //if(model.UnionCouncil == "Karam Khan Nizamani")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_KaramKhanNizamani);   
-        //}
-        //if(model.UnionCouncil == "Ajan Shah")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_AjanShah);   
-        //}
-        //if(model.UnionCouncil == "Bhanoth")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_Bhanoth);   
-        //}
-        //if(model.UnionCouncil == "Bhit Shah")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_BhitShah);   
-        //}
-        //if(model.UnionCouncil == "Fateh Muhammad Shah Ajnani")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_FatehMuhammadShahAjnani);   
-        //}
-        //if(model.UnionCouncil == "Abdul Wahid Burira")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_AbdulWahidBurira);   
-        //}
-        //if(model.UnionCouncil == "BD Kaka")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_BDKaka);   
-        //}
-        //if(model.UnionCouncil == "Faqeerabad")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_Faqeerabad);   
-        //}
-        //if(model.UnionCouncil == "Makhdoom joon Landhiyoon")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_MakhdoomjoonLandhiyoon);   
-        //}
-        //if(model.UnionCouncil == "Old Saeedabad")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_OldSaeedabad);   
-        //}
-        //if(model.UnionCouncil == "Ramzan Unar")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_RamzanUnar);   
-        //}
-        //if(model.UnionCouncil == "Shahmir Rahu")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_ShahmirRahu);   
-        //}
-        //if(model.UnionCouncil == "Sikandarabad")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_Sikandarabad);   
-        //}
-        //if(model.UnionCouncil == "Zair Peer")
-        //{
-        //    villages = new List<string>();
-        //    villages.AddRange(Global.Villages_ZairPeer);   
-        //}
+        if (!string.IsNullOrEmpty(value) && value.Length >=3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.talukaSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
     }
     private async void OnValidSubmit()
     {
@@ -556,6 +530,48 @@
             if(model.VillageId==null)
             {
                 AlertService.Error("Incorrect Village Name Entered!");
+                return false;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(cityValue))
+        {
+            if (citySearchList == null)
+            {
+                AlertService.Error("Incorrect City Name Entered!");
+                return false;
+            }
+            foreach(var item in citySearchList)
+            {
+                if (item.Value == cityValue)
+                {
+                    model.CityId = item.Id;
+                }
+            }
+            if(model.CityId==null)
+            {
+                AlertService.Error("Incorrect City Name Entered!");
+                return false;
+            }
+        }
+        
+        if (!string.IsNullOrEmpty(talukaValue))
+        {
+            if (talukaSearchList == null)
+            {
+                AlertService.Error("Incorrect taluka Name Entered!");
+                return false;
+            }
+            foreach(var item in talukaSearchList)
+            {
+                if (item.Value == talukaValue)
+                {
+                    model.TalukaId = item.Id;
+                }
+            }
+            if(model.TalukaId==null)
+            {
+                AlertService.Error("Incorrect taluka Name Entered!");
                 return false;
             }
         }

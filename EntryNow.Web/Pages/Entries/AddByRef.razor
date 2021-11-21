@@ -64,13 +64,16 @@
                               </div>*@
                               <div class="form-group">
                                   <label>City</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.City">
-                                        <option disabled selected hidden>Select City ...</option>
-                                        @foreach(var city in cities)
+                                  <InputText @bind-Value="this.cityValue" class="form-control select2" @oninput="(e)=> AutoCompleteCity(e.Value.ToString())" list="_city"/>
+                                      <datalist id="_city">
+                                        @if (citySearchList != null)
                                         {
-                                            <option value="@city">@city</option>
+                                            @foreach (var item in citySearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
                                         }
-                                  </select>
+                                      </datalist>
                               </div>
                           </div>
                           <div class="col-md-4">
@@ -94,13 +97,16 @@
                               </div>*@
                               <div class="form-group">
                                   <label>Taluka</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.Taluka">
-                                        <option disabled selected hidden>Select Taluka ...</option>
-                                        @foreach(var taluka in talukas)
+                                  <InputText @bind-Value="this.talukaValue" class="form-control select2" @oninput="(e)=> AutoCompleteTaluka(e.Value.ToString())" list="_taluka"/>
+                                      <datalist id="_taluka">
+                                        @if (talukaSearchList != null)
                                         {
-                                            <option value="@taluka">@taluka</option>
+                                            @foreach (var item in talukaSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
                                         }
-                                  </select>
+                                      </datalist>
                               </div>
                           </div>
                           <div class="col-md-4">
@@ -203,10 +209,14 @@
     private string surnameValue = "";
     private string ucValue = "";
     private string villageValue = "";
+    private string cityValue = "";
+    private string talukaValue = "";
     private IList<SearchValues> referencesSearchList;
     private IList<SearchValues> surnamesSearchList;
     private IList<SearchValues> ucsSearchList;
     private IList<SearchValues> villagesSearchList;
+    private IList<SearchValues> citySearchList;
+    private IList<SearchValues> talukaSearchList;
     private List<string> cities = new List<string>();
     private List<string> districts = new List<string>();
     private List<string> talukas = new List<string>();
@@ -233,15 +243,17 @@
         surnameValue = "";
         ucValue = "";
         villageValue = "";
+        cityValue="";
+        talukaValue = "";
         checkboxvalue = false;
 
         districts.Clear();
-        talukas.Clear();
-        cities.Clear();
+        //talukas.Clear();
+        //cities.Clear();
 
         districts.AddRange(Global.Districts);
-        talukas.AddRange(Global.Talukas);
-        cities.AddRange(Global.Cities);
+        //talukas.AddRange(Global.Talukas);
+        //cities.AddRange(Global.Cities);
         pageLoading = false;
     }
     private async Task AutoCompleteSurname(string value)
@@ -313,6 +325,53 @@
             }
         }
     }
+    private async Task AutoCompleteCity(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >=3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.citySearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+    private async Task AutoCompleteTaluka(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >= 3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.talukaSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
     private async void OnValidSubmit()
     {
         AlertService.Clear();
@@ -403,6 +462,48 @@
             if(model.VillageId==null)
             {
                 AlertService.Error("Incorrect Village Name Entered!");
+                return false;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(cityValue))
+        {
+            if (citySearchList == null)
+            {
+                AlertService.Error("Incorrect City Name Entered!");
+                return false;
+            }
+            foreach(var item in citySearchList)
+            {
+                if (item.Value == cityValue)
+                {
+                    model.CityId = item.Id;
+                }
+            }
+            if(model.CityId==null)
+            {
+                AlertService.Error("Incorrect City Name Entered!");
+                return false;
+            }
+        }
+        
+        if (!string.IsNullOrEmpty(talukaValue))
+        {
+            if (talukaSearchList == null)
+            {
+                AlertService.Error("Incorrect taluka Name Entered!");
+                return false;
+            }
+            foreach(var item in talukaSearchList)
+            {
+                if (item.Value == talukaValue)
+                {
+                    model.TalukaId = item.Id;
+                }
+            }
+            if(model.TalukaId==null)
+            {
+                AlertService.Error("Incorrect taluka Name Entered!");
                 return false;
             }
         }

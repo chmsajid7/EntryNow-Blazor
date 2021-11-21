@@ -83,10 +83,12 @@ namespace EntryNow.Web.Models
         public string EmailAddress { get; set; }
         public string CNIC { get; set; }
         public string District { get; set; }
+        public int? TalukaId { get; set; }
         public string Taluka { get; set; }
         public int? UnionCounsilId { get; set; }
         public string UnionCouncil { get; set; }
         public string Deh { get; set; }
+        public int? CityId { get; set; }
         public string City { get; set; }
         public int? VillageId { get; set; }
         public string Village { get; set; }

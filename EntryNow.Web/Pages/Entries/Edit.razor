@@ -65,20 +65,16 @@
                               </div>*@
                               <div class="form-group">
                                   <label>City</label>
-                                  <select class="form-control select2" style="width: 100%;" @bind="model.City">
-                                        @if (string.IsNullOrEmpty(model.City))
+                                  <InputText @bind-Value="this.cityValue" class="form-control select2" @oninput="(e)=> AutoCompleteCity(e.Value.ToString())" list="_city"/>
+                                      <datalist id="_city">
+                                        @if (citySearchList != null)
                                         {
-                                            <option disabled selected hidden>Select City ...</option>
+                                            @foreach (var item in citySearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
                                         }
-                                        else
-                                        {
-                                            <option selected="selected">@model.City</option>
-                                        }
-                                        @foreach(var city in cities)
-                                        {
-                                            <option value="@city">@city</option>
-                                        }
-                                  </select>
+                                      </datalist>
                               </div>
                           </div>
                           <div class="col-md-4">
@@ -117,20 +113,16 @@
                              <div class="form-group">
                                   <label>Taluka</label>
                                   @*<select class="form-control select2" style="width: 100%;" @onchange="@FillUcDropDown">*@
-                                  <select class="form-control select2" style="width: 100%;"  @bind="model.Taluka">
-                                        @if (string.IsNullOrEmpty(model.Taluka))
+                                  <InputText @bind-Value="this.talukaValue" class="form-control select2" @oninput="(e)=> AutoCompleteTaluka(e.Value.ToString())" list="_taluka"/>
+                                      <datalist id="_taluka">
+                                        @if (talukaSearchList != null)
                                         {
-                                            <option disabled selected hidden>Select Taluka ...</option>
+                                            @foreach (var item in talukaSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
                                         }
-                                        else
-                                        {
-                                            <option selected="selected">@model.Taluka</option>
-                                        }
-                                        @foreach(var taluka in talukas)
-                                        {
-                                            <option value="@taluka">@taluka</option>
-                                        }
-                                  </select>
+                                      </datalist>
                               </div>
                           </div>
                           <div class="col-md-4">
@@ -281,11 +273,17 @@
     private string oldUcValue = "";
     private string villageValue = "";
     private string oldVillageValue = "";
+    private string cityValue = "";
+    private string oldCityValue = "";
+    private string talukaValue = "";
+    private string oldTalukaValue = "";
     private Entries_CreateViewModel model = new Entries_CreateViewModel();
     private IList<SearchValues> referencesSearchList;
-    private IList<SearchValues> surnamesSearchList;
+    private IList<SearchValues> surn    amesSearchList;
     private IList<SearchValues> ucsSearchList;
     private IList<SearchValues> villagesSearchList;
+    private IList<SearchValues> citySearchList;
+    private IList<SearchValues> talukaSearchList;
     private List<string> cities = new List<string>();
     private List<string> districts = new List<string>();
     private List<string> talukas = new List<string>();
@@ -303,8 +301,8 @@
     {
         pageLoading = true;
         districts.AddRange(Global.Districts);
-        talukas.AddRange(Global.Talukas);
-        cities.AddRange(Global.Cities);
+        //talukas.AddRange(Global.Talukas);
+        //cities.AddRange(Global.Cities);
         model = await GetEntryById();
         if (model.IsAReference)
         {
@@ -326,6 +324,14 @@
         {
             await FindVillageById();
         }
+        if (model.CityId.HasValue == true)
+        {
+            await FindCityById();
+        }
+        if (model.TalukaId.HasValue == true)
+        {
+            await FindTalukaById();
+        }
 
         //if (model.District != null)
         //{
@@ -333,11 +339,11 @@
         //}
         //if (model.Taluka != null)
         //{
-        talukas.Remove(model.Taluka);
+        //talukas.Remove(model.Taluka);
         //}
         //if (model.City != null)
         //{
-        cities.Remove(model.City);
+        //cities.Remove(model.City);
         //}
         pageLoading = false;
     }
@@ -429,17 +435,51 @@
             StateHasChanged();
         }
     }
-    //private Task FindSurname()
-    //{
-    //    foreach (var item in surnames)
-    //    {
-    //        if (item.Id == model.SurnameId)
-    //        {
-    //            surname = item.Value;
-    //        }
-    //    }
-    //    return Task.CompletedTask;
-    //}
+    private async Task FindCityById()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/findcity?id=" + model.CityId))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    SearchValues searchedValue = Newtonsoft.Json.JsonConvert.DeserializeObject<SearchValues>(apiResponse);
+                    cityValue = searchedValue.Value;
+                    oldCityValue = searchedValue.Value;
+                }
+            }
+        }
+        catch(Exception)
+        {
+            AlertService.Error("Taluka Not Found!");
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task FindTalukaById()
+    {
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/findtaluka?id=" + model.TalukaId))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    SearchValues searchedValue = Newtonsoft.Json.JsonConvert.DeserializeObject<SearchValues>(apiResponse);
+                    talukaValue = searchedValue.Value;
+                    oldTalukaValue = searchedValue.Value;
+                }
+            }
+        }
+        catch(Exception)
+        {
+            AlertService.Error("Village Not Found!");
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
     private async Task AutoCompleteReference(string value)
     {
         if (!string.IsNullOrEmpty(value) && value.Length >=3)
@@ -536,6 +576,53 @@
             }
         }
     }
+    private async Task AutoCompleteCity(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >=3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.citySearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+    private async Task AutoCompleteTaluka(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >= 3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.talukaSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
     private async Task<Entries_CreateViewModel> GetEntryById()
     {
         try
@@ -558,232 +645,7 @@
         }
         return new Entries_CreateViewModel();
     }
-    //private void FillUcDropDown (ChangeEventArgs e)
-    //{
-    //    //model.Taluka = e.Value.ToString();
-    //    //if(model.Taluka == "Hala")
-    //    //{
-    //    //    unioncounsils.AddRange(Global.UnionCounsil_Hala);
-    //    //}
-    //    //if(model.Taluka == "Saeedabad")
-    //    //{
-    //    //    unioncounsils.AddRange(Global.UnionCounsil_Saeedabad);
-    //    //}
-    //    //if(model.Taluka == "Matiari")
-    //    //{
-    //    //    unioncounsils.AddRange(Global.UnionCounsil_Matiari);
-    //    //}
-    //}
-    //private void _FillUcDropDown ()
-    //{
-    //    //if(model.Taluka == "Hala")
-    //    //{
-    //    //    unioncounsils.AddRange(Global.UnionCounsil_Hala);
-    //    //}
-    //    //if(model.Taluka == "Saeedabad")
-    //    //{
-    //    //    unioncounsils.AddRange(Global.UnionCounsil_Saeedabad);
-    //    //}
-    //    //if(model.Taluka == "Matiari")
-    //    //{
-    //    //    unioncounsils.AddRange(Global.UnionCounsil_Matiari);
-    //    //}
-    //}
-    //private void FillVillagesDropDown (ChangeEventArgs e)
-    //{
-    //    //model.UnionCouncil = e.Value.ToString();
-    //    //if(model.UnionCouncil == "Khandu")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_Khandu);
-    //    //}
-    //    //if(model.UnionCouncil == "Karam Khan Nizamani")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_KaramKhanNizamani);
-    //    //}
-    //    //if(model.UnionCouncil == "Ajan Shah")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_AjanShah);
-    //    //}
-    //    //if(model.UnionCouncil == "Bhanoth")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_Bhanoth);
-    //    //}
-    //    //if(model.UnionCouncil == "Bhit Shah")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_BhitShah);
-    //    //}
-    //    //if(model.UnionCouncil == "Fateh Muhammad Shah Ajnani")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_FatehMuhammadShahAjnani);
-    //    //}
-    //    //if(model.UnionCouncil == "Abdul Wahid Burira")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_AbdulWahidBurira);
-    //    //}
-    //    //if(model.UnionCouncil == "BD Kaka")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_BDKaka);
-    //    //}
-    //    //if(model.UnionCouncil == "Faqeerabad")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_Faqeerabad);
-    //    //}
-    //    //if(model.UnionCouncil == "Makhdoom joon Landhiyoon")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_MakhdoomjoonLandhiyoon);
-    //    //}
-    //    //if(model.UnionCouncil == "Old Saeedabad")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_OldSaeedabad);
-    //    //}
-    //    //if(model.UnionCouncil == "Ramzan Unar")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_RamzanUnar);
-    //    //}
-    //    //if(model.UnionCouncil == "Shahmir Rahu")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_ShahmirRahu);
-    //    //}
-    //    //if(model.UnionCouncil == "Sikandarabad")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_Sikandarabad);
-    //    //}
-    //    //if(model.UnionCouncil == "Zair Peer")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_ZairPeer);
-    //    //}
-    //}
-    //private void _FillVillagesDropDown ()
-    //{
-    //    //if(model.UnionCouncil == "Khandu")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_Khandu);
-    //    //}
-    //    //if(model.UnionCouncil == "Karam Khan Nizamani")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_KaramKhanNizamani);
-    //    //}
-    //    //if(model.UnionCouncil == "Ajan Shah")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_AjanShah);
-    //    //}
-    //    //if(model.UnionCouncil == "Bhanoth")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_Bhanoth);
-    //    //}
-    //    //if(model.UnionCouncil == "Bhit Shah")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_BhitShah);
-    //    //}
-    //    //if(model.UnionCouncil == "Fateh Muhammad Shah Ajnani")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_FatehMuhammadShahAjnani);
-    //    //}
-    //    //if(model.UnionCouncil == "Abdul Wahid Burira")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_AbdulWahidBurira);
-    //    //}
-    //    //if(model.UnionCouncil == "BD Kaka")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_BDKaka);
-    //    //}
-    //    //if(model.UnionCouncil == "Faqeerabad")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_Faqeerabad);
-    //    //}
-    //    //if(model.UnionCouncil == "Makhdoom joon Landhiyoon")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_MakhdoomjoonLandhiyoon);
-    //    //}
-    //    //if(model.UnionCouncil == "Old Saeedabad")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_OldSaeedabad);
-    //    //}
-    //    //if(model.UnionCouncil == "Ramzan Unar")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_RamzanUnar);
-    //    //}
-    //    //if(model.UnionCouncil == "Shahmir Rahu")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_ShahmirRahu);
-    //    //}
-    //    //if(model.UnionCouncil == "Sikandarabad")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_Sikandarabad);
-    //    //}
-    //    //if(model.UnionCouncil == "Zair Peer")
-    //    //{
-    //    //    villages.AddRange(Global.Villages_ZairPeer);
-    //    //}
-    //}
-    //private async Task FillDropDowns()
-    //{
-    //    //try
-    //    //{
-    //        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-    //        //{
-    //        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/dropdown"))
-    //        //    {
-    //        //        string apiResponse = await response.Content.ReadAsStringAsync();
-    //        //        this.cities = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-    //        //    }
-    //        //}
-    //        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-    //        //{
-    //        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "deh/dropdown"))
-    //        //    {
-    //        //        string apiResponse = await response.Content.ReadAsStringAsync();
-    //        //        this.dehs = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-    //        //    }
-    //        //}
-    //        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-    //        //{
-    //        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "district/dropdown"))
-    //        //    {
-    //        //        string apiResponse = await response.Content.ReadAsStringAsync();
-    //        //        this.districts = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-    //        //    }
-    //        //}
-    //        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-    //        //{
-    //        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "surname/dropdown"))
-    //        //    {
-    //        //        string apiResponse = await response.Content.ReadAsStringAsync();
-    //        //        this.surnames = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-    //        //    }
-    //        //}
-    //        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-    //        //{
-    //        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/dropdown"))
-    //        //    {
-    //        //        string apiResponse = await response.Content.ReadAsStringAsync();
-    //        //        this.talukas = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-    //        //    }
-    //        //}
-    //        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-    //        //{
-    //        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "unioncounsil/dropdown"))
-    //        //    {
-    //        //        string apiResponse = await response.Content.ReadAsStringAsync();
-    //        //        this.unioncounsils = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-    //        //    }
-    //        //}
-    //        //using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-    //        //{
-    //        //    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/dropdown"))
-    //        //    {
-    //        //        string apiResponse = await response.Content.ReadAsStringAsync();
-    //        //        this.villages = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<DropDowns>>(apiResponse);
-    //        //    }
-    //        //}
-    //    //}
-    //    //catch(Exception e)
-    //    //{
-    //    //    AlertService.Error(e.Message);
-    //    //    loading = false;
-    //    //    StateHasChanged();
-    //    //}
-    //}
+
     private async void OnValidSubmit()
     {
         AlertService.Clear();
@@ -839,6 +701,14 @@
         if (string.IsNullOrEmpty(villageValue))
         {
             model.VillageId = null;
+        }
+        if (string.IsNullOrEmpty(cityValue))
+        {
+            model.CityId = null;
+        }
+        if (string.IsNullOrEmpty(talukaValue))
+        {
+            model.TalukaId = null;
         }
 
         if (!string.IsNullOrEmpty(referenceValue) && referencesSearchList != null)
@@ -1016,6 +886,96 @@
                 catch (Exception)
                 {
                     AlertService.Error("Incorrect Village Name Entered!");
+                    return false;
+                }
+            }
+        }
+
+        if (!string.IsNullOrEmpty(cityValue) && citySearchList != null)
+        {
+            foreach(var item in citySearchList)
+            {
+                if (item.Value == cityValue)
+                {
+                    model.CityId = item.Id;
+                }
+            }
+            if(model.CityId==null)
+            {
+                AlertService.Error("Incorrect City Entered!");
+                return false;
+            }
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(cityValue))
+            {
+                try
+                {
+                    if (cityValue != oldCityValue)
+                    {
+                        foreach(var item in citySearchList)
+                        {
+                            if (item.Value == cityValue)
+                            {
+                                model.CityId = item.Id;
+                            }
+                        }
+                        if(model.CityId == null)
+                        {
+                            AlertService.Error("Incorrect City Entered!");
+                            return false;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    AlertService.Error("Incorrect City Entered!");
+                    return false;
+                }
+            }
+        }
+        
+        if (!string.IsNullOrEmpty(talukaValue) && talukaSearchList != null)
+        {
+            foreach(var item in talukaSearchList)
+            {
+                if (item.Value == talukaValue)
+                {
+                    model.TalukaId = item.Id;
+                }
+            }
+            if(model.TalukaId==null)
+            {
+                AlertService.Error("Incorrect Taluka Entered!");
+                return false;
+            }
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(talukaValue))
+            {
+                try
+                {
+                    if (talukaValue != oldTalukaValue)
+                    {
+                        foreach(var item in talukaSearchList)
+                        {
+                            if (item.Value == talukaValue)
+                            {
+                                model.TalukaId = item.Id;
+                            }
+                        }
+                        if(model.TalukaId == null)
+                        {
+                            AlertService.Error("Incorrect Taluka Entered!");
+                            return false;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    AlertService.Error("Incorrect Taluka Entered!");
                     return false;
                 }
             }
