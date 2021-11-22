@@ -1131,24 +1131,24 @@
     }
     private async Task GetCityCount()
     {
-        //try
-        //{
-        //    using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-        //    {
-        //        using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/get/count"))
-        //        {
-        //            string apiResponse = await response.Content.ReadAsStringAsync();
-        totalcities = 100;//Int32.Parse(apiResponse);
-        totalcityPages = (int)Math.Ceiling((decimal)totalcities / (decimal)pageSize);
-        //        }
-        //    }
-        //}
-        //catch (Exception e)
-        //{
-        //    AlertService.Error(e.Message);
-        //    loading = false;
-        //    StateHasChanged();
-        //}
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/get/count"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    totalcities = Int32.Parse(apiResponse);
+                    totalcityPages = (int)Math.Ceiling((decimal)totalcities / (decimal)pageSize);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
     }
     protected async Task OnInitializedAsync_Taluka()
     {
@@ -1196,24 +1196,24 @@
     }
     private async Task GetTalukaCount()
     {
-        //try
-        //{
-        //    using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-        //    {
-        //        using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/get/count"))
-        //        {
-        //            string apiResponse = await response.Content.ReadAsStringAsync();
-        totaltalukas = 100;// Int32.Parse(apiResponse);
-        totaltalukaPages = (int)Math.Ceiling((decimal)totaltalukas / (decimal)pageSize);
-        //        }
-        //    }
-        //}
-        //catch (Exception e)
-        //{
-        //    AlertService.Error(e.Message);
-        //    loading = false;
-        //    StateHasChanged();
-        //}
+        try
+        {
+            using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+            {
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/get/count"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    totaltalukas = Int32.Parse(apiResponse);
+                    totaltalukaPages = (int)Math.Ceiling((decimal)totaltalukas / (decimal)pageSize);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+            loading = false;
+            StateHasChanged();
+        }
     }
     private async Task GetUCs()
     {

@@ -251,11 +251,11 @@
                     </div>
                     
                     <div class="col-md-12" style="display:inline-block;">
-                        <input type="number" min="1" style="width:10%;" class="form-control select2" @oninput="(e)=> RenderToPage(e.Value.ToString())">
-                            @if (!string.IsNullOrEmpty(renderToPageError))
-                            {
-                                <label style="color:red;">@renderToPageError</label>
-                            }
+                        <input type="number" min="1" style="width:12%; float:right; margin-top:5px;" class="form-control select2" @oninput="(e)=> RenderToPage(e.Value.ToString())" placeholder="Go To Page">
+                        @if (!string.IsNullOrEmpty(renderToPageError) || !string.IsNullOrWhiteSpace(renderToPageError))
+                        {
+                            <label style="color:red; float:right; margin-top:10px;">@renderToPageError</label>
+                        }
                     </div>
                 </div>
             }
@@ -333,7 +333,27 @@
 
     private async Task RenderToPage(string val)
     {
-        if(Int32.Parse(val) > 0)
+        if (string.IsNullOrEmpty(val))
+        {
+            renderToPageError = "";
+            loading = true;
+            _page = 1;
+            await GetData();
+            await GetEntriesCount();
+            loading = false;
+            StateHasChanged();
+        }
+        else if (Int32.Parse(val) > totalPages)
+        {
+            renderToPageError = $"Page Number must be less then {totalPages}.";
+            StateHasChanged();
+        }
+        else if (Int32.Parse(val) <= 0)
+        {
+            renderToPageError = "Page Number must be positive.";
+            StateHasChanged();
+        }
+        else if(Int32.Parse(val) > 0)
         {
             renderToPageError = "";
             loading = true;
@@ -341,10 +361,7 @@
             await GetData();
             await GetEntriesCount();
             loading = false;
-        }
-        else
-        {
-            renderToPageError = "Page Number must be positive";
+            StateHasChanged();
         }
     }
 

@@ -104,6 +104,7 @@
             @if (totalPages > 0)
             {
             <div class="card-footer clearfix">
+                <div class="col-md-12">
                     Page @_page of @totalPages Selected
                     <ul class="pagination pagination-sm m-0 float-right">
                         @if (_page == 1)
@@ -135,18 +136,6 @@
                                     }
                                 }
                             }
-                            @*@for (int i = 1; i <= totalPages; i++)
-                            {
-                                int buttonNumber = i;
-                                @if (buttonNumber == _page)
-                                {
-                                    <li class="page-item active"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
-                                }
-                                else
-                                {
-                                    <li class="page-item"><a class="page-link" @onclick="@(() => GetDataByPageNumber(buttonNumber))" href="" @onclick:preventDefault>@i</a></li>
-                                }
-                            }*@
                         }
                         @if (_page == totalPages)
                         {
@@ -158,6 +147,14 @@
                             <li class="page-item"><a class="page-link" @onclick="GetDataOnNextPage" href="" @onclick:preventDefault>&raquo;</a></li>
                         }
                     </ul>
+                </div>
+                <div class="col-md-12" style="display:inline-block;">
+                        <input type="number" min="1" style="width:12%; float:right; margin-top:5px;" class="form-control select2" @oninput="(e)=> RenderToPage(e.Value.ToString())" placeholder="Go To Page">
+                        @if (!string.IsNullOrEmpty(renderToPageError) || !string.IsNullOrWhiteSpace(renderToPageError))
+                        {
+                            <label style="color:red; float:right; margin-top:10px;">@renderToPageError</label>
+                        }
+                </div>
             </div>
             }
             </div>
@@ -174,6 +171,7 @@
     private bool loading;
     private IList<References> entries;
     private int totalPages;
+    private string renderToPageError="";
 
     protected override async Task OnInitializedAsync()
     {
@@ -263,5 +261,39 @@
         await PageNumberHelper.SaveReferencesPageNo(_page);
         string url = $"entries/addByRef/{val}";
         await JSRuntime.InvokeAsync<object>("open", url, "_blank");
+    }
+
+    private async Task RenderToPage(string val)
+    {
+        if (string.IsNullOrEmpty(val))
+        {
+            renderToPageError = "";
+            loading = true;
+            _page = 1;
+            await GetData();
+            await GetReferencesCount();
+            loading = false;
+            StateHasChanged();
+        }
+        else if (Int32.Parse(val) > totalPages)
+        {
+            renderToPageError = $"Page Number must be less then {totalPages}.";
+            StateHasChanged();
+        }
+        else if (Int32.Parse(val) <= 0)
+        {
+            renderToPageError = "Page Number must be positive.";
+            StateHasChanged();
+        }
+        else if(Int32.Parse(val) > 0)
+        {
+            renderToPageError = "";
+            loading = true;
+            _page = Int32.Parse(val);
+            await GetData();
+            await GetReferencesCount();
+            loading = false;
+            StateHasChanged();
+        }
     }
 }
