@@ -8,99 +8,6 @@
 @inject IJSRuntime JSRuntime;
 
 <EditForm Model="@model">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="form-group">
-                <label>Name</label>
-                <InputText @bind-Value="model.Name" class="form-control" />
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label>Surname</label>
-                <InputText @bind-Value="this.surnameValue" class="form-control select2" @oninput="(e)=> AutoCompleteSurname(e.Value.ToString())" list="_surname" />
-                <datalist id="_surname">
-                    @if (surnamesSearchList != null)
-                    {
-                        @foreach (var item in surnamesSearchList)
-                        {
-                            <option value="@item.Value">@item.Value</option>
-                        }
-                    }
-                </datalist>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label>Contact Number</label>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                    </div>
-                    <InputText @bind-Value="model.ContactNumber" class="form-control" data-inputmask='"mask": "0399-999 9999"' data-mask />
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="form-group">
-                <label>Village</label>
-                <InputText @bind-Value="this.villageValue" class="form-control select2" @oninput="(e)=> AutoCompleteVillage(e.Value.ToString())" list="_village" />
-                <datalist id="_village">
-                    @if (villagesSearchList != null)
-                    {
-                        @foreach (var item in villagesSearchList)
-                        {
-                            <option value="@item.Value">@item.Value</option>
-                        }
-                    }
-                </datalist>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label>Reference</label>
-                <InputText @bind-Value="this.referenceValue" class="form-control select2" @oninput="(e)=> AutoCompleteReference(e.Value.ToString())" list="_ref" />
-                <datalist id="_ref">
-                    @if (referencesSearchList != null)
-                    {
-                        @foreach (var item in referencesSearchList)
-                        {
-                            <option value="@item.Value">@item.Value</option>
-                        }
-                    }
-                </datalist>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label>Union Council</label>
-                <InputText @bind-Value="this.ucValue" class="form-control select2" @oninput="(e)=> AutoCompleteUC(e.Value.ToString())" list="_uc" />
-                <datalist id="_uc">
-                    @if (ucsSearchList != null)
-                    {
-                        @foreach (var item in ucsSearchList)
-                        {
-                            <option value="@item.Value">@item.Value</option>
-                        }
-                    }
-                </datalist>
-            </div>
-        </div>
-        <div class="row" dir="rtl">
-        <div class="col-md-4">
-            <div class="form-group">
-                <button class="btn btn-primary page-link" style="float:right; margin-top:34px;" type="button" @onclick="@(() => GetDataByPageNumber(_page))" href="" @onclick:preventDefault>
-                    Search
-                </button>
-            </div>
-        </div>
-    </div>
-    </div>
-
-
-
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <div class="container-fluid">
@@ -112,6 +19,16 @@
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
                     <li class="breadcrumb-item active">List of all the Entries</li>
+                    &nbsp;&nbsp;
+                    <a href="#" style="float:right; color:grey;" @onclick:preventDefault data-toggle="modal" data-target="#modal-default-search">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    @if (isOnSearch)
+                    {
+                        <a href="#" style="float:right;" @onclick:preventDefault @onclick="@(() => ClearSearch())">
+                            &nbsp;Clear Search
+                        </a>
+                    }
                 </ol>
             </div>
         </div>
@@ -289,6 +206,113 @@
     </div>
 </section>
 
+<!-- Pop Up for Search Btn -->
+<section class="content">
+    <div class="modal fade" id="modal-default-search">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Search Entry : </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    
+                    <EditForm Model="@model">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <InputText @bind-Value="model.Name" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Surname</label>
+                                    <InputText @bind-Value="this.surnameValue" class="form-control select2" @oninput="(e)=> AutoCompleteSurname(e.Value.ToString())" list="_surname" />
+                                    <datalist id="_surname">
+                                        @if (surnamesSearchList != null)
+                                        {
+                                            @foreach (var item in surnamesSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Contact Number</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                        </div>
+                                        <InputText @bind-Value="model.ContactNumber" class="form-control" data-inputmask='"mask": "0399-999 9999"' data-mask />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Village</label>
+                                    <InputText @bind-Value="this.villageValue" class="form-control select2" @oninput="(e)=> AutoCompleteVillage(e.Value.ToString())" list="_village" />
+                                    <datalist id="_village">
+                                        @if (villagesSearchList != null)
+                                        {
+                                            @foreach (var item in villagesSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Reference</label>
+                                    <InputText @bind-Value="this.referenceValue" class="form-control select2" @oninput="(e)=> AutoCompleteReference(e.Value.ToString())" list="_ref" />
+                                    <datalist id="_ref">
+                                        @if (referencesSearchList != null)
+                                        {
+                                            @foreach (var item in referencesSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Union Council</label>
+                                    <InputText @bind-Value="this.ucValue" class="form-control select2" @oninput="(e)=> AutoCompleteUC(e.Value.ToString())" list="_uc" />
+                                    <datalist id="_uc">
+                                        @if (ucsSearchList != null)
+                                        {
+                                            @foreach (var item in ucsSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>
+                        </div>
+                    </EditForm>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => GetSearchData(_page))">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 @code {
     private int _page = 1;
     private int pageSize = 10;
@@ -302,6 +326,7 @@
     private string query = string.Empty;
     private int renderToPage;
     private string renderToPageError="";
+    private bool isOnSearch = false;
 
 
     private Entries_CreateViewModel model = new Entries_CreateViewModel();
@@ -321,14 +346,6 @@
         await GetData();
         await GetEntriesCount();
         loading = false;
-
-        //while (0 < 1)
-        //{
-        //    await Task.Delay(3000);
-        //    _page = await PageNumberHelper.GetEntriesPageNo();
-        //    await GetData();
-        //    await GetEntriesCount();
-        //}
     }
 
     private async Task RenderToPage(string val)
@@ -491,6 +508,49 @@
         loading = false;
     }
 
+    private async Task GetSearchData(int pageNumber)
+    {
+        this.totalPages = 0;
+        isOnSearch = true;
+
+        loading = true;
+        _page = pageNumber;
+        await GetData();
+        await GetEntriesCount();
+
+        
+
+        loading = false;
+        StateHasChanged();
+
+        model.Name = "";
+        this.surnameValue = "";
+        model.ContactNumber = "";
+        this.villageValue = "";
+        this.referenceValue = "";
+        StateHasChanged();
+
+    }
+
+    private async Task ClearSearch()
+    {
+        this.totalPages = 0;
+        model.Name = "";
+        model.ReferenceId = null;
+        model.ContactNumber = null;
+        model.SurnameId = null;
+        model.UnionCounsilId = null;
+        model.VillageId = null;
+
+        isOnSearch = false;
+        loading = true;
+        _page = 1;
+        await GetData();
+        await GetEntriesCount();
+        loading = false;
+        StateHasChanged();
+    }
+
     private async Task GetData()
     {
         if (!string.IsNullOrEmpty(referenceValue))
@@ -589,9 +649,7 @@
 
             query = "voter/get?pageNumber=" + _page + "&perPage=" + pageSize + "&";
 
-            string name = model.Name;
-
-            @if (!string.IsNullOrWhiteSpace(name))
+            @if (!string.IsNullOrWhiteSpace(model.Name))
                 query += "name=" + model.Name + "&";
 
             @if (model.ReferenceId != null && model.ReferenceId > 0)
