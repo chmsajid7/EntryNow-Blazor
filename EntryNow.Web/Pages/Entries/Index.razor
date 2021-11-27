@@ -301,6 +301,45 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                  <label>Taluka</label>
+                                  <InputText @bind-Value="this.talukaValue" class="form-control select2" @oninput="(e)=> AutoCompleteTaluka(e.Value.ToString())" list="_taluka"/>
+                                      <datalist id="_taluka">
+                                        @if (talukaSearchList != null)
+                                        {
+                                            @foreach (var item in talukaSearchList)
+                                            {
+                                                <option value="@item.Value">@item.Value</option>
+                                            }
+                                        }
+                                      </datalist>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                      <label>City</label>
+                                      <InputText @bind-Value="this.cityValue" class="form-control select2" @oninput="(e)=> AutoCompleteCity(e.Value.ToString())" list="_city"/>
+                                          <datalist id="_city">
+                                            @if (citySearchList != null)
+                                            {
+                                                @foreach (var item in citySearchList)
+                                                {
+                                                    <option value="@item.Value">@item.Value</option>
+                                                }
+                                            }
+                                          </datalist>
+                                  </div>
+                              </div>
+                            <div class="col-md-4">
+                              <div class="form-group">
+                                      <label>Complete Address</label>
+                                      <InputText @bind-Value="model.Address" class="form-control" />
+                                      <ValidationMessage For="@(() => model.Address)" />
+                              </div>
+                          </div>
+                        </div>
                     </EditForm>
 
                 </div>
@@ -334,10 +373,14 @@
     private string ucValue = "";
     private string referenceValue = "";
     private string villageValue = "";
+    private string talukaValue = "";
+    private string cityValue = "";
     private IList<SearchValues> surnamesSearchList;
     private IList<SearchValues> ucsSearchList;
     private IList<SearchValues> villagesSearchList;
+    private IList<SearchValues> talukaSearchList;
     private IList<SearchValues> referencesSearchList;
+    private IList<SearchValues> citySearchList;
 
     protected override async Task OnInitializedAsync()
     {
@@ -454,6 +497,54 @@
         }
     }
 
+    private async Task AutoCompleteTaluka(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >= 3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.talukaSearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task AutoCompleteCity(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Length >=3)
+        {
+            try
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "city/find?name=" + value))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        this.citySearchList = Newtonsoft.Json.JsonConvert.DeserializeObject<IList<SearchValues>>(apiResponse);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                AlertService.Error(e.Message);
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
     private async Task AutoCompleteReference(string value)
     {
         if (!string.IsNullOrEmpty(value) && value.Length >= 3)
@@ -518,8 +609,6 @@
         await GetData();
         await GetEntriesCount();
 
-        
-
         loading = false;
         StateHasChanged();
 
@@ -529,7 +618,6 @@
         this.villageValue = "";
         this.referenceValue = "";
         StateHasChanged();
-
     }
 
     private async Task ClearSearch()
@@ -571,7 +659,6 @@
                 }
             }
         }
-
         else
             model.ReferenceId = null;
 
@@ -593,7 +680,6 @@
                 }
             }
         }
-
         else
             model.SurnameId = null;
 
@@ -615,9 +701,54 @@
                 }
             }
         }
-
         else
             model.UnionCounsilId = null;
+
+        if (!string.IsNullOrEmpty(talukaValue))
+        {
+            if (talukaSearchList == null)
+            {
+                //AlertService.Error("Incorrect Village Name Entered!");
+            }
+            foreach (var item in talukaSearchList)
+            {
+                if (item.Value == talukaValue)
+                {
+                    model.TalukaId = item.Id;
+                }
+                else
+                {
+                    //AlertService.Error("Incorrect Village Name Entered!");
+                }
+            }
+        }
+        else
+        {
+            model.TalukaId = null;
+        }
+
+        if (!string.IsNullOrEmpty(cityValue))
+        {
+            if (citySearchList == null)
+            {
+                //AlertService.Error("Incorrect Village Name Entered!");
+            }
+            foreach (var item in citySearchList)
+            {
+                if (item.Value == cityValue)
+                {
+                    model.CityId = item.Id;
+                }
+                else
+                {
+                    //AlertService.Error("Incorrect Village Name Entered!");
+                }
+            }
+        }
+        else
+        {
+            model.VillageId = null;
+        }
 
         if (!string.IsNullOrEmpty(villageValue))
         {
@@ -637,9 +768,10 @@
                 }
             }
         }
-
         else
+        {
             model.VillageId = null;
+        }
 
         try
         {
@@ -664,8 +796,17 @@
             @if (model.VillageId != null && model.VillageId > 0)
                 query += "villageId=" + model.VillageId + "&";
 
+            @if (model.TalukaId != null && model.TalukaId > 0)
+                query += "TalukaId=" + model.TalukaId + "&";
+
+            @if (model.CityId != null && model.CityId > 0)
+                query += "CityId=" + model.CityId + "&";
+
             @if (model.UnionCounsilId != null && model.UnionCounsilId > 0)
                 query += "unionCounsilId=" + model.UnionCounsilId + "&";
+
+            @if (!string.IsNullOrWhiteSpace(model.Address))
+                query += "Address=" + model.Address;
 
 
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
@@ -710,8 +851,17 @@
             @if (model.VillageId != null && model.VillageId > 0)
                 query += "villageId=" + model.VillageId + "&";
 
+            @if (model.TalukaId != null && model.TalukaId > 0)
+                query += "TalukaId=" + model.TalukaId + "&";
+
+            @if (model.CityId != null && model.CityId > 0)
+                query += "CityId=" + model.CityId + "&";
+
             @if (model.UnionCounsilId != null && model.UnionCounsilId > 0)
                 query += "unionCounsilId=" + model.UnionCounsilId + "&";
+
+            @if (!string.IsNullOrWhiteSpace(model.Address))
+                query += "Address=" + model.Address;
 
 
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
