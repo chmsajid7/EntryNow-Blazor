@@ -18,8 +18,6 @@ namespace EntryNow.Web
             builder.Services
                 .AddScoped<IAccountService, AccountService>()
                 .AddScoped<PageNumberHelper>()
-                //.AddScoped<IEntriesService, EntriesService>()
-                //.AddScoped<IReferencesService, ReferencesService>()
                 .AddScoped<IAlertService, AlertService>()
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>();

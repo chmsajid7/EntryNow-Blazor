@@ -209,7 +209,7 @@
 <!-- Pop Up for Search Btn -->
 <section class="content">
     <div class="modal fade" id="modal-default-search">
-        <div class="modal-dialog">
+        <div class="modal-dialog" style="max-width: 80%;" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Search Entry : </h4>
@@ -332,7 +332,9 @@
                                           </datalist>
                                   </div>
                               </div>
-                            <div class="col-md-4">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
                               <div class="form-group">
                                       <label>Complete Address</label>
                                       <InputText @bind-Value="model.Address" class="form-control" />
@@ -615,8 +617,12 @@
         model.Name = "";
         this.surnameValue = "";
         model.ContactNumber = "";
+        model.Address = "";
         this.villageValue = "";
         this.referenceValue = "";
+        this.ucValue = "";
+        this.talukaValue = "";
+        this.cityValue = "";
         StateHasChanged();
     }
 
@@ -629,6 +635,9 @@
         model.SurnameId = null;
         model.UnionCounsilId = null;
         model.VillageId = null;
+        model.Address = null;
+        model.TalukaId = null;
+        model.CityId = null;
 
         isOnSearch = false;
         loading = true;
