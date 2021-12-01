@@ -1156,7 +1156,7 @@
     }
     private async Task TalukaMethod()
     {
-        model_village.VillageName = "";
+        model_taluka.TalukaName = "";
         isModalValid = false;
         loading = true;
         await GetTaluka();
@@ -1200,7 +1200,7 @@
         {
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
-                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "village/get/count"))
+                using (System.Net.Http.HttpResponseMessage response = await httpClient.GetAsync(baseUrl + "taluka/get/count"))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     totaltalukas = Int32.Parse(apiResponse);
